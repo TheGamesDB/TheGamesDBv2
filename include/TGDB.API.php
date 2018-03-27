@@ -9,7 +9,7 @@ class TGDB
 
 	public function __construct()
 	{
-		$this->database = new sql();
+		$this->database = sql::getInstance();
 	}
 
 	function GetAllGamesByPlatform($platformID, $options)
