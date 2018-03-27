@@ -7,17 +7,23 @@ class TGDB
 	private $PlatformsTblCols;
 	private $GamesTblCols;
 
-	public function __construct()
+	private function __construct()
 	{
 		$this->database = sql::getInstance();
 	}
 
-	function GetAllGamesByPlatform($platformID, $options)
+	public static function getInstance()
 	{
-		return $this->GetGameListByPlatform($platformID, $options, 0, 99999999);
+		static $instance = null;
+		if (!isset($instance))
+		{
+			$object = __CLASS__;
+			$instance = new $object;
+		}
+		return $instance;
 	}
 
-	function GetGameListByPlatform($IDs = 0, $options = array(), $offset = 0, $limit = 20)
+	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $options = array())
 	{
 		$qry = "Select id, GameTitle, Developer, ReleaseDate ";
 
@@ -91,7 +97,7 @@ class TGDB
 		}
 	}
 
-	function GetGameByID($IDs, $offset = 0, $limit = 20, $requestBoxart = false)
+	function GetGameByID($IDs, $offset = 0, $limit = 20, $options = array())
 	{
 		$GameIDs = array();
 		if(is_array($IDs))
@@ -114,8 +120,23 @@ class TGDB
 			return array();
 		}
 
+		$qry = "Select id, GameTitle, Developer, ReleaseDate ";
+
+		if(!empty($options))
+		{
+			foreach($options as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games WHERE id IN ($GameIDs) LIMIT :limit OFFSET :offset";
+
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("Select * FROM games WHERE id IN ($GameIDs) LIMIT :limit OFFSET :offset");
+		$sth = $dbh->prepare($qry);
 
 		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -124,12 +145,28 @@ class TGDB
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 
-			if($requestBoxart)
+			if($options['boxart'])
 			{
 				$boxart = $this->GetGameBoxartByID($IDs, $offset, $limit);
 				foreach($res as $game)
 				{
 					$game->boxart = $boxart[$game->id];
+				}
+			}
+			if($options['Platform'])
+			{
+				$PlatformsIDs = array();
+				foreach($res as $game)
+				{
+					$PlatformsIDs[] = $game->Platform;
+				}
+				$platforms = $this->GetPlatforms($PlatformsIDs);
+				if(!empty($platforms))
+				{
+					foreach($res as $game)
+					{
+						$game->PlatformDetails = $platforms[$game->Platform];
+					}
 				}
 			}
 
@@ -139,17 +176,31 @@ class TGDB
 		return array();
 	}
 
-	function SearchGamesByName($searchTerm, $offset = 0, $limit = 20)
+	function SearchGamesByName($searchTerm, $offset = 0, $limit = 20, $options = array())
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("SELECT * FROM games
-			WHERE GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3)
-			GROUP BY id ORDER BY CASE WHEN GameTitle like :name4 THEN 0
-			WHEN GameTitle like :name5 THEN 1
-			WHEN GameTitle like :name6 THEN 2
-			ELSE 3
-			END, GameTitle LIMIT :limit OFFSET :offset");
+		$qry = "Select id, GameTitle, Developer, ReleaseDate ";
+
+		if(!empty($options))
+		{
+			foreach($options as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games WHERE GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3)
+		GROUP BY id ORDER BY CASE WHEN GameTitle like :name4 THEN 0
+		WHEN GameTitle like :name5 THEN 1
+		WHEN GameTitle like :name6 THEN 2
+		ELSE 3
+		END, GameTitle LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
 
 		$sth->bindValue(':name', "%$searchTerm%");
 		$sth->bindValue(':name2', $searchTerm);
@@ -164,12 +215,26 @@ class TGDB
 
 		if($sth->execute())
 		{
-			$res = $sth->fetch(PDO::FETCH_OBJ);
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			$IDs = array();
+			foreach($res as $game)
+			{
+				$IDs[] = $game->id;
+			}
+			if($options['boxart'] && !empty($IDs))
+			{
+				$boxart = $this->GetGameBoxartByID($IDs);
+				foreach($res as $game)
+				{
+					$game->boxart = $boxart[$game->id];
+				}
+			}
 			return $res;
 		}
 	}
 
-	function GetGameBoxartByID($IDs = 0, $offset = 0, $limit = 20)
+	//TODO:filter return type
+	function GetGameBoxartByID($IDs = 0, $offset = 0, $limit = 20, $filter = 'boxart')
 	{
 		$GameIDs;
 		if(is_array($IDs))

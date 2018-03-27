@@ -25,186 +25,185 @@ function parseRequestOptions()
     return $options;
 }
 
-function jsonSetPageUrl(&$JSON_Response, $current_page, $isNextPage)
+function getJsonPageUrl($current_page, $has_next_page)
 {
     global $BASE_URL;
     $GET = $_GET;
-    $JSON_Response['previous_page'] = NULL;
-    $JSON_Response['next_page'] = NULL;
-
+    $ret['previous'] = NULL;
     if($current_page > 0)
     {
         $GET['page'] = $current_page-1;
-        $JSON_Response['previous_page'] = "$BASE_URL/" . $_SERVER['SCRIPT_NAME']. "?" . http_build_query($GET,'','&');
+        $ret['previous'] = "$BASE_URL/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
     }
 
     $GET['page'] = $current_page;
-    $JSON_Response['current_page'] = "$BASE_URL/" . $_SERVER['SCRIPT_NAME']. "?" . http_build_query($GET,'','&');
+    $ret['current'] = "$BASE_URL/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
 
-    if($isNextPage)
+    $ret['next'] = NULL;
+    if($has_next_page)
     {
         $GET['page'] = $current_page+1;
-        $JSON_Response['next_page'] = "$BASE_URL/" . $_SERVER['SCRIPT_NAME']. "?" . http_build_query($GET,'','&');
+        $ret['next'] = "$BASE_URL/" . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
     }
+    return $ret;
+}
+
+function getValidNumericFromArray(array $args, $index)
+{
+    $IDs = array();
+    if(!empty($args[$index]) && is_numeric($args[$index]))
+    {
+        $IDs = $args[$index];
+    }
+    else if(!empty($_REQUEST[$index]))
+    {
+        $tmpIDs = explode(',', $_REQUEST[$index]);
+        foreach($tmpIDs as $key => $val)
+            if(is_numeric($val))
+                $IDs[] = $val;
+    }
+    return $IDs;
 }
 
 use Slim\Http\Request;
 use Slim\Http\Response;
 
-//TODO page and perhaps limit?
-
 // Routes
-$app->get('/', function (Request $request, Response $response, array $args) {
-    // Sample log message
+$app->get('/', function (Request $request, Response $response, array $args)
+{
     $this->logger->info("Slim-Skeleton '/' route");
 
-    // Render index view
-    return $this->renderer->render($response, 'index.phtml', $args);
+    return $this->renderer->render($response, 'index.phtml', $args);//TODO
 });
 
 $app->get('/Games[/{GameID}]', function (Request $request, Response $response, array $args)
 {
-    // Sample log message
     $this->logger->info("Slim-Skeleton '/Games' route");
 
-    $GameIDs = array();
-    if(!empty($args['GameID']))
-    {
-        $GameIDs = $args['GameID'];
-    }
-    else if(!empty($_REQUEST["GameID"]))
-    {
-        $tmpGameIDs = explode(',', $_REQUEST["GameID"]);
-        foreach($tmpGameIDs as $key => $val)
-            if(is_numeric($val))
-                $GameIDs[] = $val;
-    }
+    $GameIDs = getValidNumericFromArray($args, 'GameID');
     if(empty($GameIDs))
     {
-        return $this->renderer->render($response, 'Games.api.html', $args);//TODO
+        $JSON_Response = array("status" => 406, "msg" => "Invalid request: Invalid or missing paramaters.");
+        return $response->withJson($JSON_Response, 406);
     }
 
+    $limit = 20;
+    $page = getPage();
+    $offset = $page * $limit;
     $options = parseRequestOptions();
-    $offset = getPage()*20;
 
-    $API = new TGDB();
-    $list = $API->GetGameByID($GameIDs, $offset, 20, $options['boxart']);
+    $API = TGDB::getInstance();
+    $list = $API->GetGameByID($GameIDs, $offset, $limit+1, $options);
+
+    if($has_next_page = count($list) > $limit)
+        unset($list[$limit]);
+
     $JSON_Response = array("count" => count($list), "games" => $list);
-    return $response->write(json_encode($JSON_Response));
+    $JSON_Response['pages'] = getJsonPageUrl($page, $has_next_page);
+
+    return $response->withJson($JSON_Response);
 });
 
-$app->get('/GamesBoxart[/{GameID}]', function (Request $request, Response $response, array $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/Game' route");
-    $GameIDs = array();
-    if(!empty($args['GameID']))
-    {
-        $GameIDs = $args['GameID'];
-    }
-    else if(!empty($_REQUEST["GameID"]))
-    {
-        $tmpGameIDs = explode(',', $_REQUEST["GameID"]);
-        foreach($tmpGameIDs as $key => $val)
-            if(is_numeric($val))
-                $GameIDs[] = $val;
-    }
-    if(empty($GameIDs))
-    {
-        return $this->renderer->render($response, 'Games.api.html', $args);//TODO
-    }
-
-    $API = new TGDB();
-    $list = $API->GetGameBoxartByID($GameIDs);
-    $JSON_Response = array("count" => count($list), "gamesboxart" => $list);
-    return $response->write(json_encode($JSON_Response));
-    return $this->renderer->render($response, 'game.json', $args);
-});
-
-$app->get('/AllGames[/{PlatformID}]', function (Request $request, Response $response, array $args) {
-    // Sample log message
+$app->get('/AllGames[/{PlatformID}]', function (Request $request, Response $response, array $args)
+{
     $this->logger->info("Slim-Skeleton '/AllGames' route");
 
-    $PlatformIDs = array();
-    if(!empty($args['PlatformID']))
-    {
-        $PlatformIDs = $args['PlatformID'];
-    }
-    else if(!empty($_REQUEST["PlatformID"]))
-    {
-        $tmpPlatformIDs = explode(',', $_REQUEST["PlatformID"]);
-        foreach($tmpPlatformIDs as $key => $val)
-            if(is_numeric($val))
-                $PlatformIDs[] = $val;
-    }
-
-    $options = parseRequestOptions();
+    $PlatformIDs = getValidNumericFromArray($args, 'PlatformID');
+    $limit = 20;
     $page = getPage();
-    $offset = $page*20;
+    $offset = $page * $limit;
+    $options = parseRequestOptions();
 
-    $API = new TGDB();
-    $list = $API->GetGameListByPlatform($PlatformIDs, $options, $offset);
-    $JSON_Response = array(
-        "count" => count($list),
-        "games" => $list,
-    );
+    $API = TGDB::getInstance();
+    $list = $API->GetGameListByPlatform($PlatformIDs, $offset, $limit+1, $options);
 
+    if($has_next_page = count($list) > $limit)
+        unset($list[$limit]);
 
-     jsonSetPageUrl($JSON_Response, $page, false);
+    $JSON_Response = array("count" => count($list), "games" => $list);
+    $JSON_Response['pages'] = getJsonPageUrl($page, $has_next_page);
 
-    return $response->write(json_encode($JSON_Response));
-    return $this->renderer->render($response, 'game.json', $args);
+    return $response->withJson($JSON_Response);
 });
 
-$app->get('/PlatformsList[/]', function (Request $request, Response $response, array $args) {
-    // Sample log message
+$app->get('/GamesBoxart[/{GameID}]', function (Request $request, Response $response, array $args)
+{
+    $this->logger->info("Slim-Skeleton '/Game' route");
+
+    $GameIDs = getValidNumericFromArray($args, 'GameID');
+    if(empty($GameIDs))
+    {
+        $JSON_Response = array("status" => 406, "msg" => "Invalid request: Invalid or missing paramaters.");
+        return $response->withJson($JSON_Response, 406);
+    }
+
+    $limit = 20;
+    $page = getPage();
+    $offset = $page * $limit;
+    $options = parseRequestOptions();
+
+    $API = TGDB::getInstance();
+    $list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1);
+
+    if($has_next_page = count($list) > $limit)
+        unset($list[$limit]);
+
+    $JSON_Response = array("count" => count($list), "gamesboxart" => $list);
+    $JSON_Response['pages'] = getJsonPageUrl($page, $has_next_page);
+
+    return $response->withJson($JSON_Response);
+});
+
+//is this needed? this can be made as part of /Platforms
+$app->get('/PlatformsList[/]', function (Request $request, Response $response, array $args)
+{
     $this->logger->info("Slim-Skeleton '/PlatformsList' route");
 
     $options = parseRequestOptions();
 
-    $API = new TGDB();
+    $API = TGDB::getInstance();
     $list = $API->GetPlatformsList($options);
     $JSON_Response = array("count" => count($list), "platforms" => $list);
-    return $response->write(json_encode($JSON_Response));
-    return $this->renderer->render($response, 'game.json', $args);
+    return $response->withJson($JSON_Response);
 });
 
-$app->get('/Platforms[/{PlatformID}]', function (Request $request, Response $response, array $args) {
-    // Sample log message
+$app->get('/Platforms[/{PlatformID}]', function (Request $request, Response $response, array $args)
+{
     $this->logger->info("Slim-Skeleton '/Platforms' route");
 
-    $PlatformIDs = array();
-    if(!empty($args['PlatformID']))
-    {
-        $PlatformIDs = $args['PlatformID'];
-    }
-    else if(!empty($_REQUEST["PlatformID"]))
-    {
-        $tmpPlatformIDs = explode(',', $_REQUEST["PlatformID"]);
-        foreach($tmpPlatformIDs as $key => $val)
-            if(is_numeric($val))
-                $PlatformIDs[] = $val;
-    }
+    $PlatformIDs = getValidNumericFromArray($args, 'PlatformID');
 
     $options = parseRequestOptions();
 
-    $API = new TGDB();
+    $API = TGDB::getInstance();
     $list = $API->GetPlatforms($PlatformIDs, $options);
     $JSON_Response = array("count" => count($list), "platforms" => $list);
-    return $response->write(json_encode($JSON_Response));
-    return $this->renderer->render($response, 'game.json', $args);
+    return $response->withJson($JSON_Response);
 });
 
-$app->group('/Search', function () {
-    $this->get('/Games', function ($request, $response, $args) {
+$app->group('/Search', function ()
+{
+    $this->get('/Games', function ($request, $response, $args)
+    {
 
+        $limit = 20;
+        $page = getPage();
+        $offset = $page * $limit;
+        $options = parseRequestOptions();
 
-        $API = new TGDB();
-        $list = $API->SearchGamesByName($_REQUEST['name']);
+        $API = TGDB::getInstance();
+        $list = $API->SearchGamesByName($_REQUEST['name'], 0, $limit+1, $options);
+
+        if($has_next_page = count($list) > $limit)
+            unset($list[$limit]);
+
         $JSON_Response = array("count" => count($list), "platforms" => $list);
-        return $response->write(json_encode($JSON_Response));
+        $JSON_Response['pages'] = getJsonPageUrl($page, $has_next_page);
+
+        return $response->withJson($JSON_Response);
     });
-    $this->get('/Platform', function ($request, $response, $args) {
-        // Route for /users/{id:[0-9]+}/reset-password
-        // Reset the password for user identified by $args['id']
+    $this->get('/Platform', function ($request, $response, $args)
+    {
+        // ? needed ?
     });
 });
