@@ -72,7 +72,7 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
-			if($options['boxart'])
+			if(isset($options['boxart']) && $options['boxart'])
 			{
 				$GameIDs = array();
 				foreach($res as $game)
@@ -82,10 +82,17 @@ class TGDB
 				$boxart = $this->GetGameBoxartByID($GameIDs);
 				foreach($res as $game)
 				{
-					$game->boxart = $boxart[$game->id];
+					if(isset($boxart[$game->id]))
+					{
+						$game->boxart = $boxart[$game->id];
+					}
+					else
+					{
+						$game->boxart = NULL;
+					}
 				}
 			}
-			if($options['Platform'])
+			if(isset($options['Platform']) && $options['Platform'])
 			{
 				$platforms = $this->GetPlatforms($IDs);
 				foreach($res as $game)
@@ -145,15 +152,22 @@ class TGDB
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 
-			if($options['boxart'])
+			if(isset($options['boxart']) && isset($options['boxart']))
 			{
 				$boxart = $this->GetGameBoxartByID($IDs, $offset, $limit);
 				foreach($res as $game)
 				{
-					$game->boxart = $boxart[$game->id];
+					if(isset($boxart[$game->id]))
+					{
+						$game->boxart = $boxart[$game->id];
+					}
+					else
+					{
+						$game->boxart = NULL;
+					}
 				}
 			}
-			if($options['Platform'])
+			if(isset($options['Platform']) && $options['Platform'])
 			{
 				$PlatformsIDs = array();
 				foreach($res as $game)
@@ -221,12 +235,19 @@ class TGDB
 			{
 				$IDs[] = $game->id;
 			}
-			if($options['boxart'] && !empty($IDs))
+			if(isset($options['boxart']) && $options['boxart'] && !empty($IDs))
 			{
 				$boxart = $this->GetGameBoxartByID($IDs);
 				foreach($res as $game)
 				{
-					$game->boxart = $boxart[$game->id];
+					if(!empty($boxart[$game->id]))
+					{
+						$game->boxart = $boxart[$game->id];
+					}
+					else
+					{
+						$game->boxart = NULL;
+					}
 				}
 			}
 			return $res;
@@ -361,7 +382,7 @@ class TGDB
 				}
 			}
 		}
-		return $this->PlatformsTblCols[$name] == true;
+		return isset($this->PlatformsTblCols[$name]);
 	}
 
 	function is_valid_games_col($name)
@@ -379,7 +400,7 @@ class TGDB
 				}
 			}
 		}
-		return $this->GamesTblCols[$name] == true;
+		return isset($this->GamesTblCols[$name]);
 	}
 }
 
