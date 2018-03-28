@@ -1,6 +1,6 @@
 <?php
-require __DIR__ . '/../../include/TGDB.API.php';
-require __DIR__ . '/Utils.class.php';
+require_once __DIR__ . '/../../include/TGDB.API.php';
+require_once __DIR__ . '/Utils.class.php';
 
 
 use Slim\Http\Request;
