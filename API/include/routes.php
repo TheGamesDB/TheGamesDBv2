@@ -11,7 +11,7 @@ $app->get('/', function (Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/' route");
 
-	return $this->renderer->render($response, 'index.phtml', $args);//TODO
+	return $this->renderer->render($response, 'doc.html', $args);//TODO
 });
 
 $app->get('/Games[/{GameID}]', function (Request $request, Response $response, array $args)
@@ -21,8 +21,8 @@ $app->get('/Games[/{GameID}]', function (Request $request, Response $response, a
 	$GameIDs = Utils::getValidNumericFromArray($args, 'GameID');
 	if(empty($GameIDs))
 	{
-		$JSON_Response = array("status" => 406, "msg" => "Invalid request: Invalid or missing paramaters.");
-		return $response->withJson($JSON_Response, 406);
+		$JSON_Response = Utils::getStatus(406);
+		return $response->withJson($JSON_Response, $JSON_Response['code']);
 	}
 
 	$limit = 20;
@@ -36,7 +36,8 @@ $app->get('/Games[/{GameID}]', function (Request $request, Response $response, a
 	if($has_next_page = count($list) > $limit)
 		unset($list[$limit]);
 
-	$JSON_Response = array("count" => count($list), "games" => $list);
+	$JSON_Response = Utils::getStatus(200);
+	$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 	$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 	return $response->withJson($JSON_Response);
@@ -58,7 +59,8 @@ $app->get('/AllGames[/{PlatformID}]', function (Request $request, Response $resp
 	if($has_next_page = count($list) > $limit)
 		unset($list[$limit]);
 
-	$JSON_Response = array("count" => count($list), "games" => $list);
+	$JSON_Response = Utils::getStatus(200);
+	$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 	$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 	return $response->withJson($JSON_Response);
@@ -71,8 +73,8 @@ $app->get('/GamesBoxart[/{GameID}]', function (Request $request, Response $respo
 	$GameIDs = Utils::getValidNumericFromArray($args, 'GameID');
 	if(empty($GameIDs))
 	{
-		$JSON_Response = array("status" => 406, "msg" => "Invalid request: Invalid or missing paramaters.");
-		return $response->withJson($JSON_Response, 406);
+		$JSON_Response = Utils::getStatus(406);
+		return $response->withJson($JSON_Response, $JSON_Response['code']);
 	}
 
 	$limit = 20;
@@ -86,7 +88,8 @@ $app->get('/GamesBoxart[/{GameID}]', function (Request $request, Response $respo
 	if($has_next_page = count($list) > $limit)
 		unset($list[$limit]);
 
-	$JSON_Response = array("count" => count($list), "gamesboxart" => $list);
+	$JSON_Response = Utils::getStatus(200);
+	$JSON_Response['data'] = array("count" => count($list), "gamesboxart" => $list);
 	$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 	return $response->withJson($JSON_Response);
@@ -115,7 +118,8 @@ $app->get('/Platforms[/{PlatformID}]', function (Request $request, Response $res
 
 	$API = TGDB::getInstance();
 	$list = $API->GetPlatforms($PlatformIDs, $options);
-	$JSON_Response = array("count" => count($list), "platforms" => $list);
+	$JSON_Response = Utils::getStatus(200);
+	$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 	return $response->withJson($JSON_Response);
 });
 
@@ -135,7 +139,8 @@ $app->group('/Search', function ()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
-		$JSON_Response = array("count" => count($list), "platforms" => $list);
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);

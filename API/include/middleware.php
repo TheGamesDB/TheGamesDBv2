@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/Utils.class.php';
 
 class AuthMiddleware
 {
@@ -16,13 +17,13 @@ class AuthMiddleware
 		}
 		else if(empty($_REQUEST['API']))
 		{
-			$JSON_Response = array("status" => 401, "msg" => "This route requires and API key and no API key was provided.");
-			return $response->withJson($JSON_Response);
+			$JSON_Response = Utils::getStatus(401);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 		else if(!$this->valid_API_key($args['API']))
 		{
-			$JSON_Response = array("status" => 403, "msg" => "Invalid API key was provided.");
-			return $response->withJson($JSON_Response);
+			$JSON_Response = Utils::getStatus(403);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 
 		return $next($request, $response);

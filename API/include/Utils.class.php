@@ -4,6 +4,26 @@ class Utils
 {
 	static private $BASE_URL = "https://api.thegamesdb.net";
 
+	static private $_statusMSG = array(
+		200 => "Success",
+		401 => "This route requires and API key and no API key was provided.",
+		403 => "Invalid API key was provided.",
+		406 => "Invalid request: Invalid or missing paramaters.",
+	);
+
+	function getStatus($code)
+	{
+		if(isset(Utils::$_statusMSG[$code]))
+		{
+			$statusMSG = Utils::$_statusMSG[$code];
+		}
+		else
+		{
+			$statusMSG = "Unknown Error Code";
+		}
+		return array("code" => $code, "status" => $statusMSG);
+	}
+
 	static function getPage()
 	{
 		if(!empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) && $_REQUEST['page'] > 0)
