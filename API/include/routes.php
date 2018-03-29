@@ -95,29 +95,24 @@ $app->get('/GamesBoxart[/{GameID}]', function(Request $request, Response $respon
 	return $response->withJson($JSON_Response);
 });
 
-//is this needed? this can be made as part of /Platforms
-$app->get('/PlatformsList[/]', function(Request $request, Response $response, array $args)
-{
-	$this->logger->info("Slim-Skeleton '/PlatformsList' route");
-
-	$options = Utils::parseRequestOptions();
-
-	$API = TGDB::getInstance();
-	$list = $API->GetPlatformsList($options);
-	$JSON_Response = array("count" => count($list), "platforms" => $list);
-	return $response->withJson($JSON_Response);
-});
-
-$app->get('/Platforms[/{PlatformID}]', function(Request $request, Response $response, array $args)
+$app->get('/Platforms[/{id}]', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/Platforms' route");
 
-	$PlatformIDs = Utils::getValidNumericFromArray($args, 'PlatformID');
+	$IDs = Utils::getValidNumericFromArray($args, 'id');
 
 	$options = Utils::parseRequestOptions();
 
 	$API = TGDB::getInstance();
-	$list = $API->GetPlatforms($PlatformIDs, $options);
+	if(empty($IDs))
+	{
+		$list = $API->GetPlatformsList($options);
+	}
+	else
+	{
+		$list = $API->GetPlatforms($IDs, $options);
+	}
+
 	$JSON_Response = Utils::getStatus(200);
 	$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 	return $response->withJson($JSON_Response);
