@@ -79,7 +79,7 @@ class TGDB
 				{
 					$GameIDs[] = $game->id;
 				}
-				$boxart = $this->GetGameBoxartByID($GameIDs);
+				$boxart = $this->GetGameBoxartByID($GameIDs, 0, 999);
 				foreach($res as $game)
 				{
 					if(isset($boxart[$game->id]))
@@ -154,7 +154,7 @@ class TGDB
 
 			if(isset($options['boxart']) && isset($options['boxart']))
 			{
-				$boxart = $this->GetGameBoxartByID($IDs, $offset, $limit);
+				$boxart = $this->GetGameBoxartByID($IDs, 0, 999);
 				foreach($res as $game)
 				{
 					if(isset($boxart[$game->id]))
@@ -237,7 +237,7 @@ class TGDB
 			}
 			if(isset($options['boxart']) && $options['boxart'] && !empty($IDs))
 			{
-				$boxart = $this->GetGameBoxartByID($IDs);
+				$boxart = $this->GetGameBoxartByID($IDs, 0, 999);
 				foreach($res as $game)
 				{
 					if(!empty($boxart[$game->id]))
