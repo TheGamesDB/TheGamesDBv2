@@ -136,33 +136,66 @@ $app->get('/GamesBoxart[/{GameID}]', function(Request $request, Response $respon
 	return $response->withJson($JSON_Response);
 });
 
-$app->get('/Platforms[/{id}]', function(Request $request, Response $response, array $args)
+$app->group('/Platforms', function()
 {
-	$this->logger->info("Slim-Skeleton '/Platforms' route");
-
-	$IDs = Utils::getValidNumericFromArray($args, 'id');
-
-	$options = Utils::parseRequestOptions();
-
-	$API = TGDB::getInstance();
-	if(empty($IDs))
+	$this->get('', function($request, $response, $args)
 	{
+		$this->logger->info("Slim-Skeleton '/Platforms' route");
+
+		$options = Utils::parseRequestOptions();
+
+		$API = TGDB::getInstance();
 		$list = $API->GetPlatformsList($options);
-	}
-	else
+
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
+		return $response->withJson($JSON_Response);
+	});
+	$this->get('/ByPlatformID[/{id}]', function($request, $response, $args)
 	{
+		$this->logger->info("Slim-Skeleton '/Platforms/ByPlatformID' route");
+
+		$IDs = Utils::getValidNumericFromArray($args, 'id');
+		if(empty($IDs))
+		{
+			$JSON_Response = Utils::getStatus(406);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
+		}
+
+		$options = Utils::parseRequestOptions();
+
+		$API = TGDB::getInstance();
 		$list = $API->GetPlatforms($IDs, $options);
-	}
 
-	$JSON_Response = Utils::getStatus(200);
-	$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
-	return $response->withJson($JSON_Response);
-});
-
-$app->group('/Search', function()
-{
-	$this->get('/Platform', function($request, $response, $args)
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
+		return $response->withJson($JSON_Response);
+	});
+	$this->get('/ByPlatformName[/{name}]', function($request, $response, $args)
 	{
-		// ? needed ?
+		$this->logger->info("Slim-Skeleton '/Platforms/ByPlatformName' route");
+
+		if(isset($args['name']))
+		{
+			$searchTerm = $args['name'];
+		}
+		else if(isset($_REQUEST['name']))
+		{
+			$searchTerm = $_REQUEST['name'];
+		}
+		else
+		{
+			$JSON_Response = Utils::getStatus(406);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
+		}
+
+		$options = Utils::parseRequestOptions();
+
+		$API = TGDB::getInstance();
+		$list = array("TODO");//TODO
+
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
+		return $response->withJson($JSON_Response);
 	});
 });
