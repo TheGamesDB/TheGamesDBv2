@@ -81,7 +81,7 @@ $app->group('/Games', function()
 	{
 		$this->logger->info("Slim-Skeleton '/Games/ByPlatformID' route");
 
-		$IDs = Utils::getValidNumericFromArray($args, 'ID');
+		$IDs = Utils::getValidNumericFromArray($args, 'id');
 		if(empty($IDs))
 		{
 			$JSON_Response = Utils::getStatus(406);
@@ -105,7 +105,7 @@ $app->group('/Games', function()
 
 		return $response->withJson($JSON_Response);
 	});
-	$this->get('/Boxart[/{id}]', function($request, $response, $args)
+	$this->get('/Boxart[/{GameID}]', function($request, $response, $args)
 	{
 		$this->logger->info("Slim-Skeleton '/Games/Boxart' route");
 
