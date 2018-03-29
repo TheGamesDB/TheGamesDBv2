@@ -105,35 +105,35 @@ $app->group('/Games', function()
 
 		return $response->withJson($JSON_Response);
 	});
-});
-
-$app->get('/GamesBoxart[/{GameID}]', function(Request $request, Response $response, array $args)
-{
-	$this->logger->info("Slim-Skeleton '/Game' route");
-
-	$GameIDs = Utils::getValidNumericFromArray($args, 'GameID');
-	if(empty($GameIDs))
+	$this->get('/Boxart[/{id}]', function($request, $response, $args)
 	{
-		$JSON_Response = Utils::getStatus(406);
-		return $response->withJson($JSON_Response, $JSON_Response['code']);
-	}
+		$this->logger->info("Slim-Skeleton '/Games/Boxart' route");
 
-	$limit = 20;
-	$page = Utils::getPage();
-	$offset = $page * $limit;
-	$options = Utils::parseRequestOptions();
+		$GameIDs = Utils::getValidNumericFromArray($args, 'GameID');
+		if(empty($GameIDs))
+		{
+			$JSON_Response = Utils::getStatus(406);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
+		}
 
-	$API = TGDB::getInstance();
-	$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1);
+		$limit = 20;
+		$page = Utils::getPage();
+		$offset = $page * $limit;
+		//TODO $options and $filters
+		$options = Utils::parseRequestOptions();
 
-	if($has_next_page = count($list) > $limit)
-		unset($list[$limit]);
+		$API = TGDB::getInstance();
+		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1);
 
-	$JSON_Response = Utils::getStatus(200);
-	$JSON_Response['data'] = array("count" => count($list), "gamesboxart" => $list);
-	$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
+		if($has_next_page = count($list) > $limit)
+			unset($list[$limit]);
 
-	return $response->withJson($JSON_Response);
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "boxart" => $list);
+		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
+
+		return $response->withJson($JSON_Response);
+	});
 });
 
 $app->group('/Platforms', function()
