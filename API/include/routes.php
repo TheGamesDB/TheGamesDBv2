@@ -192,7 +192,7 @@ $app->group('/Platforms', function()
 		$options = Utils::parseRequestOptions();
 
 		$API = TGDB::getInstance();
-		$list = array("TODO");//TODO
+		$list = $API->SearchPlatformByName($searchTerm, $options);
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);

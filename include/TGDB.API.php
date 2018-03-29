@@ -367,6 +367,47 @@ class TGDB
 		}
 	}
 
+	function SearchPlatformByName($searchTerm, $options = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$qry = "Select id, name, alias";
+
+		$dbh = $this->database->dbh;
+		if(!empty($options))
+		{
+			foreach($options as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_platform_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM platforms WHERE name LIKE :name OR name=:name2 OR soundex(name) LIKE soundex(:name3)
+		GROUP BY id ORDER BY CASE WHEN name like :name4 THEN 0
+		WHEN name like :name5 THEN 1
+		WHEN name like :name6 THEN 2
+		ELSE 3
+		END, name";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+		$sth->bindValue(':name5', "%$searchTerm");
+		$sth->bindValue(':name6', $searchTerm);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
 	function is_valid_platform_col($name)
 	{
 		if(empty($this->PlatformsTblCols))
