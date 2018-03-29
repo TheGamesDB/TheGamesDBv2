@@ -16,7 +16,7 @@ $app->get('/', function(Request $request, Response $response, array $args)
 
 $app->group('/Games', function()
 {
-	$this->get('/ByName[/{name}]', function($request, $response, $args)
+	$this->get('/ByGameName[/{name}]', function($request, $response, $args)
 	{
 		if(isset($args['name']))
 		{
