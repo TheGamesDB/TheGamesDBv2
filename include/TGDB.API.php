@@ -9,7 +9,7 @@ class TGDB
 
 	private function __construct()
 	{
-		$this->database = sql::getInstance();
+		$this->database = database::getInstance();
 	}
 
 	public static function getInstance()
