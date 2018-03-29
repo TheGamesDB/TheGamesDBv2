@@ -7,14 +7,14 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 
 // Routes
-$app->get('/', function (Request $request, Response $response, array $args)
+$app->get('/', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/' route");
 
 	return $this->renderer->render($response, 'doc.html', $args);//TODO
 });
 
-$app->get('/Games[/{GameID}]', function (Request $request, Response $response, array $args)
+$app->get('/Games[/{GameID}]', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/Games' route");
 
@@ -43,7 +43,7 @@ $app->get('/Games[/{GameID}]', function (Request $request, Response $response, a
 	return $response->withJson($JSON_Response);
 });
 
-$app->get('/AllGames[/{PlatformID}]', function (Request $request, Response $response, array $args)
+$app->get('/AllGames[/{PlatformID}]', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/AllGames' route");
 
@@ -66,7 +66,7 @@ $app->get('/AllGames[/{PlatformID}]', function (Request $request, Response $resp
 	return $response->withJson($JSON_Response);
 });
 
-$app->get('/GamesBoxart[/{GameID}]', function (Request $request, Response $response, array $args)
+$app->get('/GamesBoxart[/{GameID}]', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/Game' route");
 
@@ -96,7 +96,7 @@ $app->get('/GamesBoxart[/{GameID}]', function (Request $request, Response $respo
 });
 
 //is this needed? this can be made as part of /Platforms
-$app->get('/PlatformsList[/]', function (Request $request, Response $response, array $args)
+$app->get('/PlatformsList[/]', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/PlatformsList' route");
 
@@ -108,7 +108,7 @@ $app->get('/PlatformsList[/]', function (Request $request, Response $response, a
 	return $response->withJson($JSON_Response);
 });
 
-$app->get('/Platforms[/{PlatformID}]', function (Request $request, Response $response, array $args)
+$app->get('/Platforms[/{PlatformID}]', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("Slim-Skeleton '/Platforms' route");
 
@@ -123,9 +123,9 @@ $app->get('/Platforms[/{PlatformID}]', function (Request $request, Response $res
 	return $response->withJson($JSON_Response);
 });
 
-$app->group('/Search', function ()
+$app->group('/Search', function()
 {
-	$this->get('/Games', function ($request, $response, $args)
+	$this->get('/Games', function($request, $response, $args)
 	{
 
 		$limit = 20;
@@ -134,7 +134,7 @@ $app->group('/Search', function ()
 		$options = Utils::parseRequestOptions();
 
 		$API = TGDB::getInstance();
-		$list = $API->SearchGamesByName($_REQUEST['name'], 0, $limit+1, $options);
+		$list = $API->SearchGamesByName($_REQUEST['name'], $offset, $limit+1, $options);
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
@@ -145,7 +145,7 @@ $app->group('/Search', function ()
 
 		return $response->withJson($JSON_Response);
 	});
-	$this->get('/Platform', function ($request, $response, $args)
+	$this->get('/Platform', function($request, $response, $args)
 	{
 		// ? needed ?
 	});
