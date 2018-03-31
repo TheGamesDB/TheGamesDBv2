@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/Utils.class.php';
-require_once __DIR__ . '/APIAccess.class.php';
+require_once __DIR__ . '/APIAccessDB.class.php';
 
 class AuthMiddleware
 {
@@ -36,7 +36,15 @@ class AuthMiddleware
 					$response = $next($request, $response);
 					$auth->decreaseAllowanceCounter($User, $update_refresh_date);
 					$JSON_Response = json_decode($response->getBody(), true);
-					$JSON_Response['allowance'] = $remaining_monthly_allowance - 1;
+					$JSON_Response['remaining_monthly_allowance'] = $remaining_monthly_allowance + $User->extra_allowance - 1;
+					return $response->withJson($JSON_Response, $JSON_Response['code']);
+				}
+				else if($User->extra_allowance > 0)
+				{
+					$response = $next($request, $response);
+					$auth->decreaseExtraAllowanceCounter($User, $update_refresh_date);
+					$JSON_Response = json_decode($response->getBody(), true);
+					$JSON_Response['remaining_monthly_allowance'] = $User->extra_allowance - 1;
 					return $response->withJson($JSON_Response, $JSON_Response['code']);
 				}
 				else

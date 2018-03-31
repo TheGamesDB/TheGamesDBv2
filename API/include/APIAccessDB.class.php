@@ -91,6 +91,31 @@ class APIAccessDB
 		}
 	}
 
+	function decreaseExtraAllowanceCounter($User)
+	{
+		try
+		{
+			$dbh = $this->database->dbh;
+
+			$sth = $dbh->prepare("UPDATE apiusers SET extra_allowance = extra_allowance-1 WHERE id=:id;");
+			$sth->bindValue(':id', $User->id, PDO::PARAM_INT);
+
+			$i = 1;
+			while(!$sth->execute())
+			{
+				if($i > 3)
+				{
+					break;
+				}
+				$i++;
+			}
+		}
+		catch (Exception $e)
+		{
+			//Free lunch :P
+		}
+	}
+
 	function increaseAllowanceCounter($User)
 	{
 		try
