@@ -199,3 +199,5 @@ $app->group('/Platforms', function()
 		return $response->withJson($JSON_Response);
 	});
 });
+
+?>

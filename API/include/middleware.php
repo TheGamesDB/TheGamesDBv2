@@ -28,9 +28,6 @@ class AuthMiddleware
 					$monthly_count = 0;
 				}
 				$remaining_monthly_allowance = $monthly_allowance - $monthly_count;
-				// TODO based on weather this will be a subscription based or allowance purchase
-				// 1) if subscription based we need to count 30 days instead of using start of the month
-				// 2) if allowance purchase, just countdown from their allowance
 				if($remaining_monthly_allowance > 0 || $User->extra_allowance > 0)
 				{
 					$use_extra = $remaining_monthly_allowance <= 0;
