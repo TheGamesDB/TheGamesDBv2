@@ -31,20 +31,15 @@ class AuthMiddleware
 				// TODO based on weather this will be a subscription based or allowance purchase
 				// 1) if subscription based we need to count 30 days instead of using start of the month
 				// 2) if allowance purchase, just countdown from their allowance
-				if($remaining_monthly_allowance > 0)
+				if($remaining_monthly_allowance > 0 || $User->extra_allowance > 0)
 				{
+					$use_extra = $remaining_monthly_allowance <= 0;
+
 					$response = $next($request, $response);
-					$auth->decreaseAllowanceCounter($User, $update_refresh_date);
+					$auth->countAPIRequest($User, $update_refresh_date, $use_extra);
 					$JSON_Response = json_decode($response->getBody(), true);
-					$JSON_Response['remaining_monthly_allowance'] = $remaining_monthly_allowance + $User->extra_allowance - 1;
-					return $response->withJson($JSON_Response, $JSON_Response['code']);
-				}
-				else if($User->extra_allowance > 0)
-				{
-					$response = $next($request, $response);
-					$auth->decreaseExtraAllowanceCounter($User, $update_refresh_date);
-					$JSON_Response = json_decode($response->getBody(), true);
-					$JSON_Response['remaining_monthly_allowance'] = $User->extra_allowance - 1;
+					$JSON_Response['remaining_monthly_allowance'] = $remaining_monthly_allowance + (!$use_extra ? -1 : 0);
+					$JSON_Response['extra_allowance'] =  $User->extra_allowance + ($use_extra ? -1 : 0);
 					return $response->withJson($JSON_Response, $JSON_Response['code']);
 				}
 				else

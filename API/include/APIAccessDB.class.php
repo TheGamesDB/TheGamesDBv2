@@ -27,8 +27,9 @@ class APIAccessDB
 	{
 
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("Select APIU.*, AA.monthly_allowance FROM apiusers APIU
+		$sth = $dbh->prepare("Select APIU.*, AA.monthly_allowance, sum(AMC.count) as count FROM apiusers APIU
 		LEFT JOIN api_allowance_level AA ON AA.id = APIU.api_allowance_level_id
+		LEFT JOIN api_month_counter AMC ON AMC.apiusers_id = APIU.id AND AMC.date >= APIU.last_refresh_date AND AMC.is_extra = 0
 		WHERE apikey=:apikey;");
 		$sth->bindValue(':apikey', $key, PDO::PARAM_STR);
 
@@ -59,34 +60,36 @@ class APIAccessDB
 		}
 	}
 
-	function decreaseAllowanceCounter($User, $update_refresh_date)
+	function countAPIRequest($User, $update_refresh_date, $is_extra)
 	{
+		$dbh = $this->database->dbh;
 		try
 		{
-			$dbh = $this->database->dbh;
+			$dbh->beginTransaction();
 			if($update_refresh_date)
 			{
-				$sth = $dbh->prepare("UPDATE apiusers SET count = 1, last_refresh_date=:date WHERE id=:id;");
+				$sth = $dbh->prepare("UPDATE apiusers SET last_refresh_date=:date WHERE id=:id;");
 				$sth->bindValue(':date', date('Y-m-d'));
+				$sth->bindValue(':id', $User->id, PDO::PARAM_INT);
+				$sth->execute();
 			}
-			else
+			if($is_extra)
 			{
-				$sth = $dbh->prepare("UPDATE apiusers SET count = count+1 WHERE id=:id;");
+				$sth = $dbh->prepare("UPDATE apiusers SET extra_allowance = extra_allowance - 1 WHERE id=:id;");
+				$sth->bindValue(':id', $User->id, PDO::PARAM_INT);
+				$sth->execute();
 			}
+			$sth = $dbh->prepare("INSERT INTO api_month_counter (apiusers_id, count, is_extra, date)
+			VALUES (:id, 1, :is_extra, :date) ON DUPLICATE KEY UPDATE count = count + 1;");
+			$sth->bindValue(':date', date('Y-m-d'));
 			$sth->bindValue(':id', $User->id, PDO::PARAM_INT);
-
-			$i = 1;
-			while(!$sth->execute())
-			{
-				if($i > 3)
-				{
-					break;
-				}
-				$i++;
-			}
+			$sth->bindValue(':is_extra', $is_extra, PDO::PARAM_INT);
+			$sth->execute();
+			$dbh->commit();
 		}
 		catch (Exception $e)
 		{
+			$dbh->commit();
 			//Free lunch :P
 		}
 	}
