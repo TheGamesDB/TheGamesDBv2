@@ -63,7 +63,7 @@ class APIAccessDB
 	{
 		try
 		{
-			$dbh = $this->database->dbh;			
+			$dbh = $this->database->dbh;
 			if($update_refresh_date)
 			{
 				$sth = $dbh->prepare("UPDATE apiusers SET count = 1, last_refresh_date=:date WHERE id=:id;");
@@ -71,7 +71,7 @@ class APIAccessDB
 			}
 			else
 			{
-				$sth = $dbh->prepare("UPDATE apiusers SET count = count+1 WHERE id=:id;");			
+				$sth = $dbh->prepare("UPDATE apiusers SET count = count+1 WHERE id=:id;");
 			}
 			$sth->bindValue(':id', $User->id, PDO::PARAM_INT);
 
