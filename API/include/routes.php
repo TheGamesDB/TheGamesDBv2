@@ -6,6 +6,8 @@ require_once __DIR__ . '/Utils.class.php';
 use Slim\Http\Request;
 use Slim\Http\Response;
 
+$app->add(new AuthMiddleware());
+
 // Routes
 $app->get('/', function(Request $request, Response $response, array $args)
 {
