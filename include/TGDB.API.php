@@ -1,5 +1,5 @@
 <?php
-require __DIR__ . "/db.config.php";
+require_once __DIR__ . "/db.config.php";
 
 class TGDB
 {
