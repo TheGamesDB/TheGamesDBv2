@@ -197,8 +197,16 @@ class TGDB
 			return array();
 		}
 
+		$qry = "Select keyvalue as games_id, keytype as type, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) ";
+		switch('boxart')
+		{
+			case 'boxart':
+				$qry .=" AND keytype='boxart' ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("Select keyvalue as games_id, keytype as type, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) LIMIT :limit OFFSET :offset;");
+		$sth = $dbh->prepare($qry);
 	
 		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);

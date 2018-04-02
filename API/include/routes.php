@@ -59,7 +59,7 @@ $app->group('/Games', function()
 					$IDs[] = $game->id;
 				}
 				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
-				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999);
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999, 'boxart');
 			}
 			if(isset($options['Platform']) && $options['Platform'])
 			{
@@ -107,7 +107,7 @@ $app->group('/Games', function()
 			if(isset($options['boxart']) && $options['boxart'])
 			{
 				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
-				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999);
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999, 'boxart');
 			}
 			if(isset($options['Platform']) && $options['Platform'])
 			{
@@ -159,7 +159,7 @@ $app->group('/Games', function()
 					$GameIDs[] = $game->id;
 				}
 				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
-				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999);
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
 			}
 			if(isset($options['Platform']) && $options['Platform'])
 			{
@@ -184,11 +184,12 @@ $app->group('/Games', function()
 		$limit = 20;
 		$page = Utils::getPage();
 		$offset = $page * $limit;
-		//TODO $options and $filters
 		$options = Utils::parseRequestOptions();
 
 		$API = TGDB::getInstance();
-		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1);
+		// TODO: consider return count, as each cover has multiple  result thus can hit 20 really quick
+		// but maybe this is should remain the default choice?
+		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, 'ALL');
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
