@@ -38,9 +38,10 @@ $app->group('/Games', function()
 		$page = Utils::getPage();
 		$offset = $page * $limit;
 		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $options);
+		$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $fields);
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
@@ -90,9 +91,10 @@ $app->group('/Games', function()
 		$page = Utils::getPage();
 		$offset = $page * $limit;
 		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->GetGameByID($IDs, $offset, $limit+1, $options);
+		$list = $API->GetGameByID($IDs, $offset, $limit+1, $fields);
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
@@ -137,9 +139,10 @@ $app->group('/Games', function()
 		$page = Utils::getPage();
 		$offset = $page * $limit;
 		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->GetGameListByPlatform($IDs, $offset, $limit+1, $options);
+		$list = $API->GetGameListByPlatform($IDs, $offset, $limit+1, $fields);
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);

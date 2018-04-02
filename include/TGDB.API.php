@@ -25,7 +25,7 @@ class TGDB
 
 	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $options = array())
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
 
 		if(!empty($options))
 		{
@@ -99,7 +99,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
 
 		if(!empty($options))
 		{
@@ -133,7 +133,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
 
 		if(!empty($options))
 		{

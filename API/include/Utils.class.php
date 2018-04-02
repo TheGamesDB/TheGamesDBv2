@@ -47,7 +47,21 @@ class Utils
 		}
 		return $options;
 	}
-	
+
+	static function parseRequestedFields()
+	{
+		$options = array();
+		if(!empty($_REQUEST['fields']))
+		{
+			$params = explode(',', $_REQUEST['fields']);
+			foreach($params as $key => $val)
+			{
+				$options[$val] = true;
+			}
+		}
+		return $options;
+	}
+
 	static function getJsonPageUrl($current_page, $has_next_page)
 	{
 		$GET = $_GET;
