@@ -45,6 +45,30 @@ $app->group('/Games', function()
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
+
+		if(count($list) > 0)
+		{
+			if(isset($options['boxart']) && $options['boxart'])
+			{
+				$IDs = array();
+				foreach($list as $game)
+				{
+					$IDs[] = $game->id;
+				}
+				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999);
+			}
+			if(isset($options['Platform']) && $options['Platform'])
+			{
+				$PlatformsIDs = array();
+				foreach($list as $game)
+				{
+					$PlatformsIDs[] = $game->Platform;
+				}
+				$JSON_Response['include']['Platform'] = $API->GetPlatforms($PlatformsIDs);
+			}
+		}
+
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
@@ -73,6 +97,25 @@ $app->group('/Games', function()
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
+
+		if(count($list) > 0)
+		{
+			if(isset($options['boxart']) && $options['boxart'])
+			{
+				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999);
+			}
+			if(isset($options['Platform']) && $options['Platform'])
+			{
+				$PlatformsIDs = array();
+				foreach($list as $game)
+				{
+					$PlatformsIDs[] = $game->Platform;
+				}
+				$JSON_Response['include']['Platform']['data'] = $API->GetPlatforms($PlatformsIDs);
+			}
+		}
+
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
@@ -101,6 +144,23 @@ $app->group('/Games', function()
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
+		if(count($list) > 0)
+		{
+			if(isset($options['boxart']) && $options['boxart'])
+			{
+				$GameIDs = array();
+				foreach($list as $game)
+				{
+					$GameIDs[] = $game->id;
+				}
+				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999);
+			}
+			if(isset($options['Platform']) && $options['Platform'])
+			{
+				$JSON_Response['include']['Platform']['data'] = $API->GetPlatforms($IDs);
+			}
+		}
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
@@ -129,7 +189,8 @@ $app->group('/Games', function()
 			unset($list[$limit]);
 
 		$JSON_Response = Utils::getStatus(200);
-		$JSON_Response['data'] = array("count" => count($list), "boxart" => $list);
+		$JSON_Response['data'] = array("count" => count($list), 'base_url' => Utils::$BOXART_BASE_URL, "boxart" => $list);
+
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);

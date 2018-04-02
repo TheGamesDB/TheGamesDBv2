@@ -72,34 +72,6 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
-			if(isset($options['boxart']) && $options['boxart'])
-			{
-				$GameIDs = array();
-				foreach($res as $game)
-				{
-					$GameIDs[] = $game->id;
-				}
-				$boxart = $this->GetGameBoxartByID($GameIDs, 0, 999);
-				foreach($res as $game)
-				{
-					if(isset($boxart[$game->id]))
-					{
-						$game->boxart = $boxart[$game->id];
-					}
-					else
-					{
-						$game->boxart = NULL;
-					}
-				}
-			}
-			if(isset($options['Platform']) && $options['Platform'])
-			{
-				$platforms = $this->GetPlatforms($IDs);
-				foreach($res as $game)
-				{
-					$game->PlatformDetails = $platforms[$game->Platform];
-				}
-			}
 			return $res;
 		}
 	}
@@ -151,39 +123,6 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
-
-			if(isset($options['boxart']) && isset($options['boxart']))
-			{
-				$boxart = $this->GetGameBoxartByID($IDs, 0, 999);
-				foreach($res as $game)
-				{
-					if(isset($boxart[$game->id]))
-					{
-						$game->boxart = $boxart[$game->id];
-					}
-					else
-					{
-						$game->boxart = NULL;
-					}
-				}
-			}
-			if(isset($options['Platform']) && $options['Platform'])
-			{
-				$PlatformsIDs = array();
-				foreach($res as $game)
-				{
-					$PlatformsIDs[] = $game->Platform;
-				}
-				$platforms = $this->GetPlatforms($PlatformsIDs);
-				if(!empty($platforms))
-				{
-					foreach($res as $game)
-					{
-						$game->PlatformDetails = $platforms[$game->Platform];
-					}
-				}
-			}
-
 			return $res;
 		}
 
@@ -230,26 +169,6 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
-			$IDs = array();
-			foreach($res as $game)
-			{
-				$IDs[] = $game->id;
-			}
-			if(isset($options['boxart']) && $options['boxart'] && !empty($IDs))
-			{
-				$boxart = $this->GetGameBoxartByID($IDs, 0, 999);
-				foreach($res as $game)
-				{
-					if(!empty($boxart[$game->id]))
-					{
-						$game->boxart = $boxart[$game->id];
-					}
-					else
-					{
-						$game->boxart = NULL;
-					}
-				}
-			}
 			return $res;
 		}
 	}

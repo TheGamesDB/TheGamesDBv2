@@ -3,6 +3,7 @@
 class Utils
 {
 	static private $BASE_URL = "https://api.thegamesdb.net";
+	static public $BOXART_BASE_URL = "https://thegamesdb.net/banner/";
 
 	static private $_statusMSG = array(
 		200 => "Success",
