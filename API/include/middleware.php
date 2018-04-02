@@ -18,7 +18,7 @@ class AuthMiddleware
 		else
 		{
 			$auth = APIAccessDB::getInstance();
-			$User = $auth->GetUserByAPIKey($_REQUEST['apikey']);
+			$User = $auth->GetUserAllowanceByAPIKey($_REQUEST['apikey']);
 			if(!empty($User))
 			{
 				$monthly_allowance = (!empty($User->monthly_allowance)) ? $User->monthly_allowance : 0;

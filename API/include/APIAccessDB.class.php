@@ -23,7 +23,7 @@ class APIAccessDB
 		return $instance;
 	}
 
-	function GetUserByAPIKey($key)
+	function GetUserAllowanceByAPIKey($key)
 	{
 
 		$dbh = $this->database->dbh;
