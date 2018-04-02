@@ -209,10 +209,10 @@ $app->group('/Platforms', function()
 	{
 		$this->logger->info("Slim-Skeleton '/Platforms' route");
 
-		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->GetPlatformsList($options);
+		$list = $API->GetPlatformsList($fields);
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
@@ -229,10 +229,10 @@ $app->group('/Platforms', function()
 			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 
-		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->GetPlatforms($IDs, $options);
+		$list = $API->GetPlatforms($IDs, $fields);
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
@@ -256,10 +256,10 @@ $app->group('/Platforms', function()
 			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 
-		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->SearchPlatformByName($searchTerm, $options);
+		$list = $API->SearchPlatformByName($searchTerm, $fields);
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
