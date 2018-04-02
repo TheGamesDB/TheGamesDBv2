@@ -2,7 +2,7 @@
 
 class Utils
 {
-	static private $BASE_URL = "https://api.thegamesdb.net";
+	static private $API_BASE_URL = "https://api.thegamesdb.net";
 	static public $BOXART_BASE_URL = "https://thegamesdb.net/banner/";
 
 	static private $_statusMSG = array(
@@ -69,17 +69,17 @@ class Utils
 		if($current_page > 0)
 		{
 			$GET['page'] = $current_page-1;
-			$ret['previous'] = Utils::$BASE_URL . "/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
+			$ret['previous'] = Utils::$API_BASE_URL . "/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
 		}
 	
 		$GET['page'] = $current_page;
-		$ret['current'] = Utils::$BASE_URL . "/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
+		$ret['current'] = Utils::$API_BASE_URL . "/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
 	
 		$ret['next'] = NULL;
 		if($has_next_page)
 		{
 			$GET['page'] = $current_page+1;
-			$ret['next'] = Utils::$BASE_URL . "/" . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
+			$ret['next'] = Utils::$API_BASE_URL . "/" . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
 		}
 		return $ret;
 	}
