@@ -11,7 +11,7 @@ $app->add(new AuthMiddleware());
 // Routes
 $app->get('/', function(Request $request, Response $response, array $args)
 {
-	$this->logger->info("Slim-Skeleton '/' route");
+	$this->logger->info("TGDB '/' route");
 
 	return $this->renderer->render($response, 'doc.html', $args);//TODO
 });
@@ -78,7 +78,7 @@ $app->group('/Games', function()
 	});
 	$this->get('/ByGameID[/{id}]', function($request, $response, $args)
 	{
-		$this->logger->info("Slim-Skeleton '/Games/ByGameID' route");
+		$this->logger->info("TGDB '/Games/ByGameID' route");
 
 		$IDs = Utils::getValidNumericFromArray($args, 'id');
 		if(empty($IDs))
@@ -126,7 +126,7 @@ $app->group('/Games', function()
 	});
 	$this->get('/ByPlatformID[/{id}]', function($request, $response, $args)
 	{
-		$this->logger->info("Slim-Skeleton '/Games/ByPlatformID' route");
+		$this->logger->info("TGDB '/Games/ByPlatformID' route");
 
 		$IDs = Utils::getValidNumericFromArray($args, 'id');
 		if(empty($IDs))
@@ -172,7 +172,7 @@ $app->group('/Games', function()
 	});
 	$this->get('/Boxart[/{GameID}]', function($request, $response, $args)
 	{
-		$this->logger->info("Slim-Skeleton '/Games/Boxart' route");
+		$this->logger->info("TGDB '/Games/Boxart' route");
 
 		$GameIDs = Utils::getValidNumericFromArray($args, 'GameID');
 		if(empty($GameIDs))
@@ -207,7 +207,7 @@ $app->group('/Platforms', function()
 {
 	$this->get('', function($request, $response, $args)
 	{
-		$this->logger->info("Slim-Skeleton '/Platforms' route");
+		$this->logger->info("TGDB '/Platforms' route");
 
 		$fields = Utils::parseRequestedFields();
 
@@ -220,7 +220,7 @@ $app->group('/Platforms', function()
 	});
 	$this->get('/ByPlatformID[/{id}]', function($request, $response, $args)
 	{
-		$this->logger->info("Slim-Skeleton '/Platforms/ByPlatformID' route");
+		$this->logger->info("TGDB '/Platforms/ByPlatformID' route");
 
 		$IDs = Utils::getValidNumericFromArray($args, 'id');
 		if(empty($IDs))
@@ -240,7 +240,7 @@ $app->group('/Platforms', function()
 	});
 	$this->get('/ByPlatformName[/{name}]', function($request, $response, $args)
 	{
-		$this->logger->info("Slim-Skeleton '/Platforms/ByPlatformName' route");
+		$this->logger->info("TGDB '/Platforms/ByPlatformName' route");
 
 		if(isset($args['name']))
 		{
