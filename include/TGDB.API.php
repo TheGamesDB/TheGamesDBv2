@@ -23,13 +23,13 @@ class TGDB
 		return $instance;
 	}
 
-	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $options = array())
+	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array())
 	{
 		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
 
-		if(!empty($options))
+		if(!empty($fields))
 		{
-			foreach($options as $key => $enabled)
+			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_games_col($key))
 				{
@@ -76,7 +76,7 @@ class TGDB
 		}
 	}
 
-	function GetGameByID($IDs, $offset = 0, $limit = 20, $options = array())
+	function GetGameByID($IDs, $offset = 0, $limit = 20, $fields = array())
 	{
 		$GameIDs = array();
 		if(is_array($IDs))
@@ -101,9 +101,9 @@ class TGDB
 
 		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
 
-		if(!empty($options))
+		if(!empty($fields))
 		{
-			foreach($options as $key => $enabled)
+			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_games_col($key))
 				{
@@ -129,15 +129,15 @@ class TGDB
 		return array();
 	}
 
-	function SearchGamesByName($searchTerm, $offset = 0, $limit = 20, $options = array())
+	function SearchGamesByName($searchTerm, $offset = 0, $limit = 20, $fields = array())
 	{
 		$dbh = $this->database->dbh;
 
 		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
 
-		if(!empty($options))
+		if(!empty($fields))
 		{
-			foreach($options as $key => $enabled)
+			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_games_col($key))
 				{
@@ -218,15 +218,15 @@ class TGDB
 		}
 	}
 
-	function GetPlatformsList($options = array())
+	function GetPlatformsList($fields = array())
 	{
 		$qry = "Select id, name, alias FROM platforms;";
 
 		$dbh = $this->database->dbh;
-		if(!empty($options))
+		if(!empty($fields))
 		{
 			$qry = "Select id, name, alias";
-			foreach($options as $key => $enabled)
+			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_platform_col($key))
 				{
@@ -245,7 +245,7 @@ class TGDB
 		}
 	}
 
-	function GetPlatforms($IDs, $options = array())
+	function GetPlatforms($IDs, $fields = array())
 	{
 		$PlatformIDs;
 		if(is_array($IDs))
@@ -271,10 +271,10 @@ class TGDB
 		$qry = "Select id, name, alias FROM platforms";
 
 		$dbh = $this->database->dbh;
-		if(!empty($options))
+		if(!empty($fields))
 		{
 			$qry = "Select id, name, alias";
-			foreach($options as $key => $enabled)
+			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_platform_col($key))
 				{
@@ -294,16 +294,16 @@ class TGDB
 		}
 	}
 
-	function SearchPlatformByName($searchTerm, $options = array())
+	function SearchPlatformByName($searchTerm, $fields = array())
 	{
 		$dbh = $this->database->dbh;
 
 		$qry = "Select id, name, alias";
 
 		$dbh = $this->database->dbh;
-		if(!empty($options))
+		if(!empty($fields))
 		{
-			foreach($options as $key => $enabled)
+			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_platform_col($key))
 				{
