@@ -197,7 +197,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select keyvalue as games_id, keytype as type, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) ";
+		$qry = "Select keyvalue as games_id, keytype as type, side, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) ";
 		switch($filter)
 		{
 			case 'boxart':
