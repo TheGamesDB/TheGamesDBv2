@@ -240,7 +240,7 @@ class TGDB
 
 		if($sth->execute())
 		{
-			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
 			return $res;
 		}
 	}
@@ -289,7 +289,7 @@ class TGDB
 
 		if($sth->execute())
 		{
-			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
 			return $res;
 		}
 	}
