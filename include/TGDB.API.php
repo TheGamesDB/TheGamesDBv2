@@ -198,7 +198,7 @@ class TGDB
 		}
 
 		$qry = "Select keyvalue as games_id, keytype as type, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) ";
-		switch('boxart')
+		switch($filter)
 		{
 			case 'boxart':
 				$qry .=" AND keytype='boxart' ";
