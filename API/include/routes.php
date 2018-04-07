@@ -201,6 +201,55 @@ $app->group('/Games', function()
 
 		return $response->withJson($JSON_Response);
 	});
+	$this->get('/Updates', function($request, $response, $args)
+	{
+		$this->logger->info("TGDB '/Games/Updates' route");
+
+		if(!isset($_REQUEST['time']) && !is_numeric($_REQUEST['time']) &&  $_REQUEST['time'] < 0)
+		{
+			$_REQUEST['time'] = 60*24*365;
+		}
+
+		$limit = 20;
+		$page = Utils::getPage();
+		$offset = $page * $limit;
+		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
+
+		$API = TGDB::getInstance();
+		$list = $API->GetGamesByLatestUpdatedDate($_REQUEST['time'], $offset, $limit+1, $fields);
+
+		if($has_next_page = count($list) > $limit)
+			unset($list[$limit]);
+
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
+		if(count($list) > 0)
+		{
+			if(isset($options['boxart']) && $options['boxart'])
+			{
+				$GameIDs = array();
+				foreach($list as $game)
+				{
+					$GameIDs[] = $game->id;
+				}
+				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
+			}
+			if(isset($options['Platform']) && $options['Platform'])
+			{
+				$PlatformsIDs = array();
+				foreach($list as $game)
+				{
+					$PlatformsIDs[] = $game->Platform;
+				}
+				$JSON_Response['include']['Platform']['data'] = $API->GetPlatforms($PlatformsIDs);
+			}
+		}
+		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
+
+		return $response->withJson($JSON_Response);
+	});
 });
 
 $app->group('/Platforms', function()

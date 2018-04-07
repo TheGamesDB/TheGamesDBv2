@@ -173,6 +173,39 @@ class TGDB
 		}
 	}
 
+	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
+	{
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games WHERE lastupdatedRevised > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -:minutes MINUTE) ORDER BY lastupdatedRevised DESC LIMIT :limit OFFSET :offset";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':minutes', $minutes, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+
+		return array();
+	}
+
 	//TODO:filter return type
 	function GetGameBoxartByID($IDs = 0, $offset = 0, $limit = 20, $filter = 'boxart')
 	{
