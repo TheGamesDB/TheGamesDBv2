@@ -23,7 +23,7 @@ class TGDB
 		return $instance;
 	}
 
-	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array())
+	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
 
@@ -61,7 +61,15 @@ class TGDB
 		{
 			$qry .= "WHERE Platform IN ($PlatformIDs) ";
 		}
-		$qry .= "LIMIT :limit OFFSET :offset;";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
 
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
