@@ -154,11 +154,13 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM games WHERE GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3)
-		GROUP BY id ORDER BY CASE WHEN GameTitle like :name4 THEN 0
-		WHEN GameTitle like :name5 THEN 1
-		WHEN GameTitle like :name6 THEN 2
-		ELSE 3
+		$qry .= " FROM games WHERE GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4)
+		GROUP BY id ORDER BY CASE
+		WHEN GameTitle like :name5 THEN 4
+		WHEN GameTitle like :name6 THEN 3
+		WHEN GameTitle like :name7 THEN 0
+		WHEN GameTitle like :name8 THEN 1
+		ELSE 5
 		END, GameTitle LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
@@ -167,8 +169,11 @@ class TGDB
 		$sth->bindValue(':name2', $searchTerm);
 		$sth->bindValue(':name3', "$searchTerm%");
 		$sth->bindValue(':name4', "% %$searchTerm% %");
+
 		$sth->bindValue(':name5', "%$searchTerm");
 		$sth->bindValue(':name6', $searchTerm);
+		$sth->bindValue(':name7', "$searchTerm%");
+		$sth->bindValue(':name8', "% %$searchTerm% %");
 
 
 		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
@@ -353,11 +358,13 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM platforms WHERE name LIKE :name OR name=:name2 OR soundex(name) LIKE soundex(:name3)
-		GROUP BY id ORDER BY CASE WHEN name like :name4 THEN 0
-		WHEN name like :name5 THEN 1
-		WHEN name like :name6 THEN 2
-		ELSE 3
+		$qry .= " FROM platforms WHERE name LIKE :name OR name=:name2 OR soundex(name) LIKE soundex(:name3) OR soundex(name) LIKE soundex(:name4)
+		GROUP BY id ORDER BY CASE
+		WHEN name like :name5 THEN 4
+		WHEN name like :name6 THEN 3
+		WHEN name like :name7 THEN 0
+		WHEN name like :name8 THEN 1
+		ELSE 5
 		END, name";
 
 		$sth = $dbh->prepare($qry);
@@ -366,8 +373,11 @@ class TGDB
 		$sth->bindValue(':name2', $searchTerm);
 		$sth->bindValue(':name3', "$searchTerm%");
 		$sth->bindValue(':name4', "% %$searchTerm% %");
+
 		$sth->bindValue(':name5', "%$searchTerm");
 		$sth->bindValue(':name6', $searchTerm);
+		$sth->bindValue(':name7', "$searchTerm%");
+		$sth->bindValue(':name8', "% %$searchTerm% %");
 
 		if($sth->execute())
 		{
