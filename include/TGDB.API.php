@@ -319,7 +319,7 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM platforms;";
+		$qry .= " FROM platforms ORDER BY name;";
 
 		$sth = $dbh->prepare($qry);
 
@@ -366,7 +366,7 @@ class TGDB
 				}
 			}
 		}
-		$qry .= " FROM platforms Where id IN ($PlatformIDs);";
+		$qry .= " FROM platforms Where id IN ($PlatformIDs) ORDER BY name;";
 
 		$sth = $dbh->prepare($qry);
 
