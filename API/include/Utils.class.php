@@ -69,17 +69,17 @@ class Utils
 		if($current_page > 0)
 		{
 			$GET['page'] = $current_page-1;
-			$ret['previous'] = Utils::$API_BASE_URL . "/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
+			$ret['previous'] = Utils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
 		}
 	
 		$GET['page'] = $current_page;
-		$ret['current'] = Utils::$API_BASE_URL . "/" . $_SERVER['SCRIPT_NAME']. $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
+		$ret['current'] = Utils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
 	
 		$ret['next'] = NULL;
 		if($has_next_page)
 		{
 			$GET['page'] = $current_page+1;
-			$ret['next'] = Utils::$API_BASE_URL . "/" . $_SERVER['SCRIPT_NAME'] . $_SERVER['PATH_INFO'] . "?" . http_build_query($GET,'','&');
+			$ret['next'] = Utils::$API_BASE_URL  . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
 		}
 		return $ret;
 	}
