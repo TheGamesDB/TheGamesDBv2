@@ -36,7 +36,7 @@ $app->group('/Games', function()
 
 		$limit = 20;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 
@@ -89,7 +89,7 @@ $app->group('/Games', function()
 
 		$limit = 20;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 
@@ -137,7 +137,7 @@ $app->group('/Games', function()
 
 		$limit = 20;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 
@@ -183,7 +183,7 @@ $app->group('/Games', function()
 
 		$limit = 30;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$filters = isset($_REQUEST['filter']) ? explode("," , $_REQUEST['filter']) : 'ALL';
 
@@ -214,7 +214,7 @@ $app->group('/Games', function()
 
 		$limit = 20;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 

@@ -32,7 +32,7 @@ class Utils
 		{
 			return $_REQUEST['page'];
 		}
-		return 0;
+		return 1;
 	}
 	
 	static function parseRequestOptions()
@@ -67,7 +67,7 @@ class Utils
 	{
 		$GET = $_GET;
 		$ret['previous'] = NULL;
-		if($current_page > 0)
+		if($current_page > 1)
 		{
 			$GET['page'] = $current_page-1;
 			$ret['previous'] = Utils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
