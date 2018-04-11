@@ -266,12 +266,11 @@ class TGDB
 
 	function GetPlatformsList($fields = array())
 	{
-		$qry = "Select id, name, alias FROM platforms;";
+		$qry = "Select id, name, alias ";
 
 		$dbh = $this->database->dbh;
 		if(!empty($fields))
 		{
-			$qry = "Select id, name, alias";
 			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_platform_col($key))
@@ -279,9 +278,10 @@ class TGDB
 					$qry .= ", $key ";
 				}
 			}
-			$qry .= " FROM platforms;";
 		}
-		
+
+		$qry .= " FROM platforms;";
+
 		$sth = $dbh->prepare($qry);
 
 		if($sth->execute())
@@ -314,12 +314,11 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select id, name, alias FROM platforms";
+		$qry = "Select id as n, id, name, alias ";
 
 		$dbh = $this->database->dbh;
 		if(!empty($fields))
 		{
-			$qry = "Select id, name, alias";
 			foreach($fields as $key => $enabled)
 			{
 				if($enabled && $this->is_valid_platform_col($key))
@@ -327,9 +326,8 @@ class TGDB
 					$qry .= ", $key ";
 				}
 			}
-			$qry .= " FROM platforms ";
 		}
-		$qry .= " Where id IN ($PlatformIDs);";
+		$qry .= " FROM platforms Where id IN ($PlatformIDs);";
 
 		$sth = $dbh->prepare($qry);
 
