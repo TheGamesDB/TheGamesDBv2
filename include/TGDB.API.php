@@ -219,8 +219,35 @@ class TGDB
 		return array();
 	}
 
-	//TODO:filter return type
-	function GetGameBoxartByID($IDs = 0, $offset = 0, $limit = 20, $filter = 'boxart')
+	private function CreateBoxartFilterQuery($filter, &$is_filter)
+	{
+		$qry = "";
+		switch($filter)
+		{
+			case 'fanart':
+			case 'series':
+			case 'boxart':
+			case 'screenshot':
+			case 'platform-banner':
+			case 'platform-fanart':
+			case 'platform-boxart':
+			case 'clearlogo':
+				if(!$is_filter)
+				{
+					$qry .=" AND (";
+					$is_filter = true;
+
+				}
+				else
+				{
+					$qry .=" OR ";
+				}
+				$qry .=" keytype = '$filter' ";
+		}
+		return $qry;
+	}
+
+	function GetGameBoxartByID($IDs = 0, $offset = 0, $limit = 20, $filters = 'boxart')
 	{
 		$GameIDs;
 		if(is_array($IDs))
@@ -244,10 +271,22 @@ class TGDB
 		}
 
 		$qry = "Select keyvalue as games_id, keytype as type, side, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) ";
-		switch($filter)
+		$is_filter = false;
+		if(is_array($filters))
 		{
-			case 'boxart':
-				$qry .=" AND keytype='boxart' ";
+			foreach($filters as $filter)
+			{
+				$qry .= $this->CreateBoxartFilterQuery($filter, $is_filter);
+			}
+		}
+		else
+		{
+			$qry .= $this->CreateBoxartFilterQuery($filters, $is_filter);
+		}
+
+		if($is_filter)
+		{
+			$qry .=" )";
 		}
 		$qry .= " LIMIT :limit OFFSET :offset;";
 
