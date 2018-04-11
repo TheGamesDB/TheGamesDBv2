@@ -181,22 +181,24 @@ $app->group('/Games', function()
 			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 
-		$limit = 20;
+		$limit = 30;
 		$page = Utils::getPage();
 		$offset = $page * $limit;
 		$options = Utils::parseRequestOptions();
+		$filters = isset($_REQUEST['filter']) ? explode("," , $_REQUEST['filter']) : 'ALL';
 
 		$API = TGDB::getInstance();
-		// TODO: consider return count, as each cover has multiple  result thus can hit 20 really quick
-		// but maybe this is should remain the default choice?
-		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, 'ALL');
+		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, $filters);
 
-		if($has_next_page = count($list) > $limit)
-			unset($list[$limit]);
+		$count = 0;
+		foreach($list as $boxarts)
+		{
+			$count += count($boxarts);
+		}
+		$has_next_page = $count > $limit;
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), 'base_url' => Utils::$BOXART_BASE_URL, "boxart" => $list);
-
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
