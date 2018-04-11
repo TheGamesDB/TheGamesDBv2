@@ -156,11 +156,11 @@ class TGDB
 
 		$qry .= " FROM games WHERE GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4)
 		GROUP BY id ORDER BY CASE
-		WHEN GameTitle like :name5 THEN 4
-		WHEN GameTitle like :name6 THEN 3
-		WHEN GameTitle like :name7 THEN 0
-		WHEN GameTitle like :name8 THEN 1
-		ELSE 5
+		WHEN GameTitle like :name5 THEN 3
+		WHEN GameTitle like :name6 THEN 0
+		WHEN GameTitle like :name7 THEN 1
+		WHEN GameTitle like :name8 THEN 2
+		ELSE 4
 		END, GameTitle LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
@@ -397,11 +397,11 @@ class TGDB
 
 		$qry .= " FROM platforms WHERE name LIKE :name OR name=:name2 OR soundex(name) LIKE soundex(:name3) OR soundex(name) LIKE soundex(:name4)
 		GROUP BY id ORDER BY CASE
-		WHEN name like :name5 THEN 4
-		WHEN name like :name6 THEN 3
-		WHEN name like :name7 THEN 0
-		WHEN name like :name8 THEN 1
-		ELSE 5
+		WHEN name like :name5 THEN 3
+		WHEN name like :name6 THEN 0
+		WHEN name like :name7 THEN 1
+		WHEN name like :name8 THEN 2
+		ELSE 4
 		END, name";
 
 		$sth = $dbh->prepare($qry);
