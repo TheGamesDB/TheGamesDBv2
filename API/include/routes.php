@@ -36,7 +36,7 @@ $app->group('/Games', function()
 
 		$limit = 20;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 
@@ -89,7 +89,7 @@ $app->group('/Games', function()
 
 		$limit = 20;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 
@@ -137,7 +137,7 @@ $app->group('/Games', function()
 
 		$limit = 20;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 
@@ -181,22 +181,73 @@ $app->group('/Games', function()
 			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 
-		$limit = 20;
+		$limit = 30;
 		$page = Utils::getPage();
-		$offset = $page * $limit;
+		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
+		$filters = isset($_REQUEST['filter']) ? explode("," , $_REQUEST['filter']) : 'ALL';
 
 		$API = TGDB::getInstance();
-		// TODO: consider return count, as each cover has multiple  result thus can hit 20 really quick
-		// but maybe this is should remain the default choice?
-		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, 'ALL');
+		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, $filters);
+
+		$count = 0;
+		foreach($list as $boxarts)
+		{
+			$count += count($boxarts);
+		}
+		$has_next_page = $count > $limit;
+
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), 'base_url' => Utils::$BOXART_BASE_URL, "boxart" => $list);
+		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
+
+		return $response->withJson($JSON_Response);
+	});
+	$this->get('/Updates', function($request, $response, $args)
+	{
+		$this->logger->info("TGDB '/Games/Updates' route");
+
+		if(!isset($_REQUEST['time']) && !is_numeric($_REQUEST['time']) &&  $_REQUEST['time'] < 0)
+		{
+			$_REQUEST['time'] = 60*24*365;
+		}
+
+		$limit = 20;
+		$page = Utils::getPage();
+		$offset = ($page - 1) * $limit;
+		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
+
+		$API = TGDB::getInstance();
+		$list = $API->GetGamesByLatestUpdatedDate($_REQUEST['time'], $offset, $limit+1, $fields);
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
 		$JSON_Response = Utils::getStatus(200);
-		$JSON_Response['data'] = array("count" => count($list), 'base_url' => Utils::$BOXART_BASE_URL, "boxart" => $list);
-
+		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
+		if(count($list) > 0)
+		{
+			if(isset($options['boxart']) && $options['boxart'])
+			{
+				$GameIDs = array();
+				foreach($list as $game)
+				{
+					$GameIDs[] = $game->id;
+				}
+				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
+			}
+			if(isset($options['Platform']) && $options['Platform'])
+			{
+				$PlatformsIDs = array();
+				foreach($list as $game)
+				{
+					$PlatformsIDs[] = $game->Platform;
+				}
+				$JSON_Response['include']['Platform']['data'] = $API->GetPlatforms($PlatformsIDs);
+			}
+		}
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
