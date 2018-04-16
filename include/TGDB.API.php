@@ -186,6 +186,121 @@ class TGDB
 		}
 	}
 
+	function GetGamesByDate($date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		return $this->GetGamesByDateByPlatform(0, $date, $offset, $limit, $fields, $OrderBy, $ASCDESC);
+	}
+
+	function GetGamesByDateByPlatform($IDs, $date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		if(isset($fields['BEFORE']))
+		{
+			$BeforeAfterDate = "<=";
+		}
+		else
+		{
+			$BeforeAfterDate = ">";
+		}
+
+		$qry .= " FROM games WHERE ReleaseDateRevised $BeforeAfterDate STR_TO_DATE(:date, '%d/%m/%Y') ";
+
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+			$qry .= " AND Platform IN " . implode(",", $PlatformIDsArr) . " ";
+		}
+		else if(is_numeric($IDs) && $IDs > 0)
+		{
+			$qry .= " AND Platform = $IDs ";
+		}
+
+
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':date', $date, PDO::PARAM_STR);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+
+		return array();
+	}
+
+	function GetAllGames($offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+
+		return array();
+	}
+
 	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
 	{
 		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
