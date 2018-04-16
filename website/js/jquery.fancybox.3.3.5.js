@@ -4840,6 +4840,7 @@
     var instance = $.fancybox.getInstance(),
       current = instance.current || null,
       url,
+      descr,
       tpl;
 
     if (!current) {
@@ -4850,11 +4851,15 @@
       url = current.opts.share.url.apply(current, [instance, current]);
     }
 
+    if ($.type(current.opts.share.descr) === "function") {
+      descr = current.opts.share.descr.apply(current, [instance, current]);
+    }
+
     tpl = current.opts.share.tpl
       .replace(/\{\{media\}\}/g, current.type === "image" ? encodeURIComponent(current.src) : "")
       .replace(/\{\{url\}\}/g, encodeURIComponent(url))
       .replace(/\{\{url_raw\}\}/g, escapeHtml(url))
-      .replace(/\{\{descr\}\}/g, instance.$caption ? encodeURIComponent(instance.$caption.text()) : "");
+      .replace(/\{\{descr\}\}/g, descr ? encodeURIComponent("Checkout '" + descr + "'s '" + instance.$caption.text().toLowerCase() + "' at") : instance.$caption ? encodeURIComponent("Checkout this game's '" + instance.$caption.text().toLowerCase() + "' at") : "Check this out at");
 
     $.fancybox.open({
       src: instance.translate(instance, tpl),
