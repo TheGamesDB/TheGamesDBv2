@@ -186,6 +186,78 @@ class TGDB
 		}
 	}
 
+	function SearchGamesByNameByPlatformID($searchTerm, $IDs, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$PlatformIDs = array();
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$PlatformIDs = $IDs;
+		}
+
+		$qry .= " FROM games WHERE ";
+
+		if(!empty($PlatformIDs))
+		{
+			$qry .= " Platform IN ($PlatformIDs) AND ";
+		}
+
+		$qry .= " (GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4))
+		GROUP BY id ORDER BY CASE
+		WHEN GameTitle like :name5 THEN 3
+		WHEN GameTitle like :name6 THEN 0
+		WHEN GameTitle like :name7 THEN 1
+		WHEN GameTitle like :name8 THEN 2
+		ELSE 4
+		END, GameTitle LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+
+		$sth->bindValue(':name5', "%$searchTerm");
+		$sth->bindValue(':name6', $searchTerm);
+		$sth->bindValue(':name7', "$searchTerm%");
+		$sth->bindValue(':name8', "% %$searchTerm% %");
+
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
 	function GetGamesByDate($date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		return $this->GetGamesByDateByPlatform(0, $date, $offset, $limit, $fields, $OrderBy, $ASCDESC);
