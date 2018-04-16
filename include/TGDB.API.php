@@ -418,6 +418,45 @@ class TGDB
 		}
 	}
 
+	function GetLatestGameBoxart($offset = 0, $limit = 20, $filters = 'boxart', $side = '')
+	{
+		$qry = "Select keyvalue as game_id, keytype as type, side, filename, resolution FROM banners WHERE 1 ";
+		$is_filter = false;
+		if(is_array($filters))
+		{
+			foreach($filters as $filter)
+			{
+				$qry .= $this->CreateBoxartFilterQuery($filter, $is_filter);
+			}
+		}
+		else
+		{
+			$qry .= $this->CreateBoxartFilterQuery($filters, $is_filter);
+		}
+
+		if($is_filter)
+		{
+			$qry .= " )";
+		}
+		if(!empty($side) && ($side == 'front' || $side == 'back'))
+		{
+			$qry .= " AND side = '$side' ";
+		}
+		$qry .= " ORDER BY id DESC  LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
 	function GetPlatformsList($fields = array())
 	{
 		$qry = "Select id, name, alias ";
