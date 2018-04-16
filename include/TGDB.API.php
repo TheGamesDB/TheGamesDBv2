@@ -577,6 +577,76 @@ class TGDB
 		}
 	}
 
+	function GetGamesStats()
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("SELECT type, count from statistics WHERE type != 'boxart' AND type NOT LIKE 'plat%' ORDER BY type");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_COLUMN);
+			{
+				$ret =  $dbh->query("select count(id) from games where Overview is not null", PDO::FETCH_COLUMN, 0);
+				$res['overview'] = $ret->fetch();
+			}
+			return $res;
+		}
+	}
+
+	//TO SLOW, so instead create a DB that I'd update periodically cron job
+	function UpdateStats()
+	{
+		$dbh = $this->database->dbh;
+
+		$Total = array();
+		$sth = $dbh->prepare("SELECT DISTINCT keytype from banners");
+		if($sth->execute())
+		{
+			$types = $sth->fetchAll(PDO::FETCH_COLUMN);
+			foreach($types as $type)
+			{
+				$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = :type and keyvalue IN (select id from games) GROUP BY keyvalue");
+				$sth->bindValue(':type', $type, PDO::PARAM_STR);
+				if($sth->execute())
+				{
+					$Total[$type] = $sth->rowCount();
+				}
+			}
+			$Total['boxart'] = array();
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'front' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			if($sth->execute())
+			{
+				$Total['boxart']['front'] = $sth->rowCount();
+			}
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'back' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			if($sth->execute())
+			{
+				$Total['boxart']['back'] = $sth->rowCount();
+			}
+
+			foreach($Total as $index => $val)
+			{
+				if(!is_array($val))
+				{
+					$sth = $dbh->prepare("UPDATE statistics SET count = :count WHERE type = :type");
+					$sth->bindValue(':type', $index, PDO::PARAM_STR);
+					$sth->bindValue(':count', $val, PDO::PARAM_STR);
+					$sth->execute();
+				}
+				else
+				{
+					foreach($val as $key => $val2)
+					{
+						$sth = $dbh->prepare("UPDATE statistics SET count = :count WHERE type = :type");
+						$sth->bindValue(':type', "$index-$key", PDO::PARAM_STR);
+						$sth->bindValue(':count', $val2, PDO::PARAM_STR);
+						$sth->execute();
+					}
+				}
+			}
+		}
+	}
+
 	function is_valid_platform_col($name)
 	{
 		if(empty($this->PlatformsTblCols))
