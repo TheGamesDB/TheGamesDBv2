@@ -60,7 +60,7 @@ $Header = new HEADER();
 $Header->setTitle("TGDB - Statistics");
 $Header->appendRawHeader(function() { global $PsudoGame; ?>
 	<script type="text/javascript" src="/js/Chart.2.7.2.js"></script>
-	<script type="text/javascript"  src="/js/jquery.fancybox.min.3.3.5.js"></script>
+	<script type="text/javascript"  src="/js/jquery.fancybox.3.3.5.js"></script>
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
 <?php });?>
 <?= $Header->print(); ?>
