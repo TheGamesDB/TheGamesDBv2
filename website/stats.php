@@ -205,7 +205,7 @@ $Header->appendRawHeader(function() { global $PsudoGame; ?>
 										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="banners" data-caption="Banner - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Banners
 										</a>
 										<?php while($cover = array_shift($banners)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="vanners" data-caption="Banner - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="banners" data-caption="Banner - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 											<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
