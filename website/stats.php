@@ -61,7 +61,20 @@ $Header->setTitle("TGDB - Statistics");
 $Header->appendRawHeader(function() { global $PsudoGame; ?>
 	<script type="text/javascript" src="/js/Chart.2.7.2.js"></script>
 	<script type="text/javascript"  src="/js/jquery.fancybox.3.3.5.js"></script>
+	<script type="text/javascript" src="/js/fancybox.config.js"></script>	
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
+
+		<script type="text/javascript">
+			$(document).ready(function()
+			{
+				var index = fancyboxOpts.buttons.indexOf("share");
+				if (index > -1)
+				{
+					fancyboxOpts.buttons.splice(index, 1);
+				}
+				$('[data-fancybox]').fancybox(fancyboxOpts);
+			});
+		</script>
 <?php });?>
 <?= $Header->print(); ?>
 
