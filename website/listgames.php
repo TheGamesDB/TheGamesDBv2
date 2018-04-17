@@ -8,10 +8,10 @@ if(!isset($_REQUEST['platformID']) || !is_numeric($_REQUEST['platformID']))
 	$errorPage->print_die();
 }
 require_once __DIR__ . "/include/header.footer.class.php";
-include_once __DIR__ . "/include/PaginationUtils.class.php";
-include_once __DIR__ . "/include/TGDBUtils.class.php";
+require_once __DIR__ . "/include/PaginationUtils.class.php";
+require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/include/WebUtils.class.php";
-include_once __DIR__ . "/../include/TGDB.API.php";
+require_once __DIR__ . "/../include/TGDB.API.php";
 
 $API = TGDB::getInstance();
 $Platform = $API->GetPlatforms($_REQUEST['platformID'], array("icon" => true, "overview" => true, "developer" => true));

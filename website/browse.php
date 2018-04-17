@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/include/header.footer.class.php";
-include_once __DIR__ . "/../include/TGDB.API.php";
+require_once __DIR__ . "/../include/TGDB.API.php";
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList(array("icon" => true));

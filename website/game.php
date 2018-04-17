@@ -8,8 +8,8 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 	$errorPage->print_die();
 }
 require_once __DIR__ . "/include/header.footer.class.php";
-include_once __DIR__ . "/include/TGDBUtils.class.php";
-include_once __DIR__ . "/../include/TGDB.API.php";
+require_once __DIR__ . "/include/TGDBUtils.class.php";
+require_once __DIR__ . "/../include/TGDB.API.php";
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
