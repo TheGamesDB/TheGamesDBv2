@@ -186,6 +186,193 @@ class TGDB
 		}
 	}
 
+	function SearchGamesByNameByPlatformID($searchTerm, $IDs, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$PlatformIDs = array();
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$PlatformIDs = $IDs;
+		}
+
+		$qry .= " FROM games WHERE ";
+
+		if(!empty($PlatformIDs))
+		{
+			$qry .= " Platform IN ($PlatformIDs) AND ";
+		}
+
+		$qry .= " (GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4))
+		GROUP BY id ORDER BY CASE
+		WHEN GameTitle like :name5 THEN 3
+		WHEN GameTitle like :name6 THEN 0
+		WHEN GameTitle like :name7 THEN 1
+		WHEN GameTitle like :name8 THEN 2
+		ELSE 4
+		END, GameTitle LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+
+		$sth->bindValue(':name5', "%$searchTerm");
+		$sth->bindValue(':name6', $searchTerm);
+		$sth->bindValue(':name7', "$searchTerm%");
+		$sth->bindValue(':name8', "% %$searchTerm% %");
+
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function GetGamesByDate($date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		return $this->GetGamesByDateByPlatform(0, $date, $offset, $limit, $fields, $OrderBy, $ASCDESC);
+	}
+
+	function GetGamesByDateByPlatform($IDs, $date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		if(isset($fields['BEFORE']))
+		{
+			$BeforeAfterDate = "<=";
+		}
+		else
+		{
+			$BeforeAfterDate = ">";
+		}
+
+		$qry .= " FROM games WHERE ReleaseDateRevised $BeforeAfterDate STR_TO_DATE(:date, '%d/%m/%Y') ";
+
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+			$qry .= " AND Platform IN " . implode(",", $PlatformIDsArr) . " ";
+		}
+		else if(is_numeric($IDs) && $IDs > 0)
+		{
+			$qry .= " AND Platform = $IDs ";
+		}
+
+
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':date', $date, PDO::PARAM_STR);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+
+		return array();
+	}
+
+	function GetAllGames($offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+
+		return array();
+	}
+
 	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
 	{
 		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
@@ -299,6 +486,45 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
+	function GetLatestGameBoxart($offset = 0, $limit = 20, $filters = 'boxart', $side = '')
+	{
+		$qry = "Select keyvalue as game_id, keytype as type, side, filename, resolution FROM banners WHERE 1 ";
+		$is_filter = false;
+		if(is_array($filters))
+		{
+			foreach($filters as $filter)
+			{
+				$qry .= $this->CreateBoxartFilterQuery($filter, $is_filter);
+			}
+		}
+		else
+		{
+			$qry .= $this->CreateBoxartFilterQuery($filters, $is_filter);
+		}
+
+		if($is_filter)
+		{
+			$qry .= " )";
+		}
+		if(!empty($side) && ($side == 'front' || $side == 'back'))
+		{
+			$qry .= " AND side = '$side' ";
+		}
+		$qry .= " ORDER BY id DESC  LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 			return $res;
 		}
 	}
@@ -420,6 +646,76 @@ class TGDB
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 			return $res;
+		}
+	}
+
+	function GetGamesStats()
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("SELECT type, count from statistics WHERE type != 'boxart' AND type NOT LIKE 'plat%' ORDER BY type");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_COLUMN);
+			{
+				$ret =  $dbh->query("select count(id) from games where Overview is not null", PDO::FETCH_COLUMN, 0);
+				$res['overview'] = $ret->fetch();
+			}
+			return $res;
+		}
+	}
+
+	//TO SLOW, so instead create a DB that I'd update periodically cron job
+	function UpdateStats()
+	{
+		$dbh = $this->database->dbh;
+
+		$Total = array();
+		$sth = $dbh->prepare("SELECT DISTINCT keytype from banners");
+		if($sth->execute())
+		{
+			$types = $sth->fetchAll(PDO::FETCH_COLUMN);
+			foreach($types as $type)
+			{
+				$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = :type and keyvalue IN (select id from games) GROUP BY keyvalue");
+				$sth->bindValue(':type', $type, PDO::PARAM_STR);
+				if($sth->execute())
+				{
+					$Total[$type] = $sth->rowCount();
+				}
+			}
+			$Total['boxart'] = array();
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'front' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			if($sth->execute())
+			{
+				$Total['boxart']['front'] = $sth->rowCount();
+			}
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'back' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			if($sth->execute())
+			{
+				$Total['boxart']['back'] = $sth->rowCount();
+			}
+
+			foreach($Total as $index => $val)
+			{
+				if(!is_array($val))
+				{
+					$sth = $dbh->prepare("UPDATE statistics SET count = :count WHERE type = :type");
+					$sth->bindValue(':type', $index, PDO::PARAM_STR);
+					$sth->bindValue(':count', $val, PDO::PARAM_STR);
+					$sth->execute();
+				}
+				else
+				{
+					foreach($val as $key => $val2)
+					{
+						$sth = $dbh->prepare("UPDATE statistics SET count = :count WHERE type = :type");
+						$sth->bindValue(':type', "$index-$key", PDO::PARAM_STR);
+						$sth->bindValue(':count', $val2, PDO::PARAM_STR);
+						$sth->execute();
+					}
+				}
+			}
 		}
 	}
 

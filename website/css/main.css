@@ -1,0 +1,142 @@
+
+.view-width
+{
+	border: 1px solid #0C0D0E;
+	line-height: 1.42857;
+	background-color: #1C1E22;
+	border-radius: 4px;
+	max-width: 100%;
+	width: 100%;
+}
+
+.cover-text-col-3
+{
+	left: 15px !important;
+	right: 15px !important;
+}
+
+.cover-text
+{
+	font-size: 1.8vh;
+	max-width: 100%;
+	padding: 4px;
+	line-height: 1.42857;
+	border: 1px solid #0C0D0E;
+	line-height: 1.42857;
+	text-align: center;
+	left: 3.5px;
+	right: 3.5px;
+	position: absolute;
+	background: rgba(0, 0, 0, 0.79) none repeat scroll 0% 0%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	transition: opacity .1s linear, margin-bottom .2s ease-out, margin-top .2s ease-out;
+}
+
+.cover-text-top
+{
+	border-radius: 4px 4px 0 0;
+	top: 0px;
+}
+
+.cover-text-2
+{
+	position: absolute;
+	text-align: left;
+	background: rgba(0, 0, 0, 0.79) none repeat scroll 0% 0%;
+	border: 1px solid #0C0D0E;
+	padding-left: 10px;
+	padding-right: 10px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.cover-text-top-2
+{
+	top: 0px;
+	border-radius: 4px 4px 40px 40px;
+}
+
+.cover-text-bottom
+{
+	border-radius: 0 0 4px 4px;
+	bottom: 0px;
+}
+
+.cover-text-hover
+{
+	opacity: 0;
+}
+
+.crop
+{
+	width: 151px;
+	height: 151px;
+	overflow: hidden;
+}
+.crop span.img
+{
+	background-position: center;
+	background-size: cover;
+	height: 151px;
+	display: block;
+	border-radius: 5px;
+}
+
+.cover-overlay
+{
+	width: 100%;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	padding: 2.5px;
+}
+.border-black
+{
+	border: 1px solid #000;
+}
+
+footer *
+{
+	color: white;
+}
+
+.card-footer:last-child
+{
+	border: 0 !important;
+}
+.card-footer
+{
+	background-color: rgba(0, 0, 0, 0.0) !important;
+}
+.card-noboday
+{
+	padding: 0;
+}
+
+.btn-wrap-text
+{
+	white-space: normal;
+}
+
+
+.fancybox-thumbs
+{
+	top: auto !important;
+	width: auto !important;
+	bottom: 0 !important;;
+	left: 0 !important;;
+	right : 0 !important;;
+	height: 95px!important;
+	padding: 10px 10px 5px 10px !important;;
+	box-sizing: border-box !important;;
+	background: rgba(0, 0, 0, 0.3) !important;;
+}
+
+.fancybox-show-thumbs .fancybox-inner
+{
+	right: 0 !important;
+	bottom: 95px !important;;
+}
+
