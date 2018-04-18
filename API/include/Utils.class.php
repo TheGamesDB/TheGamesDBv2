@@ -2,7 +2,8 @@
 
 class Utils
 {
-	static private $API_BASE_URL = "https://api.thegamesdb.net";
+	static public $WEBSITE_BASE_URL = "https://beta.thegamesdb.net/";
+	static private $API_BASE_URL = "https://api.beta.thegamesdb.net";
 	static public $BOXART_BASE_URL = "https://cdn.thegamesdb.net/images/";
 	static public $BOXART_CACHE_BASE_URL = "http://thegamesdb.net/banners/_cache/";
 
