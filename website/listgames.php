@@ -59,7 +59,7 @@ $Header->setTitle("TGDB - Browser - Game By Platform");
 			<div class="col-12 col-md-10">
 				<div class="card">
 					<div class="card-header">
-						<legend><img src="/banners/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
+						<legend><img src="<?= Utils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
 					</div>
 					<div class="card-body">
 						<p>Developer: <?= $Platform->developer ?></p>
