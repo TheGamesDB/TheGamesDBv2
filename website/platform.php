@@ -102,7 +102,7 @@ $Header->appendRawHeader(function()
 						<div class="card border-primary">
 							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'platform-boxart', '', false,  true, 'thumb') ?>" />
 							<div class="card-body">
-								some text here?
+								<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							</div>
 						</div>
 					</div>
