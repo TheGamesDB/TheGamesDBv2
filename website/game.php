@@ -318,7 +318,9 @@ $Header->appendRawHeader(function() { global $Game; ?>
 									</div>
 									<?php endif; ?>
 									<?php if($is_graphics_empty) : ?>
-									<h5>No fanarts/screenshots/banners found, be the 1st to add them.</h5>
+									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
+										<h5>No fanarts/screenshots/banners found, be the 1st to add them.</h5>
+									</div>
 									<?php endif; ?>
 								</div>
 							</div>
