@@ -84,7 +84,7 @@ class HEADER
 					<a class="nav-link" href="/">Home</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">Forums</a>
+					<a class="nav-link" href="https://forums.thegamesdb.net/">Forums</a>
 				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -142,7 +142,7 @@ class FOOTER
 						<ul>
 							<li><a href="#">FAQ</a></li>
 							<li><a href="#">Help desk</a></li>
-							<li><a href="#">Forums</a></li>
+							<li><a href="https://forums.thegamesdb.net/">Forums</a></li>
 						</ul>
 					</div>
 					<div class="col-sm-3">
