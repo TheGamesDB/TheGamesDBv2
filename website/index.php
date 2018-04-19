@@ -70,6 +70,7 @@ $Header->appendRawHeader(function() { ?>
 		<div class="row justify-content-center">
 
 			<div class="col-12 col-lg-6 order-2 order-lg-1">
+				<h2>Recently Added</h2><hr/>
 				<?php foreach($lastupdated as $game) : ?>
 				<div class="row" style="padding-bottom:10px">
 					<div class="col-3">
