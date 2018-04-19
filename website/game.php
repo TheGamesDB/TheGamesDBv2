@@ -233,23 +233,23 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								<p>Share Via</p>
 								<!-- Twitter -->
 								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->GameTitle' on ")."&amp;url=".urlencode(Utils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
-									<i class="fab fa-twitter"></i> Twitter
+									<i class="fab fa-twitter"></i>
 								</div>
 								<!-- Facebook -->
 								<div data="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(Utils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Facebook" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" class="btn btn-facebook">
-									<i class="fab fa-facebook"></i> Facebook
+									<i class="fab fa-facebook"></i>
 								</div>
 								<!-- Google+ -->
 								<div data="https://plus.google.com/share?url=<?= urlencode(Utils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Google+" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" target="_blank" class="btn btn-googleplus">
-									<i class="fab fa-google-plus"></i> Google+
+									<i class="fab fa-google-plus"></i>
 								</div>
 								<!-- StumbleUpon -->
 								<div data="http://www.stumbleupon.com/submit?url=<?= urlencode(Utils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-stumbleupon">
-									<i class="fab fa-stumbleupon"></i> Stumbleupon
+									<i class="fab fa-stumbleupon"></i>
 								</div>
 								<!-- Pinterest -->
 								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->GameTitle' on " . Utils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(Utils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
-									<i class="fab fa-pinterest"></i> Pinterest
+									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
 						</div>
