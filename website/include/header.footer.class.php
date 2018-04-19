@@ -5,7 +5,7 @@ FOOTER::$_time_start = microtime(true);
 
 class HEADER
 {
-	private $_title = "TGDB";
+	private $_title = "TheGamesDB";
 	private $_printExtraHeader;
 
 	public function __construct()
@@ -73,7 +73,7 @@ class HEADER
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="margin: 10px;">
-		<a class="navbar-brand" href="/">TGDB</a>
+		<a class="navbar-brand" href="/">TheGamesDB</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -118,7 +118,7 @@ class FOOTER
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-3">
-						<h2 class="logo"><a href="/"> TGDB </a></h2>
+						<h2 class="logo"><a href="/"> TheGamesDB </a></h2>
 					</div>
 					<div class="col-sm-2">
 						<h5>Get started</h5>
