@@ -6,7 +6,7 @@ class AuthMiddleware
 {
 	public function __invoke($request, $response, $next)
 	{
-		if(!isset($_SERVER['REDIRECT_URL']))
+		if(!isset($_SERVER['REDIRECT_URL']) && !isset($_SERVER['PATH_INFO']))
 		{
 			return $next($request, $response);
 		}
