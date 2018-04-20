@@ -58,7 +58,7 @@ $app->group('/Games', function()
 				{
 					$IDs[] = $game->id;
 				}
-				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['base_url'] = Utils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999, 'boxart');
 			}
 			if(isset($options['Platform']) && $options['Platform'])
@@ -106,7 +106,7 @@ $app->group('/Games', function()
 		{
 			if(isset($options['boxart']) && $options['boxart'])
 			{
-				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['base_url'] = Utils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999, 'boxart');
 			}
 			if(isset($options['Platform']) && $options['Platform'])
@@ -158,7 +158,7 @@ $app->group('/Games', function()
 				{
 					$GameIDs[] = $game->id;
 				}
-				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['base_url'] = Utils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
 			}
 			if(isset($options['Platform']) && $options['Platform'])
@@ -198,7 +198,7 @@ $app->group('/Games', function()
 		$has_next_page = $count > $limit;
 
 		$JSON_Response = Utils::getStatus(200);
-		$JSON_Response['data'] = array("count" => count($list), 'base_url' => Utils::$BOXART_BASE_URL, "boxart" => $list);
+		$JSON_Response['data'] = array("count" => count($list), 'base_url' => Utils::getImagesBaseURL(), "boxart" => $list);
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
@@ -235,7 +235,7 @@ $app->group('/Games', function()
 				{
 					$GameIDs[] = $game->id;
 				}
-				$JSON_Response['include']['boxart']['base_url'] = Utils::$BOXART_BASE_URL;
+				$JSON_Response['include']['boxart']['base_url'] = Utils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
 			}
 			if(isset($options['Platform']) && $options['Platform'])

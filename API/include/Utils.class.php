@@ -102,6 +102,18 @@ class Utils
 		}
 		return $IDs;
 	}
+
+	static function getImagesBaseURL()
+	{
+		return
+		[
+			"original" => Utils::$BOXART_BASE_URL . "original/",
+			"small" => Utils::$BOXART_BASE_URL . "small/",
+			"thumb" => Utils::$BOXART_BASE_URL . "thumb/",
+			"medium" => Utils::$BOXART_BASE_URL . "medium/",
+			"large" => Utils::$BOXART_BASE_URL . "large/",
+		];
+	}
 }
 
 ?>
