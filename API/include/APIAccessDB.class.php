@@ -30,7 +30,7 @@ class APIAccessDB
 		$sth = $dbh->prepare("Select APIU.*, AA.monthly_allowance, sum(AMC.count) as count FROM apiusers APIU
 		LEFT JOIN api_allowance_level AA ON AA.id = APIU.api_allowance_level_id
 		LEFT JOIN api_month_counter AMC ON AMC.apiusers_id = APIU.id AND AMC.date >= APIU.last_refresh_date AND AMC.is_extra = 0
-		WHERE apikey=:apikey;");
+		WHERE apikey=:apikey GROUP BY APIU.id;");
 		$sth->bindValue(':apikey', $key, PDO::PARAM_STR);
 
 		if($sth->execute())
