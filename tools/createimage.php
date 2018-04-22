@@ -21,8 +21,8 @@ if(isset($_SERVER['REDIRECT_URL']))
 	$PATHs = explode("/", $_SERVER['REDIRECT_URL']);
 	$size = $PATHs[2];
 	array_splice($PATHs, 1, 2);
-	$original_image = __DIR__ . "/banners/original" . implode("/", $PATHs);
-	$dest_image = __DIR__ . "/banners/$size" . implode("/", $PATHs);
+	$original_image = __DIR__ . "/images/original" . implode("/", $PATHs);
+	$dest_image = __DIR__ . "/images/$size" . implode("/", $PATHs);
 	if(file_exists($original_image) && !file_exists($dest_image))
 	{
 		include __DIR__ . "/../vendor/autoload.php";
