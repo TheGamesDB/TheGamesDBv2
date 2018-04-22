@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>TheGamesDB API DOCs</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <link href='//fonts.googleapis.com/css?family=Lato:300' rel='stylesheet' type='text/css'>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script>
+    <style>
+        body {
+            margin: 50px 0 0 0;
+            padding: 0;
+            width: 100%;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            text-align: center;
+            color: #aaa;
+            font-size: 18px;
+        }
+        
+        h1 {
+            color: #719e40;
+            letter-spacing: -3px;
+            font-family: 'Lato', sans-serif;
+            font-size: 100px;
+            font-weight: 200;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>API DOCS</h1>
+    <div></div>
+
+    <div class="container">
+
+        <div class="row">
+            <div class="col">
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Games/ByGameID?id=1,2,3,4
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single game entry based on the provided parameter(s).</p>
+                        <p class="card-text">This API call expects `id`, and `apikey`, while `include` and `fields` are optional.</p>
+                        <p class="card-text">Please look at "`/Games/*` Common" section below </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Games/ByPlatformID?id=12,13,14
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single game entry based on the platform id(s) provided.</p>
+                        <p class="card-text">This API call expects `id`, and `apikey`, while `include` and `fields` are optional.</p>
+                        <p class="card-text">Please look at "`/Games/*` Common" section below </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Games/ByGameName?name=God+Of+War
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single game entry based the provided parameter(s).</p>
+                        <p class="card-text">This API call expects `name`, and `apikey`, while `include` and `fields` are optional.</p>
+                        <p class="card-text">Please look at "`/Games/*` Common" section below </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Games/Updates?time=minutes
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single game entry based the provided parameter(s).</p>
+                        <p class="card-text">This API call expects `time`, and `apikey`, while `include` and `fields` are optional.</p>
+                        <p class="card-text">Please look at "`/Games/*` Common" section below </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        `/Games/*` Common (excluding `/Games/Boxart`)
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single game entry based on the provided parameter(s).</p>
+                        <p class="card-text">This API calls can expects `name`, `id`, and `apikey`, while `include` and `fields` are optional.</p>
+                        <p class="card-text">`include` valid options: `boxart,Platform`.</p>
+                        <p class="card-text">`fields` valid options: `id,GameTitle,GameID,Players,ReleaseDate,ReleaseDateRevised,Developer,Publisher,Runtime,Genre,Actors,Overview,bannerrequest,created,lastupdated,lastupdatedRevised,Rating,requestcomment,locked,mirrorupdate,lockedby,Platform,coop,Youtube,os,processor,ram,hdd,video,sound,Alternates,author,updatedby,`</p>
+                        <p class="card-text">Note: these options are subject to change.</p>
+                        <p class="card-text">Note: some of the fields options are reminent of old database and will be removed, while others will be renamed, so please keep an eye on this.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Games/Boxart?GameID=22,15,72
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single graphics entry based the provided parameter(s).</p>
+                        <p class="card-text">This API call expects `GameID`, and `apikey`, while `filter` is optional.</p>
+                        <p class="card-text">`filter` valid options: `fanart,series,boxart,screenshot,platform-banner,platform-fanart,platform-boxart,clearlogo`.</p>
+                        <p class="card-text">`filter` default value is `boxart`.</p>
+                        <p class="card-text">Note: these options are subject to change.</p>
+                        <p class="card-text">Note: series might also be known as banners, and it's like this will change to reflect that in the future.</p>
+
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Platforms
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return the platform console list</p>
+                        <p class="card-text">This API has an optional paramter`fields`.</p>
+                        <p class="card-text">Please look at "`/Platforms*` Common" section below </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Platforms/ByPlatformID?id=1,11
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single platform entry based on the provided parameter(s).</p>
+                        <p class="card-text">This API call expects `id`, and `apikey`, while `fields` are optional.</p>
+                        <p class="card-text">Please look at "`/Platforms*` Common" section below </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Platforms/ByPlatformName?name=Sony
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single platform entry based on the provided parameter(s).</p>
+                        <p class="card-text">This API call expects `name`, and `apikey`, while `fields` are optional.</p>
+                        <p class="card-text">Please look at "`/Platforms*` Common" section below </p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        `/Platforms*` Common
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">These APIs will return a list or a single platform entry based on the provided parameter(s).</p>
+                        <p class="card-text">These API call expects `id`, `name,` and `apikey`, while `fields` are optional.</p>
+                        <p class="card-text">`fields` valid options: `id,name,alias,icon,console,controller,developer,manufacturer,media,cpu,memory,graphics,sound,maxcontrollers,display,overview,youtube`</p>
+                        <p class="card-text">Note: these options are subject to change.</p>
+                        <p class="card-text">Note: some of the fields options are reminent of old database and will be removed, while others will be renamed, so please stay informed for any changes.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>
