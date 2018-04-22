@@ -1,11 +1,11 @@
 <?php
-
+require_once __DIR__ . "/../../include/CommonUtils.class.php";
 session_start();
 FOOTER::$_time_start = microtime(true);
 
 class HEADER
 {
-	private $_title = "TGDB";
+	private $_title = "TheGamesDB";
 	private $_printExtraHeader;
 
 	public function __construct()
@@ -73,7 +73,7 @@ class HEADER
 </head>
 <body>
 	<nav class="navbar navbar-expand-lg navbar-dark bg-primary" style="margin: 10px;">
-		<a class="navbar-brand" href="/">TGDB</a>
+		<a class="navbar-brand" href="/">TheGamesDB</a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
 			<span class="navbar-toggler-icon"></span>
 		</button>
@@ -84,7 +84,7 @@ class HEADER
 					<a class="nav-link" href="/">Home</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="#">Forums</a>
+					<a class="nav-link" href="https://forums.thegamesdb.net/">Forums</a>
 				</li>
 				<li class="nav-item dropdown">
 					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -97,6 +97,9 @@ class HEADER
 				</li>
 				<li class="nav-item">
 					<a class="nav-link" href="/stats.php">Stats</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="<?= CommonUtils::$API_BASE_URL ?>">API DOCS</a>
 				</li>
 			</ul>
 			<form action="/search.php" method="get" class="form-inline my-2 my-lg-0">
@@ -118,7 +121,7 @@ class FOOTER
 			<div class="container">
 				<div class="row">
 					<div class="col-sm-3">
-						<h2 class="logo"><a href="/"> TGDB </a></h2>
+						<h2 class="logo"><a href="/"> TheGamesDB </a></h2>
 					</div>
 					<div class="col-sm-2">
 						<h5>Get started</h5>
@@ -142,7 +145,7 @@ class FOOTER
 						<ul>
 							<li><a href="#">FAQ</a></li>
 							<li><a href="#">Help desk</a></li>
-							<li><a href="#">Forums</a></li>
+							<li><a href="https://forums.thegamesdb.net/">Forums</a></li>
 						</ul>
 					</div>
 					<div class="col-sm-3">

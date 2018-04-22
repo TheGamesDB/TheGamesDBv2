@@ -5,7 +5,8 @@ require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 
 $search_term = '';
-
+$has_next_page = false;
+$list = array();
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList(array("icon" => true));

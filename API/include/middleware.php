@@ -6,7 +6,7 @@ class AuthMiddleware
 {
 	public function __invoke($request, $response, $next)
 	{
-		if(!isset($_SERVER['REDIRECT_URL']))
+		if(!isset($_SERVER['REDIRECT_URL']) && !isset($_SERVER['PATH_INFO']))
 		{
 			return $next($request, $response);
 		}
@@ -37,7 +37,7 @@ class AuthMiddleware
 					$JSON_Response = json_decode($response->getBody(), true);
 					$JSON_Response['remaining_monthly_allowance'] = $remaining_monthly_allowance + (!$use_extra ? -1 : 0);
 					$JSON_Response['extra_allowance'] =  $User->extra_allowance + ($use_extra ? -1 : 0);
-					return $response->withJson($JSON_Response, $JSON_Response['code']);
+					return $response->withJson($JSON_Response, isset($JSON_Response['code'])  ? $JSON_Response['code'] : 200);
 				}
 				else
 				{

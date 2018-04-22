@@ -531,7 +531,7 @@ class TGDB
 
 	function GetPlatformsList($fields = array())
 	{
-		$qry = "Select id, name, alias ";
+		$qry = "Select id as n, id, name, alias ";
 
 		$dbh = $this->database->dbh;
 		if(!empty($fields))

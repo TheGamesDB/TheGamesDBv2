@@ -1,11 +1,8 @@
 <?php
+require_once __DIR__ . '/../../include/CommonUtils.class.php';
 
 class Utils
 {
-	static private $API_BASE_URL = "https://api.thegamesdb.net";
-	static public $BOXART_BASE_URL = "http://thegamesdb.net/banners/";
-	static public $BOXART_CACHE_BASE_URL = "http://thegamesdb.net/banners/_cache/";
-
 	static private $_statusMSG = array(
 		200 => "Success",
 		401 => "This route requires and API key and no API key was provided.",
@@ -65,22 +62,24 @@ class Utils
 
 	static function getJsonPageUrl($current_page, $has_next_page)
 	{
+		$route = isset($_SERVER['REDIRECT_URL']) ? $_SERVER['REDIRECT_URL'] : (isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : die("invalid route"));
+
 		$GET = $_GET;
 		$ret['previous'] = NULL;
 		if($current_page > 1)
 		{
 			$GET['page'] = $current_page-1;
-			$ret['previous'] = Utils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
+			$ret['previous'] = CommonUtils::$API_BASE_URL . $route . "?" . http_build_query($GET,'','&');
 		}
 	
 		$GET['page'] = $current_page;
-		$ret['current'] = Utils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
+		$ret['current'] = CommonUtils::$API_BASE_URL . $route . "?" . http_build_query($GET,'','&');
 	
 		$ret['next'] = NULL;
 		if($has_next_page)
 		{
 			$GET['page'] = $current_page+1;
-			$ret['next'] = Utils::$API_BASE_URL  . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
+			$ret['next'] = CommonUtils::$API_BASE_URL  . $route . "?" . http_build_query($GET,'','&');
 		}
 		return $ret;
 	}

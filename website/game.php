@@ -10,12 +10,10 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
+require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
-	$limit = 20;
-	$page = Utils::getPage();
-	$offset = $page * $limit;
 	$options = array("Overview" => true, "Players" => true, "Rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
 		"Genre" => true, "Publisher" => true, "Platform" => true, "Youtube" => true);
 	$API = TGDB::getInstance();
@@ -140,7 +138,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 				<?php if(!empty($cover = $fanarts) || !empty($cover = $screenshots)): ?>
 					<img class="cover cover-offset" src="<?= $cover[0]->medium ?>"/>
 				<?php else: ?>
-					<img class="cover" src="/images/placeholder_game_banner.jpg"/>
+					<img class="cover" src="<?= CommonUtils::$BOXART_BASE_URL ?>/placeholder_game_banner.png"/>
 				<?php endif; ?>
 				</div>
 			</div>
@@ -231,24 +229,24 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<div class="card-footer" style="text-align: center;">
 								<p>Share Via</p>
 								<!-- Twitter -->
-								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->GameTitle' on ")."&amp;url=".urlencode( "https://thegamesdb.net.net/game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
-									<i class="fab fa-twitter"></i> Twitter
+								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->GameTitle' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
+									<i class="fab fa-twitter"></i>
 								</div>
 								<!-- Facebook -->
-								<div data="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode( "https://thegamesdb.net.net/game.php?id=$Game->id");?>" title="Share on Facebook" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" class="btn btn-facebook">
-									<i class="fab fa-facebook"></i> Facebook
+								<div data="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Facebook" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" class="btn btn-facebook">
+									<i class="fab fa-facebook"></i>
 								</div>
 								<!-- Google+ -->
-								<div data="https://plus.google.com/share?url=<?= urlencode( "https://thegamesdb.net.net/game.php?id=$Game->id");?>" title="Share on Google+" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" target="_blank" class="btn btn-googleplus">
-									<i class="fab fa-google-plus"></i> Google+
+								<div data="https://plus.google.com/share?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Google+" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" target="_blank" class="btn btn-googleplus">
+									<i class="fab fa-google-plus"></i>
 								</div>
 								<!-- StumbleUpon -->
-								<div data="http://www.stumbleupon.com/submit?url=<?= urlencode( "https://thegamesdb.net.net/game.php?id=$Game->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-stumbleupon">
-									<i class="fab fa-stumbleupon"></i> Stumbleupon
+								<div data="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-stumbleupon">
+									<i class="fab fa-stumbleupon"></i>
 								</div>
 								<!-- Pinterest -->
-								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->GameTitle' on https://thegamesdb.net.net/game.php?id=$Game->id")."&amp;url=".urlencode( "https://thegamesdb.net.net/game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
-									<i class="fab fa-pinterest"></i> Pinterest
+								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->GameTitle' on " . CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
+									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
 						</div>
@@ -317,7 +315,9 @@ $Header->appendRawHeader(function() { global $Game; ?>
 									</div>
 									<?php endif; ?>
 									<?php if($is_graphics_empty) : ?>
-									<h5>No fanarts/screenshots/banners found, be the 1st to add them.</h5>
+									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
+										<h5>No fanarts/screenshots/banners found, be the 1st to add them.</h5>
+									</div>
 									<?php endif; ?>
 								</div>
 							</div>
