@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../API/include/Utils.class.php";
+require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList(array("icon" => true));
@@ -90,7 +90,7 @@ $Header->appendRawHeader(function()
 						<div class="grid-container grid-col-config" style=" text-align: center">
 							<?php foreach($PlatformList as $id => $Platform) :?>
 							<a class="btn btn-link grid-item" href="./listgames.php?platformID=<?= $id ?>">
-								<img src="<?= Utils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>">
+								<img src="<?= CommonUtils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>">
 								<p><?= $Platform->name ?></p>
 							</a>
 							<?php endforeach; ?>

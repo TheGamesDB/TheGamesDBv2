@@ -1,12 +1,8 @@
 <?php
+require_once __DIR__ . '/../../include/CommonUtils.class.php';
 
 class Utils
 {
-	static public $WEBSITE_BASE_URL = "https://beta.thegamesdb.net/";
-	static public $API_BASE_URL = "https://api.beta.thegamesdb.net";
-	static public $BOXART_BASE_URL = "https://cdn.thegamesdb.net/images/";
-	static public $BOXART_CACHE_BASE_URL = "http://thegamesdb.net/banners/_cache/";
-
 	static private $_statusMSG = array(
 		200 => "Success",
 		401 => "This route requires and API key and no API key was provided.",
@@ -71,17 +67,17 @@ class Utils
 		if($current_page > 1)
 		{
 			$GET['page'] = $current_page-1;
-			$ret['previous'] = Utils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
+			$ret['previous'] = CommonUtils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
 		}
 	
 		$GET['page'] = $current_page;
-		$ret['current'] = Utils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
+		$ret['current'] = CommonUtils::$API_BASE_URL . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
 	
 		$ret['next'] = NULL;
 		if($has_next_page)
 		{
 			$GET['page'] = $current_page+1;
-			$ret['next'] = Utils::$API_BASE_URL  . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
+			$ret['next'] = CommonUtils::$API_BASE_URL  . $_SERVER['REDIRECT_URL'] . "?" . http_build_query($GET,'','&');
 		}
 		return $ret;
 	}
@@ -101,18 +97,6 @@ class Utils
 					$IDs[] = $val;
 		}
 		return $IDs;
-	}
-
-	static function getImagesBaseURL()
-	{
-		return
-		[
-			"original" => Utils::$BOXART_BASE_URL . "original/",
-			"small" => Utils::$BOXART_BASE_URL . "small/",
-			"thumb" => Utils::$BOXART_BASE_URL . "thumb/",
-			"medium" => Utils::$BOXART_BASE_URL . "medium/",
-			"large" => Utils::$BOXART_BASE_URL . "large/",
-		];
 	}
 }
 

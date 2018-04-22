@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../../API/include/Utils.class.php";
+require_once __DIR__ . "/../../include/CommonUtils.class.php";
 session_start();
 FOOTER::$_time_start = microtime(true);
 
@@ -99,7 +99,7 @@ class HEADER
 					<a class="nav-link" href="/stats.php">Stats</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" href="<?= Utils::$API_BASE_URL ?>">API DOCS</a>
+					<a class="nav-link" href="<?= CommonUtils::$API_BASE_URL ?>">API DOCS</a>
 				</li>
 			</ul>
 			<form action="/search.php" method="get" class="form-inline my-2 my-lg-0">

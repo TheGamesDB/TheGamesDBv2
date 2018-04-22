@@ -12,6 +12,7 @@ require_once __DIR__ . "/include/PaginationUtils.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/include/WebUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
+require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
 $Platform = $API->GetPlatforms($_REQUEST['platformID'], array("icon" => true, "overview" => true, "developer" => true));
@@ -59,7 +60,7 @@ $Header->setTitle("TGDB - Browser - Game By Platform");
 			<div class="col-12 col-md-10">
 				<div class="card">
 					<div class="card-header">
-						<legend><img src="<?= Utils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
+						<legend><img src="<?= CommonUtils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
 					</div>
 					<div class="card-body">
 						<p>Developer: <?= $Platform->developer ?></p>
