@@ -11,13 +11,9 @@ require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
-require_once __DIR__ . "/../API/include/Utils.class.php";
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
-	$limit = 20;
-	$page = Utils::getPage();
-	$offset = $page * $limit;
 	$options = array("Overview" => true, "Players" => true, "Rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
 		"Genre" => true, "Publisher" => true, "Platform" => true, "Youtube" => true);
 	$API = TGDB::getInstance();

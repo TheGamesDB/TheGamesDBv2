@@ -14,7 +14,7 @@ $app->get('/', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("TGDB '/' route");
 
-	return $this->renderer->render($response, 'doc.html', $args);//TODO
+	return $this->renderer->render($response, 'doc.html', $args);
 });
 
 $app->group('/Games', function()
