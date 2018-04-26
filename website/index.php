@@ -7,6 +7,10 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 $API = TGDB::getInstance();
 $soon = $API->GetGamesByDate(date("d/m/Y"), 0, 5, array('AFTER' => true), "ReleaseDateRevised", 'ASC');
 $recent = $API->GetGamesByDate(date("d/m/Y"), 0, 6, array('BEFORE' => true), "ReleaseDateRevised", 'DESC');
+foreach($soon as $Game)
+{
+	$PlatformIDs[] = $Game->Platform;
+}
 foreach($recent as $Game)
 {
 	$IDs[] = $Game->id;
