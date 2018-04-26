@@ -60,6 +60,7 @@ class HEADER
 				break;
 			case 5:
 				echo '<link rel="stylesheet" href="/css/lux-bootstrap.min.css" crossorigin="anonymous">';
+				echo "<style>body { color: #424649; } </style>";
 				break;
 			default:
 				echo '<link rel="stylesheet" href="/css/materia-bootstrap.min.css" crossorigin="anonymous">';
