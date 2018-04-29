@@ -93,6 +93,7 @@ $Header->appendRawHeader(function() { ?>
 			</div>
 
 			<div class="col-12 col-lg-2 order-1 order-lg-2">
+
 				<div class="card border-secondary mb-3" style="text-align: center;">
 					<div class="card-header">
 						<h5>Releasing Soon</h5></div>
@@ -114,6 +115,10 @@ $Header->appendRawHeader(function() { ?>
 						</table>
 					</div>
 				</div>
+
+				<iframe src="https://discordapp.com/widget?id=360271801315491840&theme=light" width="100%" height="500"
+					allowtransparency="true" frameborder="0"></iframe>
+
 			</div>
 
 		</div>
