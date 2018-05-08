@@ -887,7 +887,19 @@ function InsertGameImages($user_id, $game_id, $type, $filename, $side = NULL)
 		$this->InsertUserEdits($user_id, $game_id, $type, $filename);
 	}
 	return ($dbh->inTransaction() || $res);
+}
+function DeleteGame($user_id, $game_id)
+{
+	$dbh = $this->database->dbh;
 
+	$sth = $dbh->prepare("DELETE FROM games WHERE id=:game_id;");
+	$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
+	$res = $sth->execute();
+	if($dbh->inTransaction() || $res)
+	{
+		$this->InsertUserEdits($user_id, $game_id, "game", "[REMOVED]");
+	}
+	return ($dbh->inTransaction() || $res);
 }
 
 ?>

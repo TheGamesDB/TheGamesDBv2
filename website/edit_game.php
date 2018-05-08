@@ -147,6 +147,38 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 
 				e.preventDefault(); // avoid to execute the actual submit of the form.
 			});
+
+			$("#game_delete").click(function(e)
+			{
+				<?php if($_user->hasPermission('m_delete_games')): ?>
+				if (confirm('Deleting game record is irreversible, are you sure you want to continue?'))
+				{
+					var url = "./actions/delete_game.php";
+					$.ajax({
+						type: "POST",
+						url: url,
+						data: { game_id: <?= $Game->id ?> },
+						success: function(data)
+						{
+							if(isJSON(data))
+							{
+								var obj = JSON.parse(data);
+								alert(data)
+								return;
+							}
+							else
+							{
+								alert("Error: Something Unexpected Happened.")
+								return;
+							}
+						}
+					});
+					e.preventDefault();
+				}
+				<?php else :?>
+				alert("you dont have permission to delete the game, please report it instead, thanks.");
+				<?php endif ?>
+			});
 		});
 	</script>
 	<style type="text/css">
@@ -551,6 +583,9 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 
 							<div class="card-body">
 								<p><button type="submit" class="btn btn-primary btn-block">Save</button></p>
+								<?php if($_user->hasPermission('m_delete_games')): ?>
+								<p><button id="game_delete" type="button" class="btn btn-danger btn-block">Delete</button></p>
+								<?php endif; ?>
 								<p><a href="/game.php?id=<?= $Game->id ?>" class="btn btn-default btn-block">Back</a></p>
 							</div>
 						</div>
