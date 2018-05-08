@@ -928,7 +928,7 @@ class TGDB
 			{
 				$game_id = $dbh->lastInsertId();
 				$dbh->beginTransaction();
-				$this->InsertUserEdits($user_id, $game_id, 'games', '[NEW]');
+				$this->InsertUserEdits($user_id, $game_id, 'game', '[NEW]');
 
 				$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Youtube'];
 				foreach($GameArrayFields as $key)
