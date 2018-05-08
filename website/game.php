@@ -154,36 +154,35 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Front Cover" href="<?= $box_cover->front->original ?>">
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
-								<?php if(!empty($box_cover->back)): ?>
+							<?php if(!empty($box_cover->back)): ?>
 							<a class="fancybox-thumb" style="display:none;" data-fancybox="cover" data-caption="Back Cover"
 								href="<?= $box_cover->back->original ?>" data-thumb="<?= $box_cover->back->thumbnail ?>"/>
 							</a>
-								<?php endif; ?>
+							<?php endif; ?>
 								
 							<?php elseif(!empty($box_cover->back)): ?>
 							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->front->original ?>">
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
-								<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->GameTitle, 'boxart'); ?>"/>
+							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->GameTitle, 'boxart'); ?>"/>
 							<?php endif; ?>
-							</a>
-								<div class="card-body">
-								<?php if(false) : ?>
-									<button type="button" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection <span class="glyphicon glyphicon-ok"></span></button>
-								<?php else: ?>
-									<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
-								<?php endif;?>
+							<div class="card-body">
+							<?php if(false) : ?>
+								<button type="button" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection <span class="glyphicon glyphicon-ok"></span></button>
+							<?php else: ?>
+								<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
+							<?php endif;?>
 							</div>
 							<div class="card-body">
 								<?php if (!empty($Platform)) : ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<?php endif; if (!empty($Platform)) : ?>
+								<?php endif; if (!empty($Developer)) : ?>
 								<p>Developer: <?= $Game->Developer; ?></p>
 								<?php endif; if (!empty($Game->Publisher)) : ?>
 								<p>Publisher: <?= $Game->Publisher; ?></p>
-								<?php endif; if (!empty($Game->ReleaseDate)) : ?>
-								<p>ReleaseDate: <?= $Game->ReleaseDate ;?></p>
+								<?php endif; if (!empty($Game->ReleaseDateRevised)) : ?>
+								<p>ReleaseDateRevised: <?= $Game->ReleaseDateRevised ;?></p>
 								<?php endif; if (!empty($Game->PlatformDetails)) : ?>
 								<p>Platform: <?= $Game->PlatformDetails->name; ?></p>
 								<?php endif; if (!empty($Game->Players)) : ?>
@@ -250,21 +249,6 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								</div>
 							</div>
 						</div>
-						<?php if(isset($kitsu) && $kitsu->isValid()) : ?>
-						<br/>
-						<div class="card border-success">
-							<div class="panel panel-default">
-								<div class="card-header">
-									<a data-toggle="collapse" href="#collapse1">Kitsu panel</a>
-								</div>
-								<div  class="ok">
-									<div id="collapse1" class="card-body collapse" style="background:white;">
-										<pre><?php print_r($kitsu->getJSON()); ?></pre>
-									</div>
-								</div>
-							</div>
-						</div>
-						<?php endif;?>
 					</div>
 				</div>
 
@@ -327,6 +311,24 @@ $Header->appendRawHeader(function() { global $Game; ?>
 				<?php endif; ?>
 
 			</div>
+
+			<?php if($_user->isLoggedIn() && $_user->hasPermission('u_edit_games')) : ?>
+			<div class="col-12 col-md-3 col-lg-2" style="padding-bottom:10px; text-align: center;">
+				<div class="row">
+					<div class="col">
+						<div class="card border-primary">
+							<div class="card-header">
+								<legend>Control Panel</legend>
+							</div>
+							<div class="card-body">
+							<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->GameTitle]") ?>" class="btn btn-primary btn-block">Report</a></p>
+							<p><a href="/edit_game.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">Edit</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>
 
 		</div>
 	</div>

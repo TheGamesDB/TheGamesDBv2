@@ -36,17 +36,19 @@ if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);
 }
-
 foreach($list as $Game)
 {
 	$IDs[] = $Game->id;
 }
-$covers = $API->GetGameBoxartByID($IDs, 0, 40);
-foreach($list as $Game)
+if(isset($IDs) && !empty($IDs))
 {
-	if(isset($covers[$Game->id]))
+	$covers = $API->GetGameBoxartByID($IDs, 0, 40);
+	foreach($list as $Game)
 	{
-		$Game->boxart = $covers[$Game->id];
+		if(isset($covers[$Game->id]))
+		{
+			$Game->boxart = $covers[$Game->id];
+		}
 	}
 }
 $Header = new HEADER();
@@ -71,7 +73,7 @@ $Header->setTitle("TGDB - Browser - Game By Platform");
 		</div>
 
 		<div class="row row-eq-height justify-content-center" style="margin:10px;">
-		<?php foreach($list as $Game) : ?>
+		<?php if(isset($list) && !empty($list)) : foreach($list as $Game) : ?>
 			<div class="col-6 col-md-2">
 				<div style="padding-bottom:12px; height: 100%">
 					<a href="./game.php?id=<?= $Game->id ?>">
@@ -81,13 +83,21 @@ $Header->setTitle("TGDB - Browser - Game By Platform");
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
 								<p><?= $Game->GameTitle ?></p>
-								<p><?= $Game->ReleaseDate ?></p>
+								<p><?= $Game->ReleaseDateRevised ?></p>
 							</div>
 						</div>
 					</a>
 				</div>
 			</div>
-		<?php endforeach; ?>
+		<?php endforeach; else : ?>
+			<div class="col-12 col-md-10">
+				<div class="card">
+					<div class="card-body">
+						<h3>No associated games.</h3>
+					</div>
+				</div>
+			</div>
+		<?php endif; ?>
 		</div>
 		<?= PaginationUtils::Create($has_next_page); ?>
 	</div>

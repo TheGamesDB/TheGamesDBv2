@@ -43,14 +43,18 @@ foreach($recent as $Game)
 {
 	$IDs[] = $Game->id;
 }
-$covers = $API->GetGameBoxartByID($IDs, 0, 9999, 'boxart');
-foreach($recent as $Game)
+if(isset($IDs) && !empty($IDs))
 {
-	if(isset($covers[$Game->id]))
+	$covers = $API->GetGameBoxartByID($IDs, 0, 9999, 'boxart');
+	foreach($recent as $Game)
 	{
-		$Game->boxart = $covers[$Game->id];
+		if(isset($covers[$Game->id]))
+		{
+			$Game->boxart = $covers[$Game->id];
+		}
 	}
 }
+
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browse - Platforms");
 $Header->appendRawHeader(function()

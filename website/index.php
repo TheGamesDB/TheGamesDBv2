@@ -7,6 +7,10 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 $API = TGDB::getInstance();
 $soon = $API->GetGamesByDate(date("d/m/Y"), 0, 5, array('AFTER' => true), "ReleaseDateRevised", 'ASC');
 $recent = $API->GetGamesByDate(date("d/m/Y"), 0, 6, array('BEFORE' => true), "ReleaseDateRevised", 'DESC');
+foreach($soon as $Game)
+{
+	$PlatformIDs[] = $Game->Platform;
+}
 foreach($recent as $Game)
 {
 	$IDs[] = $Game->id;
@@ -89,6 +93,7 @@ $Header->appendRawHeader(function() { ?>
 			</div>
 
 			<div class="col-12 col-lg-2 order-1 order-lg-2">
+
 				<div class="card border-secondary mb-3" style="text-align: center;">
 					<div class="card-header">
 						<h5>Releasing Soon</h5></div>
@@ -110,6 +115,10 @@ $Header->appendRawHeader(function() { ?>
 						</table>
 					</div>
 				</div>
+
+				<iframe src="https://discordapp.com/widget?id=360271801315491840&theme=light" width="100%" height="500"
+					allowtransparency="true" frameborder="0"></iframe>
+
 			</div>
 
 		</div>

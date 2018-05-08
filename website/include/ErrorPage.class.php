@@ -13,6 +13,8 @@ class ErrorPage
 	static $MSG_INVALID_PARAM_ERROR = "Invalid Parameters were provided.";
 	static $MSG_PLEASE_GO_BACK_OR_TRY_AGAIN_ERROR = "Please go back or try again";
 	static $MSG_REMOVED_GAME_INVALID_PARAM_ERROR = "The game you're looking for does not exist or has been removed.";
+	static $MSG_NOT_LOGGED_IN_EDIT_ERROR = "Please login to be able to edit this page.";
+	static $MSG_NO_PERMISSION_TO_EDIT_ERROR = "You dont currently have permission to edit this page.";
 
 	private $_error_header = "Error Has Occured";
 	private $_error_msg = "Please go back or try again";
