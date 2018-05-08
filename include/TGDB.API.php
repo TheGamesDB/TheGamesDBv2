@@ -754,6 +754,18 @@ class TGDB
 		}
 		return isset($this->GamesTblCols[$name]);
 	}
+
+	/* Everything belowis not planned to be exposed through external API */
+	function InsertUserEdits($user_id, $game_id, $type, $diff, $subtype = '')
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT INTO user_edits (users_id, games_id, type, diff) VALUES (:users_id, :games_id, :type, :diff);");
+		$sth->bindValue(':users_id', $user_id, PDO::PARAM_INT);
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':type', $type, PDO::PARAM_INT);
+		$sth->bindValue(':diff', $diff, PDO::PARAM_STR);
+		return $sth->execute();
+	}
 }
 
 
