@@ -72,7 +72,8 @@ $Header->appendRawHeader(function() { ?>
 							var obj = JSON.parse(data);
 							if(obj.code == 1)
 							{
-								windows.location.href="<?= CommonUtils::$WEBSITE_BASE_URL ?>/game.php?id=" + obj.msg;
+								alert(data)
+								window.location.href="<?= CommonUtils::$WEBSITE_BASE_URL ?>/game.php?id=" + obj.msg;
 								return;
 							}
 							alert(data)

@@ -36,7 +36,10 @@ if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);
 }
-
+foreach($list as $Game)
+{
+	$IDs[] = $Game->id;
+}
 if(isset($IDs) && !empty($IDs))
 {
 	$covers = $API->GetGameBoxartByID($IDs, 0, 40);

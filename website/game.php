@@ -154,31 +154,30 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Front Cover" href="<?= $box_cover->front->original ?>">
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
-								<?php if(!empty($box_cover->back)): ?>
+							<?php if(!empty($box_cover->back)): ?>
 							<a class="fancybox-thumb" style="display:none;" data-fancybox="cover" data-caption="Back Cover"
 								href="<?= $box_cover->back->original ?>" data-thumb="<?= $box_cover->back->thumbnail ?>"/>
 							</a>
-								<?php endif; ?>
+							<?php endif; ?>
 								
 							<?php elseif(!empty($box_cover->back)): ?>
 							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->front->original ?>">
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
-								<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->GameTitle, 'boxart'); ?>"/>
+							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->GameTitle, 'boxart'); ?>"/>
 							<?php endif; ?>
-							</a>
-								<div class="card-body">
-								<?php if(false) : ?>
-									<button type="button" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection <span class="glyphicon glyphicon-ok"></span></button>
-								<?php else: ?>
-									<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
-								<?php endif;?>
+							<div class="card-body">
+							<?php if(false) : ?>
+								<button type="button" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection <span class="glyphicon glyphicon-ok"></span></button>
+							<?php else: ?>
+								<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
+							<?php endif;?>
 							</div>
 							<div class="card-body">
 								<?php if (!empty($Platform)) : ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<?php endif; if (!empty($Platform)) : ?>
+								<?php endif; if (!empty($Developer)) : ?>
 								<p>Developer: <?= $Game->Developer; ?></p>
 								<?php endif; if (!empty($Game->Publisher)) : ?>
 								<p>Publisher: <?= $Game->Publisher; ?></p>
