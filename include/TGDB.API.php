@@ -902,4 +902,45 @@ function DeleteGame($user_id, $game_id)
 	return ($dbh->inTransaction() || $res);
 }
 
+function InsertGame($user_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher)
+{
+	$game_id = 0;
+	$dbh = $this->database->dbh;
+	{
+		$sth = $dbh->prepare("INSERT INTO games(GameTitle, Overview, ReleaseDateRevised, ReleaseDate, Players, coop, Developer, Publisher, Youtube, Alternates)
+		values (:GameTitle, :Overview, :ReleaseDateRevised, :ReleaseDate, :Players, :coop, :Developer, :Publisher, :YouTube, :Alternates)");
+		$sth->bindValue(':GameTitle', htmlspecialchars($GameTitle), PDO::PARAM_STR);
+		$sth->bindValue(':Overview', htmlspecialchars($Overview), PDO::PARAM_STR);
+		$sth->bindValue(':ReleaseDateRevised', $ReleaseDateRevised, PDO::PARAM_STR);
+		$date = explode('-', $ReleaseDateRevised);
+		$sth->bindValue(':ReleaseDate', "$date[1]/$date[2]/$date[0]", PDO::PARAM_STR);
+		$sth->bindValue(':Players', $Players, PDO::PARAM_INT);
+		$sth->bindValue(':YouTube', htmlspecialchars($Youtube), PDO::PARAM_STR);
+		$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
+		$sth->bindValue(':Alternates', "", PDO::PARAM_STR);
+
+		// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
+		// it will also mean, we will be able to standardise devs/publishers names
+		// this will allow their selection from a menu as oppose to being provided by the user
+		$sth->bindValue(':Developer', htmlspecialchars($Developer), PDO::PARAM_STR);
+		$sth->bindValue(':Publisher', htmlspecialchars($Publisher), PDO::PARAM_STR);
+
+		if($sth->execute())
+		{
+			$game_id = $dbh->lastInsertId();
+			$dbh->beginTransaction();
+			$this->InsertUserEdits($user_id, $game_id, 'games', '[NEW]');
+
+			$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Youtube'];
+			foreach($GameArrayFields as $key)
+			{
+				$diff = htmlspecialchars($$key);
+				$this->InsertUserEdits($user_id, $game_id, $key, $diff);
+			}
+			$dbh->commit();
+		}
+	}
+	return $game_id;
+}
+
 ?>

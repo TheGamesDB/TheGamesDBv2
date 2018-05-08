@@ -119,6 +119,7 @@ class HEADER
 					</a>
 					<div class="dropdown-menu">
 						<a class="dropdown-item" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $_user->GetUserID() ?>">Forum Profile</a>
+						<a class="dropdown-item" href="/add_game.php">Add New Game</a>
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $_user->GetUserSessionID()); ?>">Logout</a>
 					</div>
