@@ -249,21 +249,6 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								</div>
 							</div>
 						</div>
-						<?php if(isset($kitsu) && $kitsu->isValid()) : ?>
-						<br/>
-						<div class="card border-success">
-							<div class="panel panel-default">
-								<div class="card-header">
-									<a data-toggle="collapse" href="#collapse1">Kitsu panel</a>
-								</div>
-								<div  class="ok">
-									<div id="collapse1" class="card-body collapse" style="background:white;">
-										<pre><?php print_r($kitsu->getJSON()); ?></pre>
-									</div>
-								</div>
-							</div>
-						</div>
-						<?php endif;?>
 					</div>
 				</div>
 
