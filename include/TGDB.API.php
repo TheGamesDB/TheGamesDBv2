@@ -768,5 +768,126 @@ class TGDB
 	}
 }
 
+function UpdateGame($user_id, $game_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher)
+{
+	$dbh = $this->database->dbh;
+	{
+		$sth = $dbh->prepare("Select * FROM games WHERE id = :game_id");
+		$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$Game = $sth->fetch(PDO::FETCH_ASSOC);
+		}
+		if(!isset($Game) || empty($Game))
+		{
+			return false;
+		}
+	}
+
+	{
+		$dbh->beginTransaction();
+
+		$sth = $dbh->prepare("UPDATE games SET GameTitle=:GameTitle, Overview=:Overview, ReleaseDateRevised=:ReleaseDateRevised, ReleaseDate=:ReleaseDate, Players=:Players, coop=:coop,
+		Developer=:Developer, Publisher=:Publisher, Youtube=:YouTube WHERE id=:game_id");
+		$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':GameTitle', htmlspecialchars($GameTitle), PDO::PARAM_STR);
+		$sth->bindValue(':Overview', htmlspecialchars($Overview), PDO::PARAM_STR);
+		$sth->bindValue(':ReleaseDateRevised', $ReleaseDateRevised, PDO::PARAM_STR);
+		$date = explode('-', $ReleaseDateRevised);
+		$sth->bindValue(':ReleaseDate', "$date[1]/$date[2]/$date[0]", PDO::PARAM_STR);
+		$sth->bindValue(':Players', $Players, PDO::PARAM_INT);
+		$sth->bindValue(':YouTube', htmlspecialchars($Youtube), PDO::PARAM_STR);
+		$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
+
+		// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
+		// it will also mean, we will be able to standardise devs/publishers names
+		// this will allow their selection from a menu as oppose to being provided by the user
+		$sth->bindValue(':Developer', htmlspecialchars($Developer), PDO::PARAM_STR);
+		$sth->bindValue(':Publisher', htmlspecialchars($Publisher), PDO::PARAM_STR);
+
+		$sth->execute();
+		{
+			foreach($Game as $key => $value)
+			{
+				if(isset($$key) && htmlspecialchars($$key) != $value)
+				{
+					if($key == 'Overview')
+					{
+						$diff = xdiff_string_diff($Game['Overview'], htmlspecialchars($Overview), 1);
+						if(empty($diff))
+						{
+							continue;
+						}
+					}
+					else
+					{
+						$diff = htmlspecialchars($$key);
+					}
+					$this->InsertUserEdits($user_id, $game_id, $key, $diff);
+				}
+			}
+		}
+		return $dbh->commit();
+	}
+}
+
+function DeleteGameImages($user_id, $game_id, $id, $type)
+{
+	$dbh = $this->database->dbh;
+
+	$sth = $dbh->prepare("DELETE FROM banners WHERE id=:id;");
+	$sth->bindValue(':id', $id, PDO::PARAM_INT);
+	$res = $sth->execute();
+	if($dbh->inTransaction() || $res)
+	{
+		$this->InsertUserEdits($user_id, $game_id, $type, "[REMOVED]");
+	}
+	return ($dbh->inTransaction() || $res);
+}
+
+function DeleteAllGameImages($user_id, $game_id)
+{
+	$dbh = $this->database->dbh;
+
+	$sth = $dbh->prepare("DELETE FROM banners WHERE keyvalue=:game_id;");
+	$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
+	$res = $sth->execute();
+	if($dbh->inTransaction() || $res)
+	{
+		$this->InsertUserEdits($user_id, $game_id, "all_images", "[REMOVED]");
+	}
+	return ($dbh->inTransaction() || $res);
+}
+
+function DeleteAndInsertGameImages($user_id, $id, $game_id, $type, $filename, $side = NULL)
+{
+	$dbh = $this->database->dbh;
+	$dbh->beginTransaction();
+	$this->DeleteGameImages($user_id, $game_id, $id, $type);
+	$this->InsertGameImages($user_id, $game_id, $type, $filename, $side);
+	return $dbh->commit();
+
+}
+
+function InsertGameImages($user_id, $game_id, $type, $filename, $side = NULL)
+{
+	$dbh = $this->database->dbh;
+
+	$sth = $dbh->prepare("INSERT INTO banners (keyvalue, keytype, side, filename, userid) VALUES (:keyvalue, :keytype, :side, :filename, :user_id); ");
+	$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+	$sth->bindValue(':keyvalue', $game_id, PDO::PARAM_INT);
+	$sth->bindValue(':keytype', $type, PDO::PARAM_STR);
+	$sth->bindValue(':side', $side, PDO::PARAM_STR);
+	$sth->bindValue(':filename', $filename, PDO::PARAM_STR);
+	$res = $sth->execute();
+
+	if($dbh->inTransaction() || $res)
+	{
+		$this->InsertUserEdits($user_id, $game_id, $type, $filename);
+	}
+	return ($dbh->inTransaction() || $res);
+
+}
 
 ?>

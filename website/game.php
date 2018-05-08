@@ -328,6 +328,24 @@ $Header->appendRawHeader(function() { global $Game; ?>
 
 			</div>
 
+			<?php if($_user->isLoggedIn() && $_user->hasPermission('u_edit_games')) : ?>
+			<div class="col-12 col-md-3 col-lg-2" style="padding-bottom:10px; text-align: center;">
+				<div class="row">
+					<div class="col">
+						<div class="card border-primary">
+							<div class="card-header">
+								<legend>Control Panel</legend>
+							</div>
+							<div class="card-body">
+							<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->GameTitle]") ?>" class="btn btn-primary btn-block">Report</a></p>
+							<p><a href="/edit_game.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">Edit</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>
+
 		</div>
 	</div>
 
