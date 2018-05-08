@@ -29,6 +29,10 @@ foreach($GameArrayFields as $field)
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
 	}
+	if(empty($_REQUEST[$field]) && ($field != 'Youtube' && $field != 'Overview' && $field != 'Publisher'))
+	{
+		returnJSONAndDie(-1, "field is empty: ($field).");
+	}
 }
 
 $date = explode('-', $_REQUEST['ReleaseDateRevised']);
