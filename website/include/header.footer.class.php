@@ -123,6 +123,10 @@ class HEADER
 						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $_user->GetUserSessionID()); ?>">Logout</a>
 					</div>
 				</li>
+				<?php else : ?>
+				<li class="nav-item mr-0">
+					<a class="nav-link" href="/login.php">Log in</a>
+				</li>
 				<?php endif; ?>
 			</ul>
 		</div>
