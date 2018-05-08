@@ -182,8 +182,8 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								<p>Developer: <?= $Game->Developer; ?></p>
 								<?php endif; if (!empty($Game->Publisher)) : ?>
 								<p>Publisher: <?= $Game->Publisher; ?></p>
-								<?php endif; if (!empty($Game->ReleaseDate)) : ?>
-								<p>ReleaseDate: <?= $Game->ReleaseDate ;?></p>
+								<?php endif; if (!empty($Game->ReleaseDateRevised)) : ?>
+								<p>ReleaseDateRevised: <?= $Game->ReleaseDateRevised ;?></p>
 								<?php endif; if (!empty($Game->PlatformDetails)) : ?>
 								<p>Platform: <?= $Game->PlatformDetails->name; ?></p>
 								<?php endif; if (!empty($Game->Players)) : ?>

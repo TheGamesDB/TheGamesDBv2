@@ -25,7 +25,7 @@ class TGDB
 
 	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
 
 		if(!empty($fields))
 		{
@@ -107,7 +107,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
 
 		if(!empty($fields))
 		{
@@ -141,7 +141,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
 
 		if(!empty($fields))
 		{
@@ -190,7 +190,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
 
 		if(!empty($fields))
 		{
@@ -265,7 +265,7 @@ class TGDB
 
 	function GetGamesByDateByPlatform($IDs, $date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
 
 		if(!empty($fields))
 		{
@@ -334,7 +334,7 @@ class TGDB
 
 	function GetAllGames($offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
 
 		if(!empty($fields))
 		{
@@ -375,7 +375,7 @@ class TGDB
 
 	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, Platform ";
+		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
 
 		if(!empty($fields))
 		{

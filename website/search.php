@@ -101,7 +101,7 @@ $Header->setTitle("TGDB - Search");
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
 								<p><?= $Game->GameTitle ?></p>
-								<p><?= $Game->ReleaseDate ?></p>
+								<p><?= $Game->ReleaseDateRevised ?></p>
 							</div>
 						</div>
 					</a>
