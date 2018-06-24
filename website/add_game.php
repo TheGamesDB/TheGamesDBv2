@@ -56,7 +56,7 @@ $Header->appendRawHeader(function() { ?>
 
 		$(document).ready(function()
 		{
-			$("#game_add").submit(function(e)
+			var add_game = function(e)
 			{
 
 				var url = "./actions/add_game.php";
@@ -82,6 +82,48 @@ $Header->appendRawHeader(function() { ?>
 						else
 						{
 							alert("Error: Something Unexpected Happened.")
+							return;
+						}
+					}
+				});
+
+				e.preventDefault();
+			};
+			$("#game_add").submit(function(e)
+			{
+				var url = "./actions/game_search_count.php";
+				$.ajax({
+					type: "POST",
+					url: url,
+					data: $("[name='GameTitle']").serialize(),
+					success: function(data)
+					{
+						if(isJSON(data))
+						{
+							var obj = JSON.parse(data);
+							if(obj.code == 1)
+							{
+								if(obj.msg == 0)
+								{
+									add_game();
+								}
+								else if(obj.msg > 0)
+								{
+									if(confirm(obj.msg + " Other games were found with similair title, please ensure that this title has not been added yet, Thanks.\nare you sure you want to continue?"))
+									{
+										add_game();
+									}
+								}
+								else
+								{
+									alert("Error: Something Unexpected Happened.");
+								}
+							}
+							return;
+						}
+						else
+						{
+							alert("Error: Something Unexpected Happened.");
 							return;
 						}
 					}
