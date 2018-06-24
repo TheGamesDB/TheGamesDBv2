@@ -29,9 +29,10 @@ class APIAccessDB
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare("Select APIU.*, AA.monthly_allowance, sum(AMC.count) as count FROM apiusers APIU
 		LEFT JOIN api_allowance_level AA ON AA.id = APIU.api_allowance_level_id
-		LEFT JOIN api_month_counter AMC ON AMC.apiusers_id = APIU.id AND AMC.date >= APIU.last_refresh_date AND AMC.is_extra = 0
+		LEFT JOIN api_month_counter AMC ON AMC.IP = INET6_ATON(:IP) AND AMC.apiusers_id = APIU.id AND AMC.date >= APIU.last_refresh_date AND AMC.is_extra = 0
 		WHERE apikey=:apikey GROUP BY APIU.id;");
 		$sth->bindValue(':apikey', $key, PDO::PARAM_STR);
+		$sth->bindValue(':IP', $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
 
 		if($sth->execute())
 		{
@@ -59,11 +60,12 @@ class APIAccessDB
 				$sth->bindValue(':id', $User->id, PDO::PARAM_INT);
 				$sth->execute();
 			}
-			$sth = $dbh->prepare("INSERT INTO api_month_counter (apiusers_id, count, is_extra, date)
-			VALUES (:id, 1, :is_extra, :date) ON DUPLICATE KEY UPDATE count = count + 1;");
+			$sth = $dbh->prepare("INSERT INTO api_month_counter (apiusers_id, count, is_extra, date, IP)
+			VALUES (:id, 1, :is_extra, :date, INET6_ATON(:IP)) ON DUPLICATE KEY UPDATE count = count + 1;");
 			$sth->bindValue(':date', date('Y-m-d'));
 			$sth->bindValue(':id', $User->id, PDO::PARAM_INT);
 			$sth->bindValue(':is_extra', $is_extra, PDO::PARAM_INT);
+			$sth->bindValue(':IP', $_SERVER['REMOTE_ADDR'], PDO::PARAM_STR);
 			$sth->execute();
 			$dbh->commit();
 		}
