@@ -22,7 +22,7 @@ else
 }
 
 
-$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Youtube'];
+$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Platform', 'Youtube'];
 foreach($GameArrayFields as $field)
 {
 	if(!isset($_REQUEST[$field]))
@@ -49,7 +49,7 @@ try
 
 	$API = TGDB::getInstance();
 	$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['GameTitle'],  $_REQUEST['Overview'], $_REQUEST['Youtube'], $_REQUEST['ReleaseDateRevised'],
-		$_REQUEST['Players'], $_REQUEST['coop'], $_REQUEST['Developer'], $_REQUEST['Publisher']);
+		$_REQUEST['Players'], $_REQUEST['coop'], $_REQUEST['Developer'], $_REQUEST['Publisher'], $_REQUEST['Platform']);
 
 	if($res)
 	{

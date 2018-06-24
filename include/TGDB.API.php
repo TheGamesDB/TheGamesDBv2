@@ -901,13 +901,13 @@ class TGDB
 		return ($dbh->inTransaction() || $res);
 	}
 
-	function InsertGame($user_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher)
+	function InsertGame($user_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher, $Platform)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
 		{
-			$sth = $dbh->prepare("INSERT INTO games(GameTitle, Overview, ReleaseDateRevised, ReleaseDate, Players, coop, Developer, Publisher, Youtube, Alternates)
-			values (:GameTitle, :Overview, :ReleaseDateRevised, :ReleaseDate, :Players, :coop, :Developer, :Publisher, :YouTube, :Alternates)");
+			$sth = $dbh->prepare("INSERT INTO games(GameTitle, Overview, ReleaseDateRevised, ReleaseDate, Players, coop, Developer, Publisher, Youtube, Alternates, Platform)
+			values (:GameTitle, :Overview, :ReleaseDateRevised, :ReleaseDate, :Players, :coop, :Developer, :Publisher, :YouTube, :Alternates, :Platform)");
 			$sth->bindValue(':GameTitle', htmlspecialchars($GameTitle), PDO::PARAM_STR);
 			$sth->bindValue(':Overview', htmlspecialchars($Overview), PDO::PARAM_STR);
 			$sth->bindValue(':ReleaseDateRevised', $ReleaseDateRevised, PDO::PARAM_STR);
@@ -917,6 +917,7 @@ class TGDB
 			$sth->bindValue(':YouTube', htmlspecialchars($Youtube), PDO::PARAM_STR);
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
 			$sth->bindValue(':Alternates', "", PDO::PARAM_STR);
+			$sth->bindValue(':Platform', $Platform, PDO::PARAM_INT);
 
 			// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
 			// it will also mean, we will be able to standardise devs/publishers names
