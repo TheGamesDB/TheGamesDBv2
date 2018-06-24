@@ -111,19 +111,20 @@ class HEADER
 			</form>
 			<ul class="navbar-nav my-2 my-lg-0">
 				<?php if($_user->isLoggedIn()) : ?>
-				<li class="nav-item mr-0 dropdown">
-					<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
-						style="padding-bottom: 10px;"><img width="25px" src="<?= $_user->GetAvatar() ?>"
-						style="border-radius: 50%;"> <?= $_user->GetUsername() ?> <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+				<div class="nav-item mr-0 dropdown">
+					<button class="btn btn-link dropdown-toggle font-weight-bold" style="color:white;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<img width="25px" src="<?= $_user->GetAvatar() ?>" style="border-radius: 50%;">
+						<?= $_user->GetUsername() ?>
+						<span class="glyphicon glyphicon-star" aria-hidden="true"></span>
 						<span class="caret"></span>
-					</a>
-					<div class="dropdown-menu">
+					</button>
+					<div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
 						<a class="dropdown-item" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $_user->GetUserID() ?>">Forum Profile</a>
 						<a class="dropdown-item" href="/add_game.php">Add New Game</a>
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $_user->GetUserSessionID()); ?>">Logout</a>
 					</div>
-				</li>
+				</div>
 				<?php else : ?>
 				<li class="nav-item mr-0">
 					<a class="nav-link" href="/login.php">Log in</a>
