@@ -62,6 +62,7 @@ $app->group('/Games', function()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 
@@ -115,6 +116,7 @@ $app->group('/Games', function()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 
@@ -163,6 +165,7 @@ $app->group('/Games', function()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 		if(count($list) > 0)
@@ -266,6 +269,7 @@ $app->group('/Platforms', function()
 		$API = TGDB::getInstance();
 		$list = $API->GetPlatformsList($fields);
 
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 		if(isset($options['boxart']))
@@ -297,6 +301,7 @@ $app->group('/Platforms', function()
 		$API = TGDB::getInstance();
 		$list = $API->GetPlatforms($IDs, $fields);
 
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 		if(isset($options['boxart']))
@@ -335,6 +340,7 @@ $app->group('/Platforms', function()
 		$API = TGDB::getInstance();
 		$list = $API->SearchPlatformByName($searchTerm, $fields);
 
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 		if(isset($options['boxart']))
