@@ -11,6 +11,9 @@ require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
+require_once __DIR__ . "/include/login.phpbb.class.php";
+
+$_user = phpBBuser::getInstance();
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
@@ -32,6 +35,10 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 		if(!empty($covers))
 		{
 			$Game->boxart = $covers[$_REQUEST['id']];
+		}
+		if($_user->isLoggedIn())
+		{
+			$Game->is_booked = $API->isUserGameBookmarked($_user->GetUserID(), $Game->id);
 		}
 	}
 	$Platform = $API->GetPlatforms($Game->platform, array("icon" => true, "overview" => true, "developer" => true));
@@ -91,6 +98,47 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 				return "<?= $Game->game_title ?>";
 			};
 			$('[data-fancybox]').fancybox(fancyboxOpts);
+
+
+			$('[data-toggle="bookmark"]').click(function()
+			{
+				<?php if ($_user->isLoggedIn()) : ?>
+				$(this).append('<i class="fa fa-spinner fa-pulse"></i>');
+				$(this).attr("disabled", true);
+				$.ajax({
+					method: "POST",
+					url: "/actions/add_game_bookmark.php",
+					data: {
+						games_id: <?= $Game->id ?>,
+						is_booked: $('[data-toggle="bookmark"]').data("is-booked"),
+					 }
+				})
+					.done(function( msg ) {
+					$('[data-toggle="bookmark"]').attr("disabled", false);
+					$('[data-toggle="bookmark"]').find('.fa').remove();
+					var response = JSON.parse(msg);
+					if (response['code'] == 0 )
+					{
+						if (response['msg'] == 1)
+						{
+							$('[data-toggle="bookmark"]')[0].innerHTML='Remove From Collection';
+							$('[data-toggle="bookmark"]').removeClass( "btn-secondary" ).addClass( "btn-danger" );
+							$('[data-toggle="bookmark"]').data("is-booked", 0);
+						}
+						else
+						{
+							$('[data-toggle="bookmark"]')[0].innerHTML='Add To Collection';
+							$('[data-toggle="bookmark"]').removeClass( "btn-danger" ).addClass( "btn-secondary" );
+							$('[data-toggle="bookmark"]').data("is-booked", 1);
+						}
+					} else {
+						alert("Bookmark failed, refresh page and try again.");
+					}
+				});
+				<?php else : ?>
+				alert("You must login to use this feature.");
+				<?php endif; ?>
+			});
 		});
 	</script>
 	<style type="text/css">
@@ -172,10 +220,10 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
 							<?php endif; ?>
 							<div class="card-body">
-							<?php if(false) : ?>
-								<button type="button" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection <span class="glyphicon glyphicon-ok"></span></button>
+							<?php if(isset($Game->is_booked) && $Game->is_booked == 1) : ?>
+								<button type="button" data-is-booked="0" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection</button>
 							<?php else: ?>
-								<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
+								<button type="button" data-is-booked="1" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							<?php endif;?>
 							</div>
 							<div class="card-body">

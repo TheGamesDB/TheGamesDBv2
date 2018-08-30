@@ -1285,6 +1285,52 @@ class TGDB
 	}
 
 	/* Everything belowis not planned to be exposed through external API */
+
+	function InsertUserGameBookmark($users_id, $games_id, $is_booked)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, is_booked)
+		VALUES (:users_id, :games_id, :is_booked)
+		ON DUPLICATE KEY UPDATE is_booked = :is_booked2");
+		$sth->bindValue(':games_id', $games_id);
+		$sth->bindValue(':users_id', $users_id);
+		$sth->bindValue(':is_booked', $is_booked);
+		$sth->bindValue(':is_booked2', $is_booked);
+
+		return ($sth->execute());
+	}
+
+	function GetUserBookmarkedGames($users_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth->bindValue(':users_id', $users_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function isUserGameBookmarked($users_id, $games_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select is_booked FROM `user_games` where users_id=:users_id AND games_id=:games_id AND is_booked=1");
+		$sth->bindValue(':games_id', $games_id);
+		$sth->bindValue(':users_id', $users_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetch(PDO::FETCH_ASSOC);
+			return !empty($res) ? 1 : 0;
+		}
+		return 0;
+	}
+
 	function GetGameCount($searchTerm)
 	{
 		$dbh = $this->database->dbh;
