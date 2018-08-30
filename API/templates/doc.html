@@ -36,7 +36,6 @@
     <div></div>
 
     <div class="container">
-
         <div class="row">
             <div class="col">
 
@@ -69,47 +68,47 @@
                     <div class="card-body">
                         <p class="card-text">This API will return a list or a single game entry based the provided parameter(s).</p>
                         <p class="card-text">This API call expects `name`, and `apikey`, while `include` and `fields` are optional.</p>
+                        <p class="card-text">This API call can also take argument `filter[platform]=id,id2` to return search for specific platform(s)</p>
                         <p class="card-text">Please look at "`/Games/*` Common" section below </p>
                     </div>
                 </div>
-
+                
                 <div class="card" style="margin-bottom:10px;">
                     <div class="card-header">
-                        /Games/Updates?time=minutes
-                    </div>
-                    <div class="card-body">
-                        <p class="card-text">This API will return a list or a single game entry based the provided parameter(s).</p>
-                        <p class="card-text">This API call expects `time`, and `apikey`, while `include` and `fields` are optional.</p>
-                        <p class="card-text">Please look at "`/Games/*` Common" section below </p>
-                    </div>
-                </div>
-
-                <div class="card" style="margin-bottom:10px;">
-                    <div class="card-header">
-                        `/Games/*` Common (excluding `/Games/Boxart`)
+                        `/Games/*` Common (`/Games/Updates`)
                     </div>
                     <div class="card-body">
                         <p class="card-text">This API will return a list or a single game entry based on the provided parameter(s).</p>
                         <p class="card-text">This API calls can expects `name`, `id`, and `apikey`, while `include` and `fields` are optional.</p>
                         <p class="card-text">`include` valid options: `boxart,platform`.</p>
-                        <p class="card-text">`fields` valid options: `id,game_title,players,release_date,developer,publisher,runtime,genre,Actors,overview,bannerrequest,created,lastupdated,lastupdatedRevised,rating,requestcomment,locked,mirrorupdate,lockedby,platform,coop,youtube,os,processor,ram,hdd,video,sound,alternates,author,updatedby,`</p>
+                        <p class="card-text">`fields` valid options: `id,game_title,players,release_date,developers,publisher(deprecated),publishers,genres,overview,last_updated,rating,platform,coop,youtube,os,processor,ram,hdd,video,sound,alternates(format changed),`</p>
                         <p class="card-text">Note: these options are subject to change.</p>
                         <p class="card-text">Note: some of the fields options are reminent of old database and will be removed, while others will be renamed, so please keep an eye on this.</p>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Games/Updates?time=minutes<br/>
+                        /Games/Updates?last_edit_id=edit_id
+                        </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return user edits.</p>
+                        <p class="card-text">This API call expects `last_edit_id` or `time`, and `apikey`.</p>
+                        <p class="card-text">`last_edit_id` refers to the edit id and no `games_id`, `last_edit_id` will take preferance over `time` if both are specified.</p>
                     </div>
                 </div>
 
                 <div class="card" style="margin-bottom:10px;">
                     <div class="card-header">
-                        /Games/Boxart?games_id=22,15,72
+                        /Games/Images?games_id=22,15,72&filter[type]=boxart,fanart
                     </div>
                     <div class="card-body">
                         <p class="card-text">This API will return a list or a single graphics entry based the provided parameter(s).</p>
                         <p class="card-text">This API call expects `games_id`, and `apikey`, while `filter` is optional.</p>
-                        <p class="card-text">`filter` valid options: `fanart,series,boxart,screenshot,platform-banner,platform-fanart,platform-boxart,clearlogo`.</p>
+                        <p class="card-text">`filter` valid options: `fanart,banner,boxart,screenshot,clearlogo`.</p>
                         <p class="card-text">`filter` default value is `boxart`.</p>
                         <p class="card-text">Note: these options are subject to change.</p>
-                        <p class="card-text">Note: series might also be known as banners, and it's like this will change to reflect that in the future.</p>
-
                     </div>
                 </div>
 
@@ -152,13 +151,53 @@
                     </div>
                     <div class="card-body">
                         <p class="card-text">These APIs will return a list or a single platform entry based on the provided parameter(s).</p>
-                        <p class="card-text">These API call expects `id`, `name,` and `apikey`, while `fields` are optional.</p>
+                        <p class="card-text">These API call expects `platforms_id`, `name,` and `apikey`, while `fields` are optional.</p>
                         <p class="card-text">`fields` valid options: `id,name,alias,icon,console,controller,developer,manufacturer,media,cpu,memory,graphics,sound,maxcontrollers,display,overview,youtube`</p>
                         <p class="card-text">Note: these options are subject to change.</p>
                         <p class="card-text">Note: some of the fields options are reminent of old database and will be removed, while others will be renamed, so please stay informed for any changes.</p>
                     </div>
                 </div>
 
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Platforms/images?platforms_id=1,2,4&filter[type]=boxart
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return a list or a single graphics entry based the provided parameter(s).</p>
+                        <p class="card-text">This API call expects `platforms_id`, and `apikey` param, while `filter` param is optional.</p>
+                        <p class="card-text">`filter[type]` valid options: `banner,fanart,boxart`.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Genres
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return the list of genres with associated name and id.</p>
+                        <p class="card-text">This API call expects `apikey`.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Developers
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return the list of developers with associated name and id.</p>
+                        <p class="card-text">This API call expects `apikey`.</p>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:10px;">
+                    <div class="card-header">
+                        /Publishers
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">This API will return the list of publishers with associated name and id.</p>
+                        <p class="card-text">This API call expects `apikey`.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
