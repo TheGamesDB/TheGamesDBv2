@@ -189,35 +189,31 @@ $app->group('/Games', function()
 
 		return $response->withJson($JSON_Response);
 	});
-	$this->get('/Boxart[/{GameID}]', function($request, $response, $args)
+	$this->get('/Images[/{games_id}]', function($request, $response, $args)
 	{
-		$this->logger->info("TGDB '/Games/Boxart' route");
+		$this->logger->info("TGDB '/Games/Images' route");
 
-		$GameIDs = Utils::getValidNumericFromArray($args, 'GameID');
+		$GameIDs = Utils::getValidNumericFromArray($args, 'games_id');
 		if(empty($GameIDs))
 		{
 			$JSON_Response = Utils::getStatus(406);
 			return $response->withJson($JSON_Response, $JSON_Response['code']);
 		}
 
-		$limit = 30;
+		$limit = 20;
 		$page = Utils::getPage();
 		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
-		$filters = isset($_REQUEST['filter']) ? explode("," , $_REQUEST['filter']) : 'ALL';
+		$filters = isset($_REQUEST['filter']['type']) ? explode("," , $_REQUEST['filter']['type']) : 'ALL';
 
 		$API = TGDB::getInstance();
-		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, $filters);
+		$list = $API->GetGameBoxartByID2($GameIDs, $offset, $limit+1, $filters);
 
-		$count = 0;
-		foreach($list as $boxarts)
-		{
-			$count += count($boxarts);
-		}
-		$has_next_page = $count > $limit;
+		if($has_next_page = count($list) > $limit)
+			unset($list[end(array_keys($list))]);
 
 		$JSON_Response = Utils::getStatus(200);
-		$JSON_Response['data'] = array("count" => count($list), 'base_url' => CommonUtils::getImagesBaseURL(), "boxart" => $list);
+		$JSON_Response['data'] = array("count" => count($list), 'base_url' => CommonUtils::getImagesBaseURL(), "images" => $list);
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
@@ -353,6 +349,39 @@ $app->group('/Platforms', function()
 			$JSON_Response['include']['images']['base_url'] = CommonUtils::getImagesBaseURL();
 			$JSON_Response['include']['images']['data'] = $API->GetPlatformBoxartByID($PlatformIDs, 0, 99999, ['boxart']);
 		}
+		return $response->withJson($JSON_Response);
+	});
+	$this->get('/Images[/{platforms_id}]', function($request, $response, $args)
+	{
+		$this->logger->info("TGDB '/Platforms/images' route");
+
+		$GameIDs = Utils::getValidNumericFromArray($args, 'platforms_id');
+		if(empty($GameIDs))
+		{
+			$JSON_Response = Utils::getStatus(406);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
+		}
+
+		$limit = 30;
+		$page = Utils::getPage();
+		$offset = ($page - 1) * $limit;
+		$options = Utils::parseRequestOptions();
+		$filters = isset($_REQUEST['filter']['type']) ? explode(",", $_REQUEST['filter']['type']) : 'ALL';
+
+		$API = TGDB::getInstance();
+		$list = $API->GetPlatformBoxartByID($GameIDs, $offset, $limit+1, $filters);
+
+		$count = 0;
+		foreach($list as $boxarts)
+		{
+			$count += count($boxarts);
+		}
+		$has_next_page = $count > $limit;
+
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), 'base_url' => CommonUtils::getImagesBaseURL(), "images" => $list);
+		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
+
 		return $response->withJson($JSON_Response);
 	});
 });
