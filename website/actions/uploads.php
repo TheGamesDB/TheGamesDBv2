@@ -3,6 +3,7 @@ require_once __DIR__ . "/../../include/TGDB.API.php";
 require_once __DIR__ . "/../include/UploadHandler.fineupload.class.php";
 require_once __DIR__ . "/../include/ErrorPage.class.php";
 require_once __DIR__ . "/../include/login.phpbb.class.php";
+require_once __DIR__ . "/../include/WebUtils.class.php";
 
 function save_image($original_image, $dest_image, $type)
 {
@@ -190,7 +191,8 @@ if (get_request_method() == "POST")
 					}
 					if(isset($sql_image_path))
 					{
-						$sizes = ["small", "thumb", "cropped_center_thumb", "medium", "large"];
+						$sizes = ["small", "thumb", "cropped_center_thumb", "cropped_center_thumb_square", "medium", "large"];
+						WebUtils::purgeCDNCache($sql_image_path);
 						if(basename($sql_image_path) != $image_name)
 						{
 							array_push($sizes, 'original');
@@ -211,9 +213,9 @@ if (get_request_method() == "POST")
 						}
 					}
 				}
-					$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'],
-						$_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name, $_REQUEST['subtype']);
-				}
+				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'],
+					$_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name, $_REQUEST['subtype']);
+			}
 			else
 			{
 				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'],
