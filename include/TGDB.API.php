@@ -665,6 +665,50 @@ class TGDB
 		}
 	}
 
+	function GetPubsList()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM pubs_list order by name");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetPubsListByIDs($IDs)
+	{
+		$dbh = $this->database->dbh;
+		$devs_IDs;
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$valid_ids[] = $val;
+			}
+			if(!empty($valid_ids))
+			{
+				$devs_IDs = implode(",", $valid_ids);
+			}
+		}
+		else if(is_numeric($IDs))
+		{
+			$devs_IDs = $IDs;
+		}
+		if(empty($devs_IDs))
+		{
+			return array();
+		}
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM pubs_list where id IN($devs_IDs) order by name");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
 	//TO SLOW, so instead create a DB that I'd update periodically cron job
 	function UpdateStats()
 	{
