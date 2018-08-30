@@ -203,23 +203,17 @@ if (get_request_method() == "POST")
 								unlink($image_to_delete);
 							}
 						}
-					}
-					foreach($covers as $cover)
-					{
 						if($_REQUEST['subtype'] == $cover->side)
 						{
 							$res = $API->DeleteAndInsertGameImages($_user->GetUserID(), $cover->id, $_REQUEST['game_id'], $_REQUEST['type'],
 								$_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name, $_REQUEST['subtype']);
-							break;
+								echo json_encode($result); return;
 						}
 					}
 				}
-				else
-				{
 					$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'],
 						$_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name, $_REQUEST['subtype']);
 				}
-			}
 			else
 			{
 				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'],
