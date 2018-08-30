@@ -207,7 +207,7 @@ $app->group('/Games', function()
 		$filters = isset($_REQUEST['filter']['type']) ? explode("," , $_REQUEST['filter']['type']) : 'ALL';
 
 		$API = TGDB::getInstance();
-		$list = $API->GetGameBoxartByID2($GameIDs, $offset, $limit+1, $filters);
+		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, $filters);
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[end(array_keys($list))]);

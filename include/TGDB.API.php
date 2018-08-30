@@ -655,7 +655,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select keyvalue as games_id, keytype as type, side, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) ";
+		$qry = "Select B.games_id, B.id, B.type, B.side, B.filename, B.resolution FROM banners B, (SELECT id FROM games WHERE id IN ($GameIDs) LIMIT :limit OFFSET :offset) T WHERE B.games_id = T.id ";
 		$is_filter = false;
 		if(is_array($filters))
 		{
@@ -673,7 +673,7 @@ class TGDB
 		{
 			$qry .=" )";
 		}
-		$qry .= " LIMIT :limit OFFSET :offset;";
+		$qry .= ";";
 
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
@@ -690,7 +690,7 @@ class TGDB
 
 	function GetLatestGameBoxart($offset = 0, $limit = 20, $filters = 'boxart', $side = '')
 	{
-		$qry = "Select keyvalue as game_id, keytype as type, side, filename, resolution FROM banners WHERE 1 ";
+		$qry = "Select games_id as game_id, type as type, side, filename, resolution FROM banners WHERE 1 ";
 		$is_filter = false;
 		if(is_array($filters))
 		{
@@ -1081,6 +1081,36 @@ class TGDB
 		}
 	}
 
+	function GetUserEdits($condition = '', $order = '', $offset = 0, $limit = 100)
+	{
+		if(empty($condition))
+		{
+			die("Error, empty condition.");
+		}
+		$orderby = "";
+		if(!empty($order))
+		{
+			$orderby = "order by $order";
+		}
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select id as edit_id, games_id as game_id, timestamp, type, value FROM user_edits
+		WHERE $condition $orderby LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			foreach($res as $edit)
+			{
+				if($edit->type == 'genres' || $edit->type == 'developers' || $edit->type == 'publishers')
+				{
+					$edit->value = json_decode($edit->value);
+				}
+			}
+			return $res;
+		}
+	}
+
 	function GetGamesAlts($games_id, $include_id = true)
 	{
 		$dbh = $this->database->dbh;
@@ -1200,13 +1230,13 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$Total = array();
-		$sth = $dbh->prepare("SELECT DISTINCT keytype from banners");
+		$sth = $dbh->prepare("SELECT DISTINCT type from banners");
 		if($sth->execute())
 		{
 			$types = $sth->fetchAll(PDO::FETCH_COLUMN);
 			foreach($types as $type)
 			{
-				$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = :type and keyvalue IN (select id from games) GROUP BY keyvalue");
+				$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where type = :type and games_id IN (select id from games) GROUP BY games_id");
 				$sth->bindValue(':type', $type, PDO::PARAM_STR);
 				if($sth->execute())
 				{
@@ -1214,12 +1244,12 @@ class TGDB
 				}
 			}
 			$Total['boxart'] = array();
-			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'front' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where type = 'boxart' and side = 'front' and games_id IN (select id from games) GROUP BY games_id");
 			if($sth->execute())
 			{
 				$Total['boxart']['front'] = $sth->rowCount();
 			}
-			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'back' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where type = 'boxart' and side = 'back' and games_id IN (select id from games) GROUP BY games_id");
 			if($sth->execute())
 			{
 				$Total['boxart']['back'] = $sth->rowCount();
@@ -1245,6 +1275,7 @@ class TGDB
 					}
 				}
 			}
+			$dbh->query("update statistics set count = (select count(id) from games) where type = 'total';");
 		}
 	}
 
@@ -1674,8 +1705,9 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("DELETE FROM banners WHERE id=:id;");
+		$sth = $dbh->prepare("DELETE FROM banners WHERE id=:id and games_id=:games_id;");
 		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 		if($dbh->inTransaction() || $res)
 		{
@@ -1688,7 +1720,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("DELETE FROM banners WHERE keyvalue=:game_id;");
+		$sth = $dbh->prepare("DELETE FROM banners WHERE games_id=:game_id;");
 		$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 		if($dbh->inTransaction() || $res)
@@ -1712,10 +1744,10 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("INSERT INTO banners (keyvalue, keytype, side, filename, userid) VALUES (:keyvalue, :keytype, :side, :filename, :user_id); ");
+		$sth = $dbh->prepare("INSERT INTO banners (games_id, type, side, filename, userid) VALUES (:games_id, :type, :side, :filename, :user_id); ");
 		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-		$sth->bindValue(':keyvalue', $game_id, PDO::PARAM_INT);
-		$sth->bindValue(':keytype', $type, PDO::PARAM_STR);
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':type', $type, PDO::PARAM_STR);
 		$sth->bindValue(':side', $side, PDO::PARAM_STR);
 		$sth->bindValue(':filename', $filename, PDO::PARAM_STR);
 		$res = $sth->execute();
