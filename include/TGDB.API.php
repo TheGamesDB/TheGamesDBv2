@@ -233,6 +233,43 @@ class TGDB
 		}
 	}
 
+	function SearchGamesByExactName($searchTerm, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games WHERE game_title=:game_title LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':game_title', $searchTerm);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
 	function SearchGamesByNameByPlatformID($searchTerm, $IDs, $offset = 0, $limit = 20, $fields = array())
 	{
 		$dbh = $this->database->dbh;
