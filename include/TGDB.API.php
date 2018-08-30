@@ -764,6 +764,16 @@ class TGDB
 		}
 	}
 
+	function GetESRBrating()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM ESRB_rating");
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
+		}
+	}
+
 	//TO SLOW, so instead create a DB that I'd update periodically cron job
 	function UpdateStats()
 	{
