@@ -346,4 +346,19 @@ $app->group('/Developers', function()
 	});
 });
 
+$app->group('/Publishers', function()
+{
+	$this->get('', function($request, $response, $args)
+	{
+		$this->logger->info("TGDB '/Publishers' route");
+		$API = TGDB::getInstance();
+		$list = $API->GetPubsList();
+		
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "publishers" => $list);
+		return $response->withJson($JSON_Response);
+	});
+});
+
 ?>
