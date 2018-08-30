@@ -20,7 +20,7 @@ $PsudoGame->boxart = array_merge(
 );
 $PsudoGame->boxart = array_merge(
 	$PsudoGame->boxart,
-	$API->GetLatestGameBoxart(0, $limit, 'series')
+	$API->GetLatestGameBoxart(0, $limit, 'banner')
 );
 $PsudoGame->boxart = array_merge(
 	$PsudoGame->boxart,
@@ -37,7 +37,7 @@ $PsudoGame->boxart = array_merge(
 
 $fanarts = TGDBUtils::GetAllCovers($PsudoGame, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($PsudoGame, 'screenshot', '');
-$banners = TGDBUtils::GetAllCovers($PsudoGame, 'series', '');
+$banners = TGDBUtils::GetAllCovers($PsudoGame, 'banner', '');
 $clearlogos = TGDBUtils::GetAllCovers($PsudoGame, 'clearlogo', '');
 $fboxart = TGDBUtils::GetAllCovers($PsudoGame, 'boxart', 'front');
 $bboxart = TGDBUtils::GetAllCovers($PsudoGame, 'boxart', 'back');
@@ -232,33 +232,38 @@ $Header->appendRawHeader(function() { global $PsudoGame; ?>
 							</div>
 							<div class="card-body bg-light">
 								<div class="row justify-content-center" style="text-align:center;">
+									<div class="col-12 col-sm-12" style="margin-bottom:10px;">
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=overview'>
+											Missing Overviews
+										</a>
+									</div>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-danger btn-wrap-text" href="#" target='_black'>
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=boxart&sub_type=front'>
 											Missing Front Covers
 										</a>
 									</div>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-danger btn-wrap-text" href="#" target='_black'>
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=boxart&sub_type=back'>
 											Missing Back Covers
 										</a>
 									</div>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-danger btn-wrap-text" href="#" target='_black'>
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=fanart'>
 											Missing Fanarts
 										</a>
 									</div>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-danger btn-wrap-text" href="#" target='_black'>
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=screenshot'>
 											Missing Screenshots
 										</a>
 									</div>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-danger purple btn-wrap-text" href="#" target='_black'>
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=banner'>
 											Missing Banners
 										</a>
 									</div>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-danger btn-wrap-text" href="#" target='_black'>
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=clearlogo'>
 											Missing ClearLogos
 										</a>
 									</div>

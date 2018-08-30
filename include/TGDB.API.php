@@ -469,6 +469,141 @@ class TGDB
 		return array();
 	}
 
+	function GetMissingGames($field, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		if(!$this->is_valid_games_col($field))
+		{
+			return array();
+		}
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+
+		$qry .= "WHERE $field = '' OR $field IS NULL ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			{
+				foreach($res as $game)
+				{
+					$GameIDs[] = $game->id;
+				}
+				$devs = $this->GetGamesDevs($GameIDs, false);
+				foreach($res as $game)
+				{
+					$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
+				}
+				if(isset($fields['publishers']))
+				{
+					$pubs = $this->GetGamesPubs($GameIDs, false);
+					foreach($res as $game)
+					{
+						$game->publishers = (!empty($pubs[$game->id])) ? $pubs[$game->id] : NULL;
+					}
+				}
+			}
+			return $res;
+		}
+	}
+
+	function GetMissingGamesImages($type, $sub_type = '', $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+		$side = '';
+		if($sub_type != '')
+		{
+			$side = 'AND side=:side';
+		}
+		$qry .= "WHERE id NOT IN (select games_id from banners where type=:type $side) ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':type', $type, PDO::PARAM_STR);
+		if($sub_type != '')
+		{
+			$sth->bindValue(':side', $sub_type, PDO::PARAM_STR);
+		}
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			{
+				foreach($res as $game)
+				{
+					$GameIDs[] = $game->id;
+				}
+				$devs = $this->GetGamesDevs($GameIDs, false);
+				foreach($res as $game)
+				{
+					$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
+				}
+				if(isset($fields['publishers']))
+				{
+					$pubs = $this->GetGamesPubs($GameIDs, false);
+					foreach($res as $game)
+					{
+						$game->publishers = (!empty($pubs[$game->id])) ? $pubs[$game->id] : NULL;
+					}
+				}
+			}
+			return $res;
+		}
+	}
+
 	private function CreateBoxartFilterQuery($filter, &$is_filter)
 	{
 		$qry = "";
