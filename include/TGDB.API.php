@@ -982,6 +982,40 @@ class TGDB
 		}
 	}
 
+	function GetUserEditsByTime($minutes = 1440, $offset = 0, $limit = 100)
+	{
+
+		return $this->GetUserEdits("timestamp > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -$minutes MINUTE)", "id DESC", $offset, $limit);
+
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select id as edit_id, games_id as game_id, timestamp, type, value FROM user_edits
+		WHERE timestamp > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -:minutes MINUTE) order by id LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':minutes', $minutes, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ);
+		}
+	}
+
+	function GetUserEditsByID($id, $offset = 0, $limit = 100)
+	{
+		return $this->GetUserEdits("id > $id", "", $offset, $limit);
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select id as edit_id, games_id as game_id, timestamp, type, value FROM user_edits
+		WHERE id > :id LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ);
+		}
+	}
+
 	function GetPubsListByIDs($IDs)
 	{
 		$dbh = $this->database->dbh;

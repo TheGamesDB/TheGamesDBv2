@@ -223,47 +223,31 @@ $app->group('/Games', function()
 	{
 		$this->logger->info("TGDB '/Games/Updates' route");
 
-		if(!isset($_REQUEST['time']) && !is_numeric($_REQUEST['time']) &&  $_REQUEST['time'] < 0)
-		{
-			$_REQUEST['time'] = 60*24*365;
-		}
-
-		$limit = 20;
+		$limit = 100;
 		$page = Utils::getPage();
 		$offset = ($page - 1) * $limit;
-		$options = Utils::parseRequestOptions();
-		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->GetGamesByLatestUpdatedDate($_REQUEST['time'], $offset, $limit+1, $fields);
+
+		if(isset($_REQUEST['last_edit_id']) && is_numeric($_REQUEST['last_edit_id']) && ($_REQUEST['last_edit_id'] > -1))
+		{
+			$list = $API->GetUserEditsByID($_REQUEST['last_edit_id'], $offset, $limit+1);
+		}
+		else
+		{
+			if(!isset($_REQUEST['time']) || !is_numeric($_REQUEST['time']) ||  $_REQUEST['time'] < 0)
+			{
+				$_REQUEST['time'] = 60*24;
+			}
+			$list = $API->GetUserEditsByTime($_REQUEST['time'], $offset, $limit+1);
+		}
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
-		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
-		if(count($list) > 0)
-		{
-			if(isset($options['boxart']) && $options['boxart'])
-			{
-				$GameIDs = array();
-				foreach($list as $game)
-				{
-					$GameIDs[] = $game->id;
-				}
-				$JSON_Response['include']['boxart']['base_url'] = CommonUtils::getImagesBaseURL();
-				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
-			}
-			if(isset($options['platform']) && $options['platform'])
-			{
-				$PlatformsIDs = array();
-				foreach($list as $game)
-				{
-					$PlatformsIDs[] = $game->platform;
-				}
-				$JSON_Response['include']['platform']['data'] = $API->GetPlatforms($PlatformsIDs);
-			}
-		}
+		$JSON_Response['data'] = array("count" => count($list), "updates" => $list);
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
 
 		return $response->withJson($JSON_Response);
