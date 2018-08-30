@@ -1545,18 +1545,36 @@ class TGDB
 		}
 		return ($dbh->inTransaction() || $res);
 	}
-	function DeleteGame($user_id, $game_id)
+
+	function DeleteGame($user_id, $games_id)
 	{
+		$this->DeleteAllGameImages($user_id, $games_id);
+
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("DELETE FROM games WHERE id=:game_id;");
-		$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
+		$dbh->beginTransaction();
+
+		$sth = $dbh->prepare("DELETE FROM games_pubs WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
+		$sth = $dbh->prepare("DELETE FROM games_genre WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
+		$sth = $dbh->prepare("DELETE FROM games_devs WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
+		$sth = $dbh->prepare("DELETE FROM games WHERE id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 		if($dbh->inTransaction() || $res)
 		{
-			$this->InsertUserEdits($user_id, $game_id, "game", "[REMOVED]");
+			$this->InsertUserEdits($user_id, $games_id, "game", "[REMOVED]");
 		}
-		return ($dbh->inTransaction() || $res);
+
+		return $dbh->commit();
 	}
 
 	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings)

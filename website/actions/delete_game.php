@@ -55,7 +55,6 @@ try
 		}
 	}
 
-	$API->DeleteAllGameImages($_user->GetUserID(), $_REQUEST['game_id']);
 	$res = $API->DeleteGame($_user->GetUserID(), $_REQUEST['game_id']);
 
 	returnJSONAndDie(1, "success!!");
