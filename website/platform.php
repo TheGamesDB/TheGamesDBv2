@@ -107,7 +107,7 @@ $Header->appendRawHeader(function()
 						<div class="card border-primary">
 							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'platform-boxart', '', false,  true, 'thumb') ?>" />
 							<div class="card-body">
-								<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
+							<button onclick="alert('Not Implemented Yet!')" type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							</div>
 						</div>
 					</div>
@@ -126,24 +126,22 @@ $Header->appendRawHeader(function()
 									<?= $Platform->overview;?></p>
 							</div>
 							<div class="card-body">
-								<?php if(!empty($Game->developer)) : ?>
-								<p>Developer:
-									<?= $Game->developer; ?></p>
-								<?php endif; if(!empty($Game->publisher)) : ?>
-								<p>Publisher:
-									<?= $Game->publisher; ?></p>
-								<?php endif; if(!empty($Game->release_data)) : ?>
-								<p>ReleaseDate:
-									<?= $Game->release_data ;?></p>
-								<?php endif; if(!empty($Game->PlatformDetails)) : ?>
-								<p>Platform:
-									<?= $Game->PlatformDetails->name; ?></p>
-								<?php endif; if(!empty($Game->players)) : ?>
-								<p>Players:
-									<?= $Game->players; ?></p>
-								<?php endif; if(!empty($Game->coop)) : ?>
-								<p>Co-op:
-									<?= $Game->coop; ?></p>
+								<?php if(!empty($Platform->manufacturer)) : ?>
+								<p>Manufacturer: <?= $Platform->manufacturer; ?></p>
+								<?php endif; if(!empty($Platform->developer)) : ?>
+								<p>Developer: <?= $Platform->developer; ?></p>
+								<?php endif; if(!empty($Platform->media)) : ?>
+								<p>Media Medium: <?= $Platform->media ;?></p>
+								<?php endif; if(!empty($Platform->cpu)) : ?>
+								<p>CPU: <?= $Platform->cpu ;?></p>
+								<?php endif; if(!empty($Platform->memory)) : ?>
+								<p>Memory: <?= $Platform->memory ;?></p>
+								<?php endif; if(!empty($Platform->graphics)) : ?>
+								<p>Graphics: <?= $Platform->graphics ;?></p>
+								<?php endif; if(!empty($Platform->sound)) : ?>
+								<p>Sound: <?= $Platform->sound ;?></p>
+								<?php endif; if(!empty($Platform->display)) : ?>
+								<p>Display: <?= $Platform->display ;?></p>
 								<?php endif; if(!empty($Platform->youtube)) : ?>
 								<p><a data-fancybox data-caption="Trailer" href="http://youtube.com/watch?v=<?= $Platform->youtube;?>">Watch Trailer</a>
 								</p>
