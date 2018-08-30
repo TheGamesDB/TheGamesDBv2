@@ -84,6 +84,7 @@ $Header->appendRawHeader(function() { ?>
 					</div>
 					<div class="col-9">
 						<h4><a href="/game.php?id=<?= $game->id ?>"><?= $game->game_title ?></a></h4>
+						<h6 class="text-muted">Platform: <?= $Platforms[$game->platform]->name ?></h6>
 						<p>
 							<?= !empty($game->overview) ? WebUtils::truncate($game->overview, 200) : "No overview is currently available for this title, please feel free to add one."; ?>... <a href="/game.php?id=<?= $game->id ?>">Read More</a></p>
 					</div>
