@@ -75,6 +75,90 @@ class APIAccessDB
 			//Free lunch :P
 		}
 	}
+
+	function RequestPublicAPIKey($user_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select apikey, is_banned FROM apiusers where userid = :user_id AND is_private_key = 0 LIMIT 1;");
+		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetch(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				if($res->is_banned == 0)
+				{
+					return $res->apikey;
+				}
+				else
+				{
+					return "Access Denied";
+				}
+			}
+			else
+			{
+				$bytes = openssl_random_pseudo_bytes(64/2);
+				$key = bin2hex($bytes);
+				$sth = $dbh->prepare("INSERT INTO apiusers (userid, apikey, api_allowance_level_id, extra_allowance, is_private_key)
+				VALUES(:user_id, :apikey, 1, 0, 0);");
+				$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+				$sth->bindValue(':apikey', $key, PDO::PARAM_INT);
+
+				if($sth->execute())
+				{
+					return $key;
+				}
+				else
+				{
+					return "Failed to generate API Key.";
+				}
+			}
+		}
+	}
+
+	function RequestPrivateAPIKey($user_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select apikey, extra_allowance, is_banned FROM apiusers where userid = :user_id AND is_private_key != 0 LIMIT 1;");
+		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetch(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				if($res->is_banned == 0)
+				{
+					return $res;
+				}
+				else
+				{
+					return "Access Denied";
+				}
+			}
+			else
+			{
+				$bytes = openssl_random_pseudo_bytes(64/2);
+				$key = bin2hex($bytes);
+				$sth = $dbh->prepare("INSERT INTO apiusers (userid, apikey, api_allowance_level_id, extra_allowance, is_private_key)
+				VALUES(:user_id, :apikey, 0, 6000, 1);");
+				$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+				$sth->bindValue(':apikey', $key, PDO::PARAM_INT);
+
+				if($sth->execute())
+				{
+					return $this->RequestPrivateAPIKey($user_id);
+				}
+				else
+				{
+					return "Failed to generate API Key.";
+				}
+			}
+		}
+	}
 }
 
 ?>
