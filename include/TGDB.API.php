@@ -1060,14 +1060,14 @@ class TGDB
 	}
 
 	/* Everything belowis not planned to be exposed through external API */
-	function InsertUserEdits($user_id, $game_id, $type, $diff, $subtype = '')
+	function InsertUserEdits($user_id, $game_id, $type, $value, $subtype = '')
 	{
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("INSERT INTO user_edits (users_id, games_id, type, diff) VALUES (:users_id, :games_id, :type, :diff);");
+		$sth = $dbh->prepare("INSERT INTO user_edits (users_id, games_id, type, value) VALUES (:users_id, :games_id, :type, :value);");
 		$sth->bindValue(':users_id', $user_id, PDO::PARAM_INT);
 		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
 		$sth->bindValue(':type', $type, PDO::PARAM_INT);
-		$sth->bindValue(':diff', $diff, PDO::PARAM_STR);
+		$sth->bindValue(':value', $value, PDO::PARAM_STR);
 		return $sth->execute();
 	}
 
@@ -1334,19 +1334,8 @@ class TGDB
 				{
 					if(isset($$key) && htmlspecialchars($$key) != $value)
 					{
-						if($key == 'overview')
-						{
-							$diff = xdiff_string_diff($Game['overview'], htmlspecialchars($overview), 1);
-							if(empty($diff))
-							{
-								continue;
-							}
-						}
-						else
-						{
-							$diff = htmlspecialchars($$key);
-						}
-						$this->InsertUserEdits($user_id, $game_id, $key, $diff);
+						$html_escaped_value = htmlspecialchars($$key);
+						$this->InsertUserEdits($user_id, $game_id, $key, $html_escaped_value);
 					}
 				}
 			}
@@ -1455,8 +1444,8 @@ class TGDB
 				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developer', 'publisher', 'youtube'];
 				foreach($GameArrayFields as $key)
 				{
-					$diff = htmlspecialchars($$key);
-					$this->InsertUserEdits($user_id, $game_id, $key, $diff);
+					$html_escaped_value = htmlspecialchars($$key);
+					$this->InsertUserEdits($user_id, $game_id, $key, $html_escaped_value);
 				}
 				$dbh->commit();
 			}
