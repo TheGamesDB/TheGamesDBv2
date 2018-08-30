@@ -74,7 +74,8 @@ $game_pubs = $API->GetPubsListByIDs($Game->publishers);
 $fanarts = TGDBUtils::GetAllCovers($Game, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($Game, 'screenshot', '');
 $banners = TGDBUtils::GetAllCovers($Game, 'series', '');
-$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners);
+$clearlogos = TGDBUtils::GetAllCovers($Game, 'clearlogo', '');
+$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) &&  empty($clearlogos);
 
 $box_cover = new \stdClass();
 $box_cover->front = TGDBUtils::GetAllCovers($Game, 'boxart', 'front');
@@ -101,6 +102,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
 
 	<script type="text/javascript" defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
@@ -152,6 +154,16 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				icon: "fas fa-times",
 			});
 
+			<?php if($_user->hasPermission('m_delete_games')) : ?>
+			$.fancybox.defaults.btnTpl.del = '<button data-fancybox-del class="fancybox-button fancybox-button--del" title="Delete">' +
+				'<svg style="margin: 5px;" enable-background="new 0 0 32 32" id="Layer_1" version="1.1" viewBox="0 0 32 32" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="trash"><path clip-rule="evenodd" d="M29.98,6.819c-0.096-1.57-1.387-2.816-2.98-2.816h-3v-1V3.001   c0-1.657-1.344-3-3-3H11c-1.657,0-3,1.343-3,3v0.001v1H5c-1.595,0-2.885,1.246-2.981,2.816H2v1.183v1c0,1.104,0.896,2,2,2l0,0v17   c0,2.209,1.791,4,4,4h16c2.209,0,4-1.791,4-4v-17l0,0c1.104,0,2-0.896,2-2v-1V6.819H29.98z M10,3.002c0-0.553,0.447-1,1-1h10   c0.553,0,1,0.447,1,1v1H10V3.002z M26,28.002c0,1.102-0.898,2-2,2H8c-1.103,0-2-0.898-2-2v-17h20V28.002z M28,8.001v1H4v-1V7.002   c0-0.553,0.447-1,1-1h22c0.553,0,1,0.447,1,1V8.001z" fill="#333333" fill-rule="evenodd"/><path clip-rule="evenodd" d="M9,28.006h2c0.553,0,1-0.447,1-1v-13c0-0.553-0.447-1-1-1H9   c-0.553,0-1,0.447-1,1v13C8,27.559,8.447,28.006,9,28.006z M9,14.005h2v13H9V14.005z" fill="#333333" fill-rule="evenodd"/><path clip-rule="evenodd" d="M15,28.006h2c0.553,0,1-0.447,1-1v-13c0-0.553-0.447-1-1-1h-2   c-0.553,0-1,0.447-1,1v13C14,27.559,14.447,28.006,15,28.006z M15,14.005h2v13h-2V14.005z" fill="#333333" fill-rule="evenodd"/><path clip-rule="evenodd" d="M21,28.006h2c0.553,0,1-0.447,1-1v-13c0-0.553-0.447-1-1-1h-2   c-0.553,0-1,0.447-1,1v13C20,27.559,20.447,28.006,21,28.006z M21,14.005h2v13h-2V14.005z" fill="#333333" fill-rule="evenodd"/></g></svg>' +
+			'</button>';
+			fancyboxOpts.buttons.splice(fancyboxOpts.buttons.length -1, 0, "del");
+			$('body').on('click', '[data-fancybox-del]', function(instance)
+			{
+				delete_image($.fancybox.getInstance().current.opts.imageId);
+			});
+			<?php endif;?>
 			fancyboxOpts.share.descr = function(instance, item)
 			{
 				return "<?= $Game->game_title ?>";
@@ -225,6 +237,44 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				alert("you dont have permission to delete the game, please report it instead, thanks.");
 				<?php endif ?>
 			});
+			<?php if($_user->hasPermission('m_delete_games')) : ?>
+				function delete_image(image_id)
+				{
+					if (confirm('Deleting images record is irreversible, are you sure you want to continue?'))
+					{
+						var url = "./actions/delete_art.php";
+						$.ajax({
+							type: "POST",
+							url: url,
+							data: {
+								game_id: <?= $Game->id ?>,
+								image_id: image_id
+								},
+							success: function(data)
+							{
+								if(isJSON(data))
+								{
+									var obj = JSON.parse(data);
+									if(obj.code == 1)
+									{
+										alert("image removed please refresh page to see results.");
+									}
+									else
+									{
+										alert(data)
+									}
+									return;
+								}
+								else
+								{
+									alert("Error: Something Unexpected Happened.")
+									return;
+								}
+							}
+						});
+					}
+				}
+			<?php endif;?>
 		});
 	</script>
 	<style type="text/css">
@@ -462,17 +512,17 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 					<div class="col">
 						<div class="card border-primary">
 							<?php if(!empty($box_cover->front)) : ?>
-							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Front Cover" href="<?= $box_cover->front->original ?>">
+							<a class="fancybox-thumb" data-image-id="<?= $box_cover->front->id ?>" data-fancybox="cover" data-caption="Front Cover" href="<?= $box_cover->front->original ?>">
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 								<?php if(!empty($box_cover->back)): ?>
-							<a class="fancybox-thumb" style="display:none;" data-fancybox="cover" data-caption="Back Cover"
+							<a class="fancybox-thumb" data-image-id="<?= $box_cover->back->id ?>" style="display:none;" data-fancybox="cover" data-caption="Back Cover"
 								href="<?= $box_cover->back->original ?>" data-thumb="<?= $box_cover->back->thumbnail ?>"/>
 							</a>
 								<?php endif; ?>
 								
 							<?php elseif(!empty($box_cover->back)): ?>
-							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->front->original ?>">
+							<a class="fancybox-thumb" data-image-id="<?= $box_cover->back->id ?>" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->front->original ?>">
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
@@ -481,8 +531,6 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 							</a>
 							<div class="card-body">
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<p>Developer: <input type="text" name="developer" value="<?= $Game->developer; ?>"/></p>
-								<p>Publisher: <input type="text" name="publisher" value="<?= $Game->publisher; ?>"/></p>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="<?= $Game->release_date ;?>"></p>
 								<p>Players:
 									<select name="players">
@@ -518,6 +566,39 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								</p>
 								<p>YouTube Trailer: <input name="youtube" value="<?= $Game->youtube?>"/></p>
 							</div>
+							<div class="card-footer">
+								<h4>Genres</h4>
+								<div class="row">
+									<?php foreach($GenreList as $genre) :
+										$checked = isset($Game->genres) && !empty($Game->genres) && in_array($genre->id, $Game->genres); ?>
+									<div class="col-4" style="margin-bottom:10px;">
+										<input name="genres[]" value="<?= $genre->id; ?>" id="genre-<?= $genre->id; ?>" type="checkbox" <?= $checked ? "checked" : "" ?>/>
+										<label for="genre-<?= $genre->id; ?>"><span></span><?= $genre->name; ?></label>
+									</div>
+									<?php endforeach; ?>
+								</div>
+							</div>
+							<div class="card-footer">
+								<h4>Developer(s)</h4>
+								<p><span id="devs_list"></span></p>
+							</div>
+							<div class="card-footer">
+								<h4>Publisher(s)</h4>
+								<p><span id="pubs_list"></span></p>
+							</div>
+							<div class="card-footer">
+								<h4>ESRB Rating</h4>
+								<div class="row">
+									<?php foreach($ESRBRating as $rate) :
+										$checked = strpos($Game->rating, $rate->name) !== false; ?>
+									<div class="col-4" style="margin-bottom:10px;">
+										<!-- TODO: Rating to Rating[] -->
+										<input name="rating" value="<?= $rate->id; ?>" id="rating-<?= $rate->id; ?>" type="radio" <?= $checked ? "checked" : "" ?>/>
+										<label for="rating-<?= $rate->id; ?>"><span></span><?= $rate->name; ?></label>
+									</div>
+									<?php endforeach; ?>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -533,24 +614,24 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<div class="row justify-content-center">
 									<?php if(!empty($cover = array_shift($fanarts))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
-										<a class="fancybox-thumb" data-fancybox="fanarts" data-caption="Fanart" href="<?= $cover->original ?>">
+										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="fanarts" data-caption="Fanart" href="<?= $cover->original ?>">
 											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>" alt=""/>
 											<img src="/images/ribbonFanarts.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($fanarts)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="fanarts" data-caption="Fanart"
+											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="fanarts" data-caption="Fanart"
 												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 										<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
 									<?php if(!empty($cover = array_shift($screenshots))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
-										<a class="fancybox-thumb" data-fancybox="screenshots" data-caption="Screenshot" href="<?= $cover->original ?>">
+										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="screenshots" data-caption="Screenshot" href="<?= $cover->original ?>">
 											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>"/>
 											<img src="/images/ribbonScreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($screenshots)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="screenshots" data-caption="Screenshot"
+											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="screenshots" data-caption="Screenshot"
 												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 										<?php endwhile; ?>
 									</div>
@@ -558,12 +639,24 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 
 									<?php if(!empty($cover = array_shift($banners))) : ?>
 									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
-										<a class="fancybox-thumb" data-fancybox="banners" data-caption="Banner" href="<?= $cover->original ?>">
+										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="banners" data-caption="Banner" href="<?= $cover->original ?>">
 											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
 											<img src="/images/ribbonBanners.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($banners)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="banners" data-caption="Banner"
+											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="banners" data-caption="Banner"
+												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+										<?php endwhile; ?>
+									</div>
+									<?php endif; ?>
+									<?php if(!empty($cover = array_shift($clearlogos))) : ?>
+									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
+										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="clearlogos" data-caption="Clearlogo" href="<?= $cover->original ?>">
+											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
+											<img src="/images/ribbonClearlogos.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+										</a>
+										<?php while($cover = array_shift($banners)) : ?>
+											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="clearlogos" data-caption="Clearlogo"
 												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 										<?php endwhile; ?>
 									</div>
