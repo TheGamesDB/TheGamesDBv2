@@ -469,6 +469,138 @@ class TGDB
 		return array();
 	}
 
+	function GetGamesByDevID($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+		$DevIDs = array();
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$DevIDsArr[] = $val;
+			}
+			$DevIDs = implode(",", $DevIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$DevIDs = $IDs;
+		}
+
+		if(empty($DevIDs))
+		{
+			return array();
+		}
+
+		$qry .= "WHERE id IN (SELECT games_id from games_devs where dev_id IN ($DevIDs)) ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
+	function GetGamesByPubID($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+		$PubIDs = array();
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PubIDsArr[] = $val;
+			}
+			$PubIDs = implode(",", $PubIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$PubIDs = $IDs;
+		}
+
+		if(empty($PubIDs))
+		{
+			return array();
+		}
+
+		$qry .= "WHERE id IN (SELECT games_id from games_pubs where pub_id IN ($PubIDs)) ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
 	function GetMissingGames($field, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		if(!$this->is_valid_games_col($field))
