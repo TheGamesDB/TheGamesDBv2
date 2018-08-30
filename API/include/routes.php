@@ -42,7 +42,22 @@ $app->group('/Games', function()
 		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $fields);
+		if(isset($_REQUEST['filter']['platform']) && (!is_array($_REQUEST['filter']['platform'] || !in_array(0, $_REQUEST['filter']['platform']))))
+		{
+			if(!is_array($_REQUEST['filter']['platform']))
+			{
+				$PlatformsIDs = explode(",",$_REQUEST['filter']['platform']);
+			}
+			else
+			{
+				$PlatformsIDs = $_REQUEST['filter']['platform'];
+			}
+			$list = $API->SearchGamesByNameByPlatformID($searchTerm, $PlatformsIDs, $offset, $limit + 1, $fields);
+		}
+		else
+		{
+			$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $fields);
+		}
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
