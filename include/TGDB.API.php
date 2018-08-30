@@ -64,7 +64,7 @@ class TGDB
 
 	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, developer, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -150,7 +150,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select id, game_title, developer, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -188,7 +188,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, game_title, developer, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -237,7 +237,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, game_title, developer, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -316,7 +316,7 @@ class TGDB
 
 	function GetGamesByDateByPlatform($IDs, $date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, developer, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -389,7 +389,7 @@ class TGDB
 
 	function GetAllGames($offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, developer, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -434,7 +434,7 @@ class TGDB
 
 	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
 	{
-		$qry = "Select id, game_title, developer, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -447,7 +447,7 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM games WHERE lastupdatedRevised > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -:minutes MINUTE) ORDER BY lastupdatedRevised DESC LIMIT :limit OFFSET :offset";
+		$qry .= " FROM games WHERE last_updated > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -:minutes MINUTE) ORDER BY last_updated DESC LIMIT :limit OFFSET :offset";
 
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
