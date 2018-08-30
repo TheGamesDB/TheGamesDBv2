@@ -198,7 +198,7 @@ $Header->appendRawHeader(function() { ?>
 						<div class="card border-primary">
 							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage("Placeholder", 'boxart'); ?>"/>
 							<div class="card-body">
-								<p>Platform: <select name="Platform" style="width:100%">
+								<p>Platform: <select name="platform" style="width:100%">
 									<?php foreach($PlatformList as $Platform) : ?>
 										<option value="<?= $Platform->id ?>"><?= $Platform->name ?></option>
 									<?php endforeach; ?>
