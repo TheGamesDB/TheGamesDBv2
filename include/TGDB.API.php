@@ -23,6 +23,45 @@ class TGDB
 		return $instance;
 	}
 
+	private function PopulateOtherData(&$res, $fields)
+	{
+		$GameIDs = array();
+		foreach($res as $game)
+		{
+			$GameIDs[] = $game->id;
+		}
+		$devs = $this->GetGamesDevs($GameIDs, false);
+		if(isset($fields['genres']))
+		{
+			$genres = $this->GetGamesGenres($GameIDs, false);
+		}
+		if(isset($fields['publishers']))
+		{
+			$pubs = $this->GetGamesPubs($GameIDs, false);
+		}
+		
+		if(isset($fields['alternates']))
+		{
+			$alts = $this->GetGamesAlts($GameIDs, false);
+		}
+		foreach($res as $game)
+		{
+			$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
+			if(isset($fields['genres']))
+			{
+				$game->genres = (!empty($genres[$game->id])) ? $genres[$game->id] : NULL;
+			}
+			if(isset($fields['publishers']))
+			{
+				$game->publishers = (!empty($pubs[$game->id])) ? $pubs[$game->id] : NULL;
+			}
+			if(isset($fields['alternates']))
+			{
+				$game->alternates = !empty($alts[$game->id]) ? $alts[$game->id] : NULL;
+			}
+		}
+	}
+
 	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		$qry = "Select id, game_title, developer, release_date, platform ";
@@ -80,6 +119,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 	}
@@ -131,6 +174,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
@@ -254,6 +301,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 	}
@@ -326,6 +377,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
@@ -367,6 +422,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
@@ -400,6 +459,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
