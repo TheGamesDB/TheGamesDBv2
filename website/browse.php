@@ -2,10 +2,24 @@
 require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
+require_once __DIR__ . "/include/TGDBUtils.class.php";
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList(array("icon" => true));
 
+$PlatformIDs = array();
+foreach($PlatformList as &$platform)
+{
+	$PlatformIDs[] = $platform->id;
+}
+$icons = $API->GetPlatformBoxartByID($PlatformIDs, 0, 99999, ['icon']);
+foreach($PlatformList as &$platform)
+{
+	if(isset($icons[$platform->id]))
+	{
+		$platform->boxart = &$icons[$platform->id];
+	}
+}
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browser");
 $Header->appendRawHeader(function()
@@ -90,7 +104,7 @@ $Header->appendRawHeader(function()
 						<div class="grid-container grid-col-config" style=" text-align: center">
 							<?php foreach($PlatformList as $id => $Platform) :?>
 							<a class="btn btn-link grid-item" href="./listgames.php?platformID=<?= $id ?>">
-								<img src="<?= CommonUtils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>">
+								<img src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
 								<p><?= $Platform->name ?></p>
 							</a>
 							<?php endforeach; ?>
