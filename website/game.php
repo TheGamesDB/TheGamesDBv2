@@ -15,7 +15,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"genre" => true, "publisher" => true, "platform" => true, "youtube" => true);
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true);
 	$API = TGDB::getInstance();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	if(empty($list))
@@ -41,11 +41,15 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 	}
 }
 
+$GenresList = $API->GetGenres();
+$DevsList = $API->GetDevsListByIDs($Game->developers);
+$PubsList = $API->GetPubsListByIDs($Game->publishers);
 
 $fanarts = TGDBUtils::GetAllCovers($Game, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($Game, 'screenshot', '');
-$banners = TGDBUtils::GetAllCovers($Game, 'series', '');
-$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners);
+$banners = TGDBUtils::GetAllCovers($Game, 'banner', '');
+$clearlogos = TGDBUtils::GetAllCovers($Game, 'clearlogo', '');
+$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) && empty($clearlogos);
 
 $box_cover =  new \stdClass();
 $box_cover->front = TGDBUtils::GetAllCovers($Game, 'boxart', 'front');
@@ -61,7 +65,7 @@ if(!empty($box_cover->back))
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game; ?>
+$Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
 	<meta property="og:title" content="<?= $Game->game_title; ?>" />
 	<meta property="og:type" content="article" />
@@ -177,19 +181,23 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<div class="card-body">
 								<?php if (!empty($Platform)) : ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<?php endif; if (!empty($developer)) : ?>
-								<p>Developer: <?= $Game->developer; ?></p>
-								<?php endif; if (!empty($Game->publisher)) : ?>
-								<p>Publisher: <?= $Game->publisher; ?></p>
+								<?php endif; if (!empty($Game->developers) && !empty($DevsList)) : ?>
+								<p>Developer(s): <?php $last_key = end(array_keys($DevsList)); foreach($DevsList as $key => $Dev) : ?>
+								<a href="listgames.php?dev_id=<?= $Dev->id ?>"><?= $Dev->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<?php endforeach; ?></p>
+								<?php endif;  if (!empty($Game->publishers) && !empty($PubsList)) : ?>
+								<p>Publishers(s): <?php $last_key = end(array_keys($PubsList)); foreach($PubsList as $key => $pub) : ?>
+								<a href="listgames.php?pub_id=<?= $pub->id ?>"><?= $pub->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<?php endforeach; ?></p>
 								<?php endif; if (!empty($Game->release_date)) : ?>
-								<p>release_date: <?= $Game->release_date ;?></p>
+								<p>ReleaseDate: <?= $Game->release_date ;?></p>
 								<?php endif; if (!empty($Game->PlatformDetails)) : ?>
 								<p>Platform: <?= $Game->PlatformDetails->name; ?></p>
 								<?php endif; if (!empty($Game->players)) : ?>
 								<p>Players: <?= $Game->players; ?></p>
 								<?php endif; if (!empty($Game->coop)) : ?>
 								<p>Co-op: <?= $Game->coop; ?></p>
-								<?php endif ?>
+								<?php endif; ?>
 							</div>
 						</div>
 					</div>
@@ -218,12 +226,17 @@ $Header->appendRawHeader(function() { global $Game; ?>
 						<div class="card border-primary">
 							<div class="card-header">
 								<h1><?= $Game->game_title;?></h1>
+								<?php if(!empty($Game->alternates)) : ?><h6 class="text-muted">Also know as: <?= implode(" | ", $Game->alternates) ?></h6><?php endif; ?>
 							</div>
 							<div class="card-body">
 								<p><?= !empty($Game->overview) ? $Game->overview : "No overview is currently available for this title, please feel free to add one.";?></p>
 								<?php if (!empty($Game->youtube)) : ?>
 								<p>Trailer: <a data-fancybox data-caption="Trailer" href="https://youtube.com/watch?v=<?= $Game->youtube?>">YouTube</a></p>
-								<?php endif;?>
+								<?php endif; if (!empty($Game->rating)) : ?>
+								<p>ESRB Rating: <?= $Game->rating; ?></p>
+								<?php endif; if (!empty($Game->genres)) : //$gens_id = (json_decode($Game->genres)); ?>
+								<p>Genre(s): <?php foreach($Game->genres as $gen_id) { echo $GenresList[$gen_id]->name . " | "; } ?></p>
+								<?php endif; ?>
 							</div>
 							<div class="card-footer" style="text-align: center;">
 								<p>Share Via</p>
@@ -287,7 +300,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 									<?php endif; ?>
 
 									<?php if(!empty($cover = array_shift($banners))) : ?>
-									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
+									<div class="col-8" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="banners" data-caption="Banner" href="<?= $cover->original ?>">
 											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
 											<img src="/images/ribbonBanners.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
@@ -298,7 +311,24 @@ $Header->appendRawHeader(function() { global $Game; ?>
 										<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
+									<?php if(!empty($cover = array_shift($clearlogos))) : ?>
+								</div>
+								<div class="row justify-content-center">
+
+									<div class="col-5" style="margin-bottom:10px; overflow:hidden;">
+										<a class="fancybox-thumb" data-fancybox="clearlogos" data-caption="Clearlogo" href="<?= $cover->original ?>">
+											<img style ="background-color: black;"class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
+											<img src="/images/ribbonClearlogos.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+										</a>
+										<?php while($cover = array_shift($clearlogos)) : ?>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="clearlogos" data-caption="Clearlogo"
+												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+										<?php endwhile; ?>
+									</div>
+									<?php endif; ?>
 									<?php if($is_graphics_empty) : ?>
+								</div>
+								<div class="row justify-content-center">
 									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
 										<h5>No fanarts/screenshots/banners found, be the 1st to add them.</h5>
 									</div>
