@@ -712,6 +712,62 @@ class TGDB
 		}
 	}
 
+	function GetPlatformBoxartByID($IDs = 0, $offset = 0, $limit = 20, $filters = 'boxart')
+	{
+		$PlatformIDs;
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$PlatformIDs = $IDs;
+		}
+
+		if(empty($PlatformIDs))
+		{
+			return array();
+		}
+
+		$qry = "Select platforms_id, id, type, filename FROM platforms_images WHERE platforms_id IN ($PlatformIDs) ";
+		$is_filter = false;
+		if(is_array($filters))
+		{
+			foreach($filters as $filter)
+			{
+				$qry .= $this->CreateBoxartFilterQuery($filter, $is_filter);
+			}
+		}
+		else
+		{
+			$qry .= $this->CreateBoxartFilterQuery($filters, $is_filter);
+		}
+
+		if($is_filter)
+		{
+			$qry .=" )";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
 	function GetGamesStats()
 	{
 		$dbh = $this->database->dbh;
