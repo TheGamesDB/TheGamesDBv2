@@ -139,9 +139,9 @@ class HEADER
 <?php
 class FOOTER
 {
-	public static $_time_start = 0;	
+	public static $_time_start = 0;
 	public static function print()
-	{ ?>
+	{ global $_user;?>
 		<footer class="container-fluid bg-dark" style="margin-top:10px; padding: 20px;">
 			<div class="container">
 				<div class="row">
@@ -152,11 +152,14 @@ class FOOTER
 						<h5>Get started</h5>
 						<ul>
 							<li><a href="/">Home</a></li>
-							<li><a href="#">Sign up</a></li>
+							<?php if(empty($_user) || !$_user->isLoggedIn()) : ?>
+							<li><a href="https://forums.thegamesdb.net/ucp.php?mode=register">Sign up</a></li>
+							<?php endif; ?>
 							<li><a href="/browse.php">Games</a></li>
 							<li><a href="/listplatforms.php">Platforms</a></li>
 						</ul>
 					</div>
+					<?php if(false) : ?>
 					<div class="col-sm-2">
 						<h5>About us</h5>
 						<ul>
@@ -173,13 +176,14 @@ class FOOTER
 							<li><a href="https://forums.thegamesdb.net/">Forums</a></li>
 						</ul>
 					</div>
+					<?php endif;?>
 					<div class="col-sm-3">
 						<div class="social-networks">
 							<a href="https://twitter.com/thegamesdb" class="twitter"><i class="fab fa-twitter"></i></a>
 							<a href="https://www.facebook.com/thegamesdb/" class="facebook"><i class="fab fa-facebook"></i></a>
 							<a href="https://plus.google.com/116977810662942577082" class="google"><i class="fab fa-google-plus"></i></a>
 						</div>
-						<button type="button" class="btn btn-info">Contact us</button>
+						<a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin" role="button" class="btn btn-info">Contact us</a>
 					</div>
 				</div>
 
