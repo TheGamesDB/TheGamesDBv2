@@ -319,4 +319,16 @@ $app->group('/Platforms', function()
 	});
 });
 
+$app->get('/Genres', function($request, $response, $args)
+{
+	$this->logger->info("TGDB '/Genres' route");
+	$API = TGDB::getInstance();
+	$list = $API->GetGenres();
+
+	Utils::htmlspecialchars_decodeArrayRecursive($list);
+	$JSON_Response = Utils::getStatus(200);
+	$JSON_Response['data'] = array("count" => count($list), "genres" => $list);
+	return $response->withJson($JSON_Response);
+});
+
 ?>

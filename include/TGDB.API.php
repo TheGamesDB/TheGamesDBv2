@@ -665,6 +665,17 @@ class TGDB
 		}
 	}
 
+	function GetGenres()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("SELECT id as n, id, genre as name FROM genres");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
 	function GetPubsList()
 	{
 		$dbh = $this->database->dbh;
