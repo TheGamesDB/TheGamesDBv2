@@ -1071,6 +1071,227 @@ class TGDB
 		return $sth->execute();
 	}
 
+	function InsertGamesGenre($game_id, $genres_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_genre (games_id, genres_id) VALUES (:games_id, :genres_id);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':genres_id', $genres_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function DeleteGamesGenre($game_id, $genres_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_genre  WHERE games_id=:games_id AND genres_id=:genres_id");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':genres_id', $genres_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function UpdateGamesGenre($user_id, $games_id, $new_ids)
+	{
+		$dbh = $this->database->dbh;
+		$is_changed = false;
+
+		$list = $this->GetGenres();
+
+		$current_ids = $this->GetGamesGenres($games_id);
+		if(isset($current_ids[$games_id]))
+		{
+			$current_ids = $current_ids[$games_id];
+		}
+		$valid_ids = array();
+
+		foreach($new_ids as $new_id)
+		{
+			if(isset($list[$new_id]))
+			{
+				$valid_ids[] = $new_id;
+
+				if(!in_array($new_id, $current_ids))
+				{
+					$res = $this->InsertGamesGenre($games_id, $new_id);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		foreach($current_ids as $current_id)
+		{
+			if(isset($list[$new_id]) && !in_array($current_id, $new_ids))
+			{
+				$res = $this->DeleteGamesGenre($games_id, $current_id);
+				if(!$dbh->inTransaction() && !$res)
+				{
+					return false;
+				}
+				$is_changed = true;
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_ids = array_unique($valid_ids);
+			if(!empty($valid_ids))
+			{
+				$genres_str = implode(",", $valid_ids);
+				$this->InsertUserEdits($user_id, $games_id, "genres", "[$genres_str]");
+			}
+		}
+		return true;
+	}
+
+	function InsertGamesDev($game_id, $dev_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_devs (games_id, dev_id) VALUES (:games_id, :dev_id);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':dev_id', $dev_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function DeleteGamesDev($game_id, $dev_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_devs  WHERE games_id=:games_id AND dev_id=:dev_id");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':dev_id', $dev_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function UpdateGamesDev($user_id, $games_id, $new_ids)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+		$list = $this->GetDevsListByIDs($new_ids);
+		$current_ids = $this->GetGamesDevs($games_id);
+		if(!empty($current_ids[$games_id]))
+		{
+			$current_ids = $current_ids[$games_id];
+		}
+
+		foreach($new_ids as $new_id)
+		{
+			if(isset($list[$new_id]))
+			{
+				$valid_ids[] = $new_id;
+
+				if(!in_array($new_id, $current_ids))
+				{
+					$res = $this->InsertGamesDev($games_id, $new_id);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		foreach($current_ids as $current_id)
+		{
+			if(isset($list[$new_id]) && !in_array($current_id, $new_ids))
+			{
+				$res = $this->DeleteGamesDev($games_id, $current_id);
+				if(!$dbh->inTransaction() && !$res)
+				{
+					return false;
+				}
+				$is_changed = true;
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_ids = array_unique($valid_ids);
+			if(!empty($valid_ids))
+			{
+				$ids_str = implode(",", $valid_ids);
+				$this->InsertUserEdits($user_id, $games_id, "developers", "[$ids_str]");
+			}
+		}
+		return true;
+	}
+
+	function InsertGamesPub($game_id, $pub_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_pubs (games_id, pub_id) VALUES (:games_id, :pub_id);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':pub_id', $pub_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function DeleteGamesPub($game_id, $pub_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_pubs WHERE games_id=:games_id AND pub_id=:pub_id");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':pub_id', $pub_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function UpdateGamesPub($user_id, $games_id, $new_ids)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+		$list = $this->GetPubsListByIDs($new_ids);
+		$current_ids = $this->GetGamesPubs($games_id);
+		if(!empty($current_ids[$games_id]))
+		{
+			$current_ids = $current_ids[$games_id];
+		}
+
+		foreach($new_ids as $new_id)
+		{
+			if(isset($list[$new_id]))
+			{
+				$valid_ids[] = $new_id;
+
+				if(!in_array($new_id, $current_ids))
+				{
+					$res = $this->InsertGamesPub($games_id, $new_id);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		foreach($current_ids as $current_id)
+		{
+			if(isset($list[$new_id]) && !in_array($current_id, $new_ids))
+			{
+				$res = $this->DeleteGamesPub($games_id, $current_id);
+				if(!$dbh->inTransaction() && !$res)
+				{
+					return false;
+				}
+				$is_changed = true;
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_ids = array_unique($valid_ids);
+			if(!empty($valid_ids))
+			{
+				$ids_str = implode(",", $valid_ids);
+				$this->InsertUserEdits($user_id, $games_id, "publishers", "[$ids_str]");
+			}
+		}
+		return true;
+	}
+
 	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $developer, $publisher)
 	{
 		$dbh = $this->database->dbh;
