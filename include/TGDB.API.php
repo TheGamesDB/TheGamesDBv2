@@ -827,6 +827,42 @@ class TGDB
 		}
 	}
 
+	function GetGamesAlts($games_id, $include_id = true)
+	{
+		$dbh = $this->database->dbh;
+		$Games_IDs;
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$valid_ids[] = $val;
+			}
+			$Games_IDs = implode(",", $valid_ids);
+		}
+		else if(is_numeric($IDs))
+		{
+			$Games_IDs = $IDs;
+		}
+		if(empty($Games_IDs))
+		{
+			return array();
+		}
+		$qry = "SELECT games_id as n, name";
+		if($include_id)
+		{
+			$qry .= ", id, games_id";
+		}
+		$qry .= " FROM games_alts where games_id IN($Games_IDs);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+			return $res;
+		}
+	}
+
 	function GetPubsListByIDs($IDs)
 	{
 		$dbh = $this->database->dbh;
