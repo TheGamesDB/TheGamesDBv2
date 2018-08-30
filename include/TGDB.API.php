@@ -1060,6 +1060,24 @@ class TGDB
 	}
 
 	/* Everything belowis not planned to be exposed through external API */
+	function GetGameCount($searchTerm)
+	{
+		$dbh = $this->database->dbh;
+		
+		$qry = "select count(*) from (select count(id) as count from games where (game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3)
+		OR soundex(game_title) LIKE soundex(:name4)) GROUP BY id) search";
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+		if($sth->execute())
+		{
+			return $sth->fetch(PDO::FETCH_COLUMN);
+		}
+		return -1;
+	}
+
 	function InsertUserEdits($user_id, $game_id, $type, $value, $subtype = '')
 	{
 		$dbh = $this->database->dbh;
