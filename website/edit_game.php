@@ -36,9 +36,12 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("release_date" => true, "overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"genre" => true, "publisher" => true, "platform" => true, "youtube" => true);
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true);
 	$API = TGDB::getInstance();
+	$GenreList = $API->GetGenres();
+	$ESRBRating = $API->GetESRBRating();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
+
 	if(empty($list))
 	{
 		$errorPage = new ErrorPage();
@@ -62,6 +65,11 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 	}
 }
 
+$devs_list = $API->GetDevsList();
+$game_devs = $API->GetDevsListByIDs($Game->developers);
+
+$pubs_list = $API->GetPubsList();
+$game_pubs = $API->GetPubsListByIDs($Game->publishers);
 
 $fanarts = TGDBUtils::GetAllCovers($Game, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($Game, 'screenshot', '');
@@ -82,13 +90,14 @@ if(!empty($box_cover->back))
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game, $_user; ?>
+$Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_list, $game_pubs, $pubs_list; ?>
 
 	<meta property="og:title" content="<?= $Game->game_title; ?>" />
 	<meta property="og:type" content="article" />
 	<meta property="og:image" content="<?= !empty($box_cover->front) ? $box_cover->front->thumbnail : "" ?>" />
 	<meta property="og:description" content="<?= htmlspecialchars($Game->overview); ?>" />
 
+	<link href="/css/select-pure.css" rel="stylesheet">
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
@@ -99,6 +108,7 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 
 	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
 	<script type="text/javascript" src="/js/fancybox.config.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/select-pure@latest/dist/bundle.min.js"></script>
 
 	<script type="text/javascript">
 		function isJSON(json)
@@ -114,6 +124,34 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 		}
 		$(document).ready(function()
 		{
+			const multi_devs_selection = [
+				<?php foreach($devs_list as $dev) : ?> { label: "<?= $dev->name ?>", value: "<?= $dev->id ?>" },<?php endforeach; ?>
+			];
+			const multi_devs_selected = [
+				<?php foreach($game_devs as $dev) : ?> "<?= $dev->id ?>", <?php endforeach; ?>
+				];
+			multi_devs = new SelectPure('#devs_list', {
+				options: multi_devs_selection,
+				value: multi_devs_selected,
+				autocomplete: true,
+				multiple: true,
+				icon: "fas fa-times",
+			});
+
+			const multi_pubs_selection = [
+				<?php foreach($pubs_list as $pub) : ?> { label: "<?= $pub->name ?>", value: "<?= $pub->id ?>" },<?php endforeach; ?>
+			];
+			const multi_pubs_selected = [
+				<?php foreach($game_pubs as $pub) : ?> "<?= $pub->id ?>", <?php endforeach; ?>
+				];
+			multi_pubs = new SelectPure('#pubs_list', {
+				options: multi_pubs_selection,
+				value: multi_pubs_selected,
+				autocomplete: true,
+				multiple: true,
+				icon: "fas fa-times",
+			});
+
 			fancyboxOpts.share.descr = function(instance, item)
 			{
 				return "<?= $Game->game_title ?>";
@@ -128,13 +166,21 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 				$.ajax({
 					type: "POST",
 					url: url,
-					data: $("#game_edit").serialize(), // serializes the form's elements.
+					data: $("#game_edit").serialize() + "&developers%5B%5D=" + multi_devs._config.value.join("&developers%5B%5D=") + "&publishers%5B%5D=" + multi_pubs._config.value.join("&publishers%5B%5D="),
 					success: function(data)
 					{
 						if(isJSON(data))
 						{
 							var obj = JSON.parse(data);
-							alert(data)
+							if(obj.code == -2)
+							{
+								// TODO: prompt user to no pub/dev
+								// then allow user to procced
+							}
+							else
+							{
+								alert(data);
+							}
 							return;
 						}
 						else
@@ -221,6 +267,21 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 		.margin5px
 		{
 			margin: 5px;
+		}
+
+		input[type="checkbox"]
+		{
+			position: absolute;
+		}
+		input[type="checkbox"] ~ label
+		{
+			text-overflow: ellipsis;
+			display: inline-block;
+			overflow: hidden;
+			width: 90%;
+			white-space: nowrap;
+			vertical-align: middle;
+			margin-left: 1.2rem;
 		}
 	</style>
 

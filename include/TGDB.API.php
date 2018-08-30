@@ -1292,7 +1292,7 @@ class TGDB
 		return true;
 	}
 
-	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $developer, $publisher)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -1310,23 +1310,61 @@ class TGDB
 		}
 
 		{
+			if(!empty($new_genres))
+			{
+				$this->UpdateGamesGenre($user_id, $game_id, $new_genres);
+			}
+			$rating = "";
+			$ratingsList = $this->GetESRBrating();
+			{
+				if(isset($ratingsList[$ratings]))
+				{
+					$rating = $ratingsList[$ratings]->name;
+				}
+			}
+
+			$valid_devs_id = array();
+			$developer = "";
+			$devs_list = $this->GetDevsListByIDs($new_developers);
+			foreach($new_developers as $dev_id)
+			{
+				if(isset($devs_list[$dev_id]))
+				{
+					$valid_devs_id[] = $devs_list[$dev_id]->name;
+				}
+			}
+			if(!empty($valid_devs_id))
+			{
+				$this->UpdateGamesDev($user_id, $game_id, $new_developers);
+				$developer = implode(" | ", $valid_devs_id);
+			}
+
+			$valid_pubs_id = array();
+			$pubs_list = $this->GetPubsListByIDs($new_publishers);
+			foreach($new_publishers as $pub_id)
+			{
+				if(isset($pubs_list[$pub_id]))
+				{
+					$valid_pubs_id[] = $pubs_list[$pub_id]->name;
+				}
+			}
+			if(!empty($valid_pubs_id))
+			{
+				$this->UpdateGamesPub($user_id, $game_id, $new_publishers);
+			}
+
 			$dbh->beginTransaction();
 
-			$sth = $dbh->prepare("UPDATE games SET game_title=:game_title, overview=:overview, release_date=:release_date, release_data=:release_data, players=:players, coop=:coop,
-			developer=:developer, publisher=:publisher, youtube=:youtube WHERE id=:game_id");
+			$sth = $dbh->prepare("UPDATE games SET game_title=:game_title, overview=:overview, release_date=:release_date, players=:players,
+			coop=:coop, youtube=:YouTube, rating=:rating WHERE id=:game_id");
 			$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
 			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
 			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
 			$sth->bindValue(':release_date', $release_date, PDO::PARAM_STR);
 			$sth->bindValue(':players', $players, PDO::PARAM_INT);
-			$sth->bindValue(':youtube', htmlspecialchars($youtube), PDO::PARAM_STR);
+			$sth->bindValue(':YouTube', htmlspecialchars($youtube), PDO::PARAM_STR);
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
-
-			// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
-			// it will also mean, we will be able to standardise devs/publishers names
-			// this will allow their selection from a menu as oppose to being provided by the user
-			$sth->bindValue(':developer', htmlspecialchars($developer), PDO::PARAM_STR);
-			$sth->bindValue(':publisher', htmlspecialchars($publisher), PDO::PARAM_STR);
+			$sth->bindValue(':rating', $rating, PDO::PARAM_STR);
 
 			$sth->execute();
 			{
@@ -1334,8 +1372,8 @@ class TGDB
 				{
 					if(isset($$key) && htmlspecialchars($$key) != $value)
 					{
-						$html_escaped_value = htmlspecialchars($$key);
-						$this->InsertUserEdits($user_id, $game_id, $key, $html_escaped_value);
+						$diff = htmlspecialchars($$key);
+						$this->InsertUserEdits($user_id, $game_id, $key, $diff);
 					}
 				}
 			}
@@ -1413,27 +1451,54 @@ class TGDB
 		return ($dbh->inTransaction() || $res);
 	}
 
-	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $developer, $publisher, $platform)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
 		{
-			$sth = $dbh->prepare("INSERT INTO games(game_title, overview, release_date, players, coop, developer, publisher, youtube, alternates, platform)
-			values (:game_title, :overview, :release_date, :players, :coop, :developer, :publisher, :youtube, :alternates, :platform)");
+			$rating = "";
+			$ratingsList = $this->GetESRBrating();
+			{
+				if(isset($ratingsList[$ratings]))
+				{
+					$rating = $ratingsList[$ratings]->name;
+				}
+			}
+
+			$valid_devs_id = array();
+			$developer = "";
+			$devs_list = $this->GetDevsList();
+			foreach($new_developers as $dev_id)
+			{
+				if(isset($devs_list[$dev_id]))
+				{
+					$valid_devs_id[] = $devs_list[$dev_id]->name;
+				}
+			}
+			if(!empty($valid_devs_id))
+			{
+				$developer = implode(" | ", $valid_devs_id);
+			}
+
+			$valid_pubs_id = array();
+			$pubs_list = $this->GetPubsList();
+			foreach($new_publishers as $pub_id)
+			{
+				if(isset($pubs_list[$pub_id]))
+				{
+					$valid_pubs_id[] = $pubs_list[$pub_id]->name;
+				}
+			}
+			$sth = $dbh->prepare("INSERT INTO games(game_title, overview, release_date, players, coop, youtube, platform, rating)
+			values (:game_title, :overview, :release_date, :players, :coop, :youtube, :platform, :rating)");
 			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
 			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
 			$sth->bindValue(':release_date', $release_date, PDO::PARAM_STR);
 			$sth->bindValue(':players', $players, PDO::PARAM_INT);
 			$sth->bindValue(':youtube', htmlspecialchars($youtube), PDO::PARAM_STR);
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
-			$sth->bindValue(':alternates', "", PDO::PARAM_STR);
 			$sth->bindValue(':platform', $platform, PDO::PARAM_INT);
-
-			// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
-			// it will also mean, we will be able to standardise devs/publishers names
-			// this will allow their selection from a menu as oppose to being provided by the user
-			$sth->bindValue(':developer', htmlspecialchars($developer), PDO::PARAM_STR);
-			$sth->bindValue(':publisher', htmlspecialchars($publisher), PDO::PARAM_STR);
+			$sth->bindValue(':rating', $rating, PDO::PARAM_STR);
 
 			if($sth->execute())
 			{
@@ -1441,11 +1506,26 @@ class TGDB
 				$dbh->beginTransaction();
 				$this->InsertUserEdits($user_id, $game_id, 'game', '[NEW]');
 
-				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developer', 'publisher', 'youtube'];
+				if(!empty($new_genres))
+				{
+					$this->UpdateGamesGenre($user_id, $game_id, $new_genres);
+				}
+
+				if(!empty($new_developers))
+				{
+					$this->UpdateGamesDev($user_id, $game_id, $new_developers);
+				}
+
+				if(!empty($new_publishers))
+				{
+					$this->UpdateGamesPub($user_id, $game_id, $new_publishers);
+				}
+
+				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'platform', 'rating'];
 				foreach($GameArrayFields as $key)
 				{
-					$html_escaped_value = htmlspecialchars($$key);
-					$this->InsertUserEdits($user_id, $game_id, $key, $html_escaped_value);
+					$diff = htmlspecialchars($$key);
+					$this->InsertUserEdits($user_id, $game_id, $key, $diff);
 				}
 				$dbh->commit();
 			}

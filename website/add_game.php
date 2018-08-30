@@ -28,17 +28,24 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList();
+$GenreList = $API->GetGenres();
+$ESRBRating = $API->GetESRBRating();
+$devs_list = $API->GetDevsList();
+$pubs_list = $API->GetPubsList();
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Add Game");
-$Header->appendRawHeader(function() { ?>
+$Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 
+	<link href="/css/select-pure.css" rel="stylesheet">
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
 
 	<script type="text/javascript" defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
 	<script type="text/javascript" defer src="/js/fontawesome.5.0.10.js" crossorigin="anonymous"></script>
+	<script type="text/javascript" src="https://unpkg.com/select-pure@latest/dist/bundle.min.js"></script>
 
 
 	<script type="text/javascript">
@@ -56,15 +63,36 @@ $Header->appendRawHeader(function() { ?>
 
 		$(document).ready(function()
 		{
+			const multi_devs_selection = [
+				<?php foreach($devs_list as $dev) : ?> { label: "<?= $dev->name ?>", value: "<?= $dev->id ?>" },<?php endforeach; ?>
+			];
+			multi_devs = new SelectPure('#devs_list', {
+				options: multi_devs_selection,
+				value: [],
+				autocomplete: true,
+				multiple: true,
+				icon: "fas fa-times",
+			});
+
+			const multi_pubs_selection = [
+				<?php foreach($pubs_list as $pub) : ?> { label: "<?= $pub->name ?>", value: "<?= $pub->id ?>" },<?php endforeach; ?>
+			];
+			multi_pubs = new SelectPure('#pubs_list', {
+				options: multi_pubs_selection,
+				value: [],
+				autocomplete: true,
+				multiple: true,
+				icon: "fas fa-times",
+			});
+
 			var add_game = function(e)
 			{
-
 				var url = "./actions/add_game.php";
 
 				$.ajax({
 					type: "POST",
 					url: url,
-					data: $("#game_add").serialize(), 
+					data: $("#game_add").serialize() + "&developers%5B%5D=" + multi_devs._config.value.join("&developers%5B%5D=") + "&publishers%5B%5D=" + multi_pubs._config.value.join("&publishers%5B%5D="),
 					success: function(data)
 					{
 						if(isJSON(data))
@@ -174,6 +202,20 @@ $Header->appendRawHeader(function() { ?>
 		{
 			margin: 5px;
 		}
+		input[type="checkbox"]
+		{
+			position: absolute;
+		}
+		input[type="checkbox"] ~ label
+		{
+			text-overflow: ellipsis;
+			display: inline-block;
+			overflow: hidden;
+			width: 90%;
+			white-space: nowrap;
+			vertical-align: middle;
+			margin-left: 1.2rem;
+		}
 	</style>
 
 	
@@ -199,13 +241,12 @@ $Header->appendRawHeader(function() { ?>
 							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage("Placeholder", 'boxart'); ?>"/>
 							<div class="card-body">
 								<p>Platform: <select name="platform" style="width:100%">
-									<?php foreach($PlatformList as $Platform) : ?>
+										<option value="" selected disabled hidden>Select Platform</option>
+										<?php foreach($PlatformList as $Platform) : ?>
 										<option value="<?= $Platform->id ?>"><?= $Platform->name ?></option>
-									<?php endforeach; ?>
+										<?php endforeach; ?>
 									</select>
 								</p>
-								<p>Developer: <input type="text" name="developer" placeholder="Developer..."/></p>
-								<p>Publisher: <input type="text" name="publisher" placeholder="Publisher..."/></p>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="1970-01-01"></p>
 								<p>Players:
 									<select name="players">
@@ -232,13 +273,45 @@ $Header->appendRawHeader(function() { ?>
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
-								<h1><input style="width:100%" name="game_title" placeholder="game_title goes here..."/></h1>
+								<h1><input style="width:100%" name="game_title" placeholder="GameTitle goes here..."/></h1>
 							</div>
 							<div class="card-body">
 								<p>
 									<textarea name="overview" rows=10 style="width:100%" placeholder="No overview is currently available for this title, please feel free to add one."></textarea>
 								</p>
 								<p>YouTube Trailer: <input name="youtube"/></p>
+							</div>
+							<div class="card-footer">
+								<h4>Genres</h4>
+								<div class="row">
+									<?php foreach($GenreList as $genre) :
+										$checked = strpos($Game->genre, $genre->name) !== false; ?>
+									<div class="col-4" style="margin-bottom:10px;">
+										<input name="genres[]" value="<?= $genre->id; ?>" id="genre-<?= $genre->id; ?>" type="checkbox" <?= $checked ? "checked" : "" ?>/>
+										<label for="genre-<?= $genre->id; ?>"><span></span><?= $genre->name; ?></label>
+									</div>
+									<?php endforeach; ?>
+								</div>
+							</div>
+							<div class="card-footer">
+								<h4>Developer(s)</h4>
+								<p><span id="devs_list"></span></p>
+							</div>
+							<div class="card-footer">
+								<h4>Publisher(s)</h4>
+								<p><span id="pubs_list"></span></p>
+							</div>
+							<div class="card-footer">
+								<h4>ESRB Rating</h4>
+								<div class="row">
+									<?php foreach($ESRBRating as $rate) :
+										$checked = strpos($Game->rating, $rate->name) !== false; ?>
+									<div class="col-4" style="margin-bottom:10px;">
+										<input name="rating" value="<?= $rate->id; ?>" id="rating-<?= $rate->id; ?>" type="radio" <?= $checked ? "checked" : "" ?>/>
+										<label for="rating-<?= $rate->id; ?>"><span></span><?= $rate->name; ?></label>
+									</div>
+									<?php endforeach; ?>
+								</div>
 							</div>
 						</div>
 					</div>
