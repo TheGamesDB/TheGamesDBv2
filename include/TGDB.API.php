@@ -731,6 +731,102 @@ class TGDB
 		}
 	}
 
+	function GetGamesGenres($games_id, $include_game_id = true)
+	{
+		if(!empty($games_id) && is_array($games_id))
+		{
+			foreach($games_id as $key => $val)
+			{
+				if(is_numeric($val))
+				{
+					$valid_games_id[] = $val;
+				}
+			}
+			if(!empty($valid_games_id))
+			{
+				$games_id = implode(",", $valid_games_id);
+			}
+		}
+		else if(empty($games_id) || !is_numeric($games_id))
+		{
+			return array();
+		}
+		$dbh = $this->database->dbh;
+		$qry = "SELECT games_id as n, genres_id";
+		if($include_game_id)
+		{
+			$qry .= ", games_id";
+		}
+		$qry .= " FROM games_genre where games_id IN($games_id);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+		}
+	}
+
+	function GetGamesDevs($games_id, $include_game_id = true)
+	{
+		if(!empty($games_id) && is_array($games_id))
+		{
+			foreach($games_id as $key => $val)
+			{
+				if(is_numeric($val))
+				{
+					$valid_games_id[] = $val;
+				}
+			}
+			$games_id = implode(",", $valid_games_id);
+		}
+		else if(empty($games_id) || !is_numeric($games_id))
+		{
+			return array();
+		}
+		$dbh = $this->database->dbh;
+		$qry = "SELECT games_id as n, dev_id";
+		if($include_game_id)
+		{
+			$qry .= ", games_id";
+		}
+		$qry .= " FROM games_devs where games_id IN($games_id);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+		}
+	}
+
+	function GetGamesPubs($games_id, $include_game_id = true)
+	{
+		if(!empty($games_id) && is_array($games_id))
+		{
+			foreach($games_id as $key => $val)
+			{
+				if(is_numeric($val))
+				{
+					$valid_games_id[] = $val;
+				}
+			}
+			$games_id = implode(",", $valid_games_id);
+		}
+		else if(empty($games_id) || !is_numeric($games_id))
+		{
+			return array();
+		}
+		$dbh = $this->database->dbh;
+		$qry = "SELECT games_id as n, pub_id";
+		if($include_game_id)
+		{
+			$qry .= ", games_id";
+		}
+		$qry .= " FROM games_pubs where games_id IN($games_id);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+		}
+	}
+
 	function GetPubsListByIDs($IDs)
 	{
 		$dbh = $this->database->dbh;
