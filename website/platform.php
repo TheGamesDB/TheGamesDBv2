@@ -199,7 +199,7 @@ $Header->appendRawHeader(function()
 									</div>
 									<?php endforeach; ?>
 									<div class="col-md-12">
-										<a href="/listgames.php?platformID=<?= $Platform->id ?>" class="btn btn-info" role="button" style="width:100%;">See More</a>
+										<a href="/listgames.php?platform_id=<?= $Platform->id ?>" class="btn btn-info" role="button" style="width:100%;">See More</a>
 									</div>
 								</div>
 							</div>

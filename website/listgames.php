@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/include/ErrorPage.class.php";
-if(!isset($_REQUEST['platformID']) || !is_numeric($_REQUEST['platformID']))
+if(!isset($_REQUEST['platform_id']) || !is_numeric($_REQUEST['platform_id']))
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -15,10 +15,10 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
-$Platform = $API->GetPlatforms($_REQUEST['platformID'], array("icon" => true, "overview" => true, "developer" => true));
-if(isset($Platform[$_REQUEST['platformID']]))
+$Platform = $API->GetPlatforms($_REQUEST['platform_id'], array("icon" => true, "overview" => true, "developer" => true));
+if(isset($Platform[$_REQUEST['platform_id']]))
 {
-	$Platform = $Platform[$_REQUEST['platformID']];
+	$Platform = $Platform[$_REQUEST['platform_id']];
 }
 else
 {
@@ -31,7 +31,7 @@ else
 $limit = 18;
 $page = PaginationUtils::getPage();
 $offset = ($page - 1) * $limit;
-$list = $API->GetGameListByPlatform($_REQUEST['platformID'], $offset, $limit+1, array(), "game_title");
+$list = $API->GetGameListByPlatform($_REQUEST['platform_id'], $offset, $limit+1, array(), "game_title");
 if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);

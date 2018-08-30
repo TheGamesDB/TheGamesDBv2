@@ -78,7 +78,7 @@ $Header->appendRawHeader(function()
 						</div>
 						<div class="form-group">
 							<label for="platformselect">Select Platform</label>
-							<select name="platformID[]" multiple class="form-control" id="platformselect">
+							<select name="platform_id[]" multiple class="form-control" id="platformselect">
 							<option value="0" selected>All</option>
 							<?php foreach($PlatformList as $id => $Platform) :?>
 							<option value="<?= $id ?>"><?= $Platform->name ?></option>
@@ -103,7 +103,7 @@ $Header->appendRawHeader(function()
 						<legend>Browse by platform</legend>
 						<div class="grid-container grid-col-config" style=" text-align: center">
 							<?php foreach($PlatformList as $id => $Platform) :?>
-							<a class="btn btn-link grid-item" href="./listgames.php?platformID=<?= $id ?>">
+							<a class="btn btn-link grid-item" href="./listgames.php?platform_id=<?= $id ?>">
 								<img src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
 								<p><?= $Platform->name ?></p>
 							</a>
