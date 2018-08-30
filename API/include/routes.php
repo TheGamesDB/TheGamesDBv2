@@ -331,4 +331,19 @@ $app->get('/Genres', function($request, $response, $args)
 	return $response->withJson($JSON_Response);
 });
 
+$app->group('/Developers', function()
+{
+	$this->get('', function($request, $response, $args)
+	{
+		$this->logger->info("TGDB '/Developers' route");
+		$API = TGDB::getInstance();
+		$list = $API->GetDevsList();
+
+		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "developers" => $list);
+		return $response->withJson($JSON_Response);
+	});
+});
+
 ?>
