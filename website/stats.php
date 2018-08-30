@@ -166,55 +166,55 @@ $Header->appendRawHeader(function() { global $PsudoGame; ?>
 								<div class="row justify-content-center" style="text-align:center;">
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
 										<?php if(!empty($cover = array_shift($fboxart))) : ?>
-											<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="fboxart" data-caption="Front Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Front Covers
+											<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="fboxart" data-caption="Front Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Front Covers
 											</a>
 											<?php while($cover = array_shift($fboxart)) : ?>
-												<a class="fancybox-thumb" style="display:none" data-fancybox="fboxart" data-caption="Front Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+												<a class="fancybox-thumb" style="display:none" data-fancybox="fboxart" data-caption="Front Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 												<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
 									<?php if(!empty($cover = array_shift($bboxart))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="bboxart" data-caption="Back Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Back Covers
+										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="bboxart" data-caption="Back Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Back Covers
 										</a>
 										<?php while($cover = array_shift($bboxart)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="bboxart" data-caption="Back Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="bboxart" data-caption="Back Cover - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 											<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
 									<?php if(!empty($cover = array_shift($fanarts))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="fanarts" data-caption="Fanart - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Fanarts
+										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="fanarts" data-caption="Fanart - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Fanarts
 										</a>
 										<?php while($cover = array_shift($fanarts)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="fanarts" data-caption="Fanart - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="fanarts" data-caption="Fanart - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 											<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
 									<?php if(!empty($cover = array_shift($screenshots))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="screenshots" data-caption="Screenshot - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Screenshots
+										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="screenshots" data-caption="Screenshot - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Screenshots
 										</a>
 										<?php while($cover = array_shift($screenshots)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="screenshots" data-caption="Screenshot - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="screenshots" data-caption="Screenshot - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 											<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
 									<?php if(!empty($cover = array_shift($banners))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="banners" data-caption="Banner - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Banners
+										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="banners" data-caption="Banner - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Banners
 										</a>
 										<?php while($cover = array_shift($banners)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="banners" data-caption="Banner - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="banners" data-caption="Banner - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 											<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
 									<?php if(!empty($cover = array_shift($clearlogos))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
-										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="clearlogos" data-caption="ClearLogo - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest ClearLogos
+										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="clearlogos" data-caption="ClearLogo - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest ClearLogos
 										</a>
 										<?php while($cover = array_shift($clearlogos)) : ?>
-											<a class="fancybox-thumb" style="display:none" data-fancybox="clearlogos" data-caption="ClearLogo - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->GameTitle ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="clearlogos" data-caption="ClearLogo - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 											<?php endwhile; ?>
 									</div>
 									<?php endif; ?>

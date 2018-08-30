@@ -34,9 +34,9 @@ class TGDBUtils
 		}
 		if($return_placeholder)
 		{
-			if(isset($game->GameTitle))
+			if(isset($game->game_title))
 			{
-				return "https://via.placeholder.com/200x250?text=$game->GameTitle";
+				return "https://via.placeholder.com/200x250?text=$game->game_title";
 			}
 			elseif(isset($game->name))
 			{

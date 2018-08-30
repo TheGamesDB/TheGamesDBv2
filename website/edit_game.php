@@ -35,8 +35,8 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
-	$options = array("ReleaseDateRevised" => true, "Overview" => true, "Players" => true, "Rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"Genre" => true, "Publisher" => true, "Platform" => true, "Youtube" => true);
+	$options = array("release_date" => true, "overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
+		"genre" => true, "publisher" => true, "platform" => true, "youtube" => true);
 	$API = TGDB::getInstance();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	if(empty($list))
@@ -55,10 +55,10 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 			$Game->boxart = $covers[$_REQUEST['id']];
 		}
 	}
-	$Platform = $API->GetPlatforms($Game->Platform, array("icon" => true, "overview" => true, "developer" => true));
-	if(isset($Platform[$Game->Platform]))
+	$Platform = $API->GetPlatforms($Game->platform, array("icon" => true, "overview" => true, "developer" => true));
+	if(isset($Platform[$Game->platform]))
 	{
-		$Platform = $Platform[$Game->Platform];
+		$Platform = $Platform[$Game->platform];
 	}
 }
 
@@ -81,13 +81,13 @@ if(!empty($box_cover->back))
 }
 
 $Header = new HEADER();
-$Header->setTitle("TGDB - Browse - Game - $Game->GameTitle");
+$Header->setTitle("TGDB - Browse - Game - $Game->game_title");
 $Header->appendRawHeader(function() { global $Game, $_user; ?>
 
-	<meta property="og:title" content="<?= $Game->GameTitle; ?>" />
+	<meta property="og:title" content="<?= $Game->game_title; ?>" />
 	<meta property="og:type" content="article" />
 	<meta property="og:image" content="<?= !empty($box_cover->front) ? $box_cover->front->thumbnail : "" ?>" />
-	<meta property="og:description" content="<?= htmlspecialchars($Game->Overview); ?>" />
+	<meta property="og:description" content="<?= htmlspecialchars($Game->overview); ?>" />
 
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">
@@ -116,7 +116,7 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 		{
 			fancyboxOpts.share.descr = function(instance, item)
 			{
-				return "<?= $Game->GameTitle ?>";
+				return "<?= $Game->game_title ?>";
 			};
 			$('[data-fancybox]').fancybox(fancyboxOpts);
 
@@ -415,18 +415,18 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
-								<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->GameTitle, 'boxart'); ?>"/>
+								<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
 							<?php endif; ?>
 							</a>
 							<div class="card-body">
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<p>Developer: <input type="text" name="Developer" value="<?= $Game->Developer; ?>"/></p>
-								<p>Publisher: <input type="text" name="Publisher" value="<?= $Game->Publisher; ?>"/></p>
-								<p>ReleaseDate*:<br/> <input id="date" name="ReleaseDateRevised" type="date" value="<?= $Game->ReleaseDateRevised ;?>"></p>
+								<p>Developer: <input type="text" name="developer" value="<?= $Game->developer; ?>"/></p>
+								<p>Publisher: <input type="text" name="publisher" value="<?= $Game->publisher; ?>"/></p>
+								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="<?= $Game->release_date ;?>"></p>
 								<p>Players:
-									<select name="Players">
+									<select name="players">
 									<?php for($x = 0; $x < 17; ++$x) : ?>
-										<option value="<?= $x ?>" <?= ($Game->Players == $x) ? "selected" : "" ?>><?= $x ?></option>
+										<option value="<?= $x ?>" <?= ($Game->players == $x) ? "selected" : "" ?>><?= $x ?></option>
 									<?php endfor; ?>
 									</select>
 								</p>
@@ -448,14 +448,14 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
-								<h1><input style="width:100%" name="GameTitle" value="<?= $Game->GameTitle?>"/></h1>
+								<h1><input style="width:100%" name="game_title" value="<?= $Game->game_title?>"/></h1>
 							</div>
 							<div class="card-body">
 								<p>
-									<textarea name="Overview" rows=10 style="width:100%" placeholder="No overview is currently available for this title, please feel free to add one."><?= !empty($Game->Overview) ?
-									$Game->Overview : "";?></textarea>
+									<textarea name="overview" rows=10 style="width:100%" placeholder="No overview is currently available for this title, please feel free to add one."><?= !empty($Game->overview) ?
+									$Game->overview : "";?></textarea>
 								</p>
-								<p>YouTube Trailer: <input name="Youtube" value="<?= $Game->Youtube?>"/></p>
+								<p>YouTube Trailer: <input name="youtube" value="<?= $Game->youtube?>"/></p>
 							</div>
 						</div>
 					</div>

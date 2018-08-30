@@ -22,7 +22,7 @@ else
 }
 
 
-$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Youtube'];
+$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developer', 'publisher', 'youtube'];
 if(!isset($_REQUEST['game_id']) || !is_numeric($_REQUEST['game_id']))
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR);
@@ -37,7 +37,7 @@ else
 		}
 	}
 
-	$date = explode('-', $_REQUEST['ReleaseDateRevised']);
+	$date = explode('-', $_REQUEST['release_date']);
 	if(!checkdate($date[1], $date[2], $date[0]))
 	{
 		returnJSONAndDie(-1, "Invalid Date Format");
@@ -50,8 +50,8 @@ try
 {
 
 	$API = TGDB::getInstance();
-	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['GameTitle'], $_REQUEST['Overview'], $_REQUEST['Youtube'], $_REQUEST['ReleaseDateRevised'],
-		$_REQUEST['Players'], $_REQUEST['coop'], $_REQUEST['Developer'], $_REQUEST['Publisher']);
+	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
+		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['Developer'], $_REQUEST['publisher']);
 
 	if($res)
 	{

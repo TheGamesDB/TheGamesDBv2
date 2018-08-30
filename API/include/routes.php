@@ -62,14 +62,14 @@ $app->group('/Games', function()
 				$JSON_Response['include']['boxart']['base_url'] = CommonUtils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999, 'boxart');
 			}
-			if(isset($options['Platform']) && $options['Platform'])
+			if(isset($options['platform']) && $options['platform'])
 			{
 				$PlatformsIDs = array();
 				foreach($list as $game)
 				{
-					$PlatformsIDs[] = $game->Platform;
+					$PlatformsIDs[] = $game->platform;
 				}
-				$JSON_Response['include']['Platform'] = $API->GetPlatforms($PlatformsIDs);
+				$JSON_Response['include']['platform'] = $API->GetPlatforms($PlatformsIDs);
 			}
 		}
 
@@ -110,14 +110,14 @@ $app->group('/Games', function()
 				$JSON_Response['include']['boxart']['base_url'] = CommonUtils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999, 'boxart');
 			}
-			if(isset($options['Platform']) && $options['Platform'])
+			if(isset($options['platform']) && $options['platform'])
 			{
 				$PlatformsIDs = array();
 				foreach($list as $game)
 				{
-					$PlatformsIDs[] = $game->Platform;
+					$PlatformsIDs[] = $game->platform;
 				}
-				$JSON_Response['include']['Platform']['data'] = $API->GetPlatforms($PlatformsIDs);
+				$JSON_Response['include']['platform']['data'] = $API->GetPlatforms($PlatformsIDs);
 			}
 		}
 
@@ -162,9 +162,9 @@ $app->group('/Games', function()
 				$JSON_Response['include']['boxart']['base_url'] = CommonUtils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
 			}
-			if(isset($options['Platform']) && $options['Platform'])
+			if(isset($options['platform']) && $options['platform'])
 			{
-				$JSON_Response['include']['Platform']['data'] = $API->GetPlatforms($IDs);
+				$JSON_Response['include']['platform']['data'] = $API->GetPlatforms($IDs);
 			}
 		}
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
@@ -239,14 +239,14 @@ $app->group('/Games', function()
 				$JSON_Response['include']['boxart']['base_url'] = CommonUtils::getImagesBaseURL();
 				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($GameIDs, 0, 999, 'boxart');
 			}
-			if(isset($options['Platform']) && $options['Platform'])
+			if(isset($options['platform']) && $options['platform'])
 			{
 				$PlatformsIDs = array();
 				foreach($list as $game)
 				{
-					$PlatformsIDs[] = $game->Platform;
+					$PlatformsIDs[] = $game->platform;
 				}
-				$JSON_Response['include']['Platform']['data'] = $API->GetPlatforms($PlatformsIDs);
+				$JSON_Response['include']['platform']['data'] = $API->GetPlatforms($PlatformsIDs);
 			}
 		}
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);

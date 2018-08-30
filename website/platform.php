@@ -38,7 +38,7 @@ if(isset($fanart) && !empty($fanart))
 	$Platform->boxart[] = $fanart[$_REQUEST['id']][0];
 	$fanart = true;
 }
-$recent = $API->GetGamesByDateByPlatform($_REQUEST['id'], date("d/m/Y"), 0, 6, array('BEFORE' => true), "ReleaseDateRevised", 'DESC');
+$recent = $API->GetGamesByDateByPlatform($_REQUEST['id'], date("d/m/Y"), 0, 6, array('BEFORE' => true), "release_date", 'DESC');
 foreach($recent as $Game)
 {
 	$IDs[] = $Game->id;
@@ -126,21 +126,21 @@ $Header->appendRawHeader(function()
 									<?= $Platform->overview;?></p>
 							</div>
 							<div class="card-body">
-								<?php if(!empty($Game->Developer)) : ?>
+								<?php if(!empty($Game->developer)) : ?>
 								<p>Developer:
-									<?= $Game->Developer; ?></p>
-								<?php endif; if(!empty($Game->Publisher)) : ?>
+									<?= $Game->developer; ?></p>
+								<?php endif; if(!empty($Game->publisher)) : ?>
 								<p>Publisher:
-									<?= $Game->Publisher; ?></p>
-								<?php endif; if(!empty($Game->ReleaseDate)) : ?>
+									<?= $Game->publisher; ?></p>
+								<?php endif; if(!empty($Game->release_data)) : ?>
 								<p>ReleaseDate:
-									<?= $Game->ReleaseDate ;?></p>
+									<?= $Game->release_data ;?></p>
 								<?php endif; if(!empty($Game->PlatformDetails)) : ?>
 								<p>Platform:
 									<?= $Game->PlatformDetails->name; ?></p>
-								<?php endif; if(!empty($Game->Players)) : ?>
+								<?php endif; if(!empty($Game->players)) : ?>
 								<p>Players:
-									<?= $Game->Players; ?></p>
+									<?= $Game->players; ?></p>
 								<?php endif; if(!empty($Game->coop)) : ?>
 								<p>Co-op:
 									<?= $Game->coop; ?></p>
@@ -191,7 +191,7 @@ $Header->appendRawHeader(function()
 													</div>
 													<div class="card-footer bg-secondary" style="text-align:center;">
 														<p>
-															<?= WebUtils::truncate($Game->GameTitle, 20, true) ?></p>
+															<?= WebUtils::truncate($Game->game_title, 20, true) ?></p>
 													</div>
 												</div>
 											</a>

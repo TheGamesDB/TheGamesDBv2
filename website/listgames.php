@@ -31,7 +31,7 @@ else
 $limit = 18;
 $page = PaginationUtils::getPage();
 $offset = ($page - 1) * $limit;
-$list = $API->GetGameListByPlatform($_REQUEST['platformID'], $offset, $limit+1, array(), "GameTitle");
+$list = $API->GetGameListByPlatform($_REQUEST['platformID'], $offset, $limit+1, array(), "game_title");
 if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);
@@ -82,8 +82,8 @@ $Header->setTitle("TGDB - Browser - Game By Platform");
 							<div class="card-body card-noboday" style="text-align:center;">
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
-								<p><?= $Game->GameTitle ?></p>
-								<p><?= $Game->ReleaseDateRevised ?></p>
+								<p><?= $Game->game_title ?></p>
+								<p><?= $Game->release_date ?></p>
 							</div>
 						</div>
 					</a>

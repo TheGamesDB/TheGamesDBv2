@@ -95,7 +95,7 @@ $Header->appendRawHeader(function() { ?>
 				$.ajax({
 					type: "POST",
 					url: url,
-					data: $("[name='GameTitle']").serialize(),
+					data: $("[name='game_title']").serialize(),
 					success: function(data)
 					{
 						if(isJSON(data))
@@ -204,11 +204,11 @@ $Header->appendRawHeader(function() { ?>
 									<?php endforeach; ?>
 									</select>
 								</p>
-								<p>Developer: <input type="text" name="Developer" placeholder="Developer..."/></p>
-								<p>Publisher: <input type="text" name="Publisher" placeholder="Publisher..."/></p>
-								<p>ReleaseDate*:<br/> <input id="date" name="ReleaseDateRevised" type="date" value="1970-01-01"></p>
+								<p>Developer: <input type="text" name="developer" placeholder="Developer..."/></p>
+								<p>Publisher: <input type="text" name="publisher" placeholder="Publisher..."/></p>
+								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="1970-01-01"></p>
 								<p>Players:
-									<select name="Players">
+									<select name="players">
 									<?php for($x = 0; $x < 17; ++$x) : ?>
 										<option value="<?= $x ?>" <?= (1 == $x) ? "selected" : "" ?>><?= $x ?></option>
 									<?php endfor; ?>
@@ -232,13 +232,13 @@ $Header->appendRawHeader(function() { ?>
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
-								<h1><input style="width:100%" name="GameTitle" placeholder="GameTitle goes here..."/></h1>
+								<h1><input style="width:100%" name="game_title" placeholder="game_title goes here..."/></h1>
 							</div>
 							<div class="card-body">
 								<p>
-									<textarea name="Overview" rows=10 style="width:100%" placeholder="No overview is currently available for this title, please feel free to add one."></textarea>
+									<textarea name="overview" rows=10 style="width:100%" placeholder="No overview is currently available for this title, please feel free to add one."></textarea>
 								</p>
-								<p>YouTube Trailer: <input name="Youtube"/></p>
+								<p>YouTube Trailer: <input name="youtube"/></p>
 							</div>
 						</div>
 					</div>

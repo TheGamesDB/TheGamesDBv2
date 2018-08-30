@@ -25,7 +25,7 @@ class TGDB
 
 	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, developer, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -107,7 +107,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, developer, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -141,7 +141,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, developer, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -154,14 +154,14 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM games WHERE GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4)
+		$qry .= " FROM games WHERE game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4)
 		GROUP BY id ORDER BY CASE
-		WHEN GameTitle like :name5 THEN 3
-		WHEN GameTitle like :name6 THEN 0
-		WHEN GameTitle like :name7 THEN 1
-		WHEN GameTitle like :name8 THEN 2
+		WHEN game_title like :name5 THEN 3
+		WHEN game_title like :name6 THEN 0
+		WHEN game_title like :name7 THEN 1
+		WHEN game_title like :name8 THEN 2
 		ELSE 4
-		END, GameTitle LIMIT :limit OFFSET :offset";
+		END, game_title LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
 
@@ -190,7 +190,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, developer, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -223,17 +223,17 @@ class TGDB
 
 		if(!empty($PlatformIDs))
 		{
-			$qry .= " Platform IN ($PlatformIDs) AND ";
+			$qry .= " platform IN ($PlatformIDs) AND ";
 		}
 
-		$qry .= " (GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4))
+		$qry .= " (game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4))
 		GROUP BY id ORDER BY CASE
-		WHEN GameTitle like :name5 THEN 3
-		WHEN GameTitle like :name6 THEN 0
-		WHEN GameTitle like :name7 THEN 1
-		WHEN GameTitle like :name8 THEN 2
+		WHEN game_title like :name5 THEN 3
+		WHEN game_title like :name6 THEN 0
+		WHEN game_title like :name7 THEN 1
+		WHEN game_title like :name8 THEN 2
 		ELSE 4
-		END, GameTitle LIMIT :limit OFFSET :offset";
+		END, game_title LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
 
@@ -265,7 +265,7 @@ class TGDB
 
 	function GetGamesByDateByPlatform($IDs, $date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, developer, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -287,7 +287,7 @@ class TGDB
 			$BeforeAfterDate = ">";
 		}
 
-		$qry .= " FROM games WHERE ReleaseDateRevised $BeforeAfterDate STR_TO_DATE(:date, '%d/%m/%Y') ";
+		$qry .= " FROM games WHERE release_date $BeforeAfterDate STR_TO_DATE(:date, '%d/%m/%Y') ";
 
 		if(is_array($IDs))
 		{
@@ -298,11 +298,11 @@ class TGDB
 						$PlatformIDsArr[] = $val;
 			}
 			$PlatformIDs = implode(",", $PlatformIDsArr);
-			$qry .= " AND Platform IN " . implode(",", $PlatformIDsArr) . " ";
+			$qry .= " AND platform IN " . implode(",", $PlatformIDsArr) . " ";
 		}
 		else if(is_numeric($IDs) && $IDs > 0)
 		{
-			$qry .= " AND Platform = $IDs ";
+			$qry .= " AND platform = $IDs ";
 		}
 
 
@@ -334,7 +334,7 @@ class TGDB
 
 	function GetAllGames($offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, developer, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -375,7 +375,7 @@ class TGDB
 
 	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, developer, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -658,7 +658,7 @@ class TGDB
 		{
 			$res = $sth->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_COLUMN);
 			{
-				$ret =  $dbh->query("select count(id) from games where Overview is not null", PDO::FETCH_COLUMN, 0);
+				$ret =  $dbh->query("select count(id) from games where overview is not null", PDO::FETCH_COLUMN, 0);
 				$res['overview'] = $ret->fetch();
 			}
 			return $res;
@@ -855,7 +855,7 @@ class TGDB
 		return $sth->execute();
 	}
 
-	function UpdateGame($user_id, $game_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $developer, $publisher)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -875,23 +875,21 @@ class TGDB
 		{
 			$dbh->beginTransaction();
 
-			$sth = $dbh->prepare("UPDATE games SET GameTitle=:GameTitle, Overview=:Overview, ReleaseDateRevised=:ReleaseDateRevised, ReleaseDate=:ReleaseDate, Players=:Players, coop=:coop,
-			Developer=:Developer, Publisher=:Publisher, Youtube=:YouTube WHERE id=:game_id");
+			$sth = $dbh->prepare("UPDATE games SET game_title=:game_title, overview=:overview, release_date=:release_date, release_data=:release_data, players=:players, coop=:coop,
+			developer=:developer, publisher=:publisher, youtube=:youtube WHERE id=:game_id");
 			$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
-			$sth->bindValue(':GameTitle', htmlspecialchars($GameTitle), PDO::PARAM_STR);
-			$sth->bindValue(':Overview', htmlspecialchars($Overview), PDO::PARAM_STR);
-			$sth->bindValue(':ReleaseDateRevised', $ReleaseDateRevised, PDO::PARAM_STR);
-			$date = explode('-', $ReleaseDateRevised);
-			$sth->bindValue(':ReleaseDate', "$date[1]/$date[2]/$date[0]", PDO::PARAM_STR);
-			$sth->bindValue(':Players', $Players, PDO::PARAM_INT);
-			$sth->bindValue(':YouTube', htmlspecialchars($Youtube), PDO::PARAM_STR);
+			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
+			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
+			$sth->bindValue(':release_date', $release_date, PDO::PARAM_STR);
+			$sth->bindValue(':players', $players, PDO::PARAM_INT);
+			$sth->bindValue(':youtube', htmlspecialchars($youtube), PDO::PARAM_STR);
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
 
 			// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
 			// it will also mean, we will be able to standardise devs/publishers names
 			// this will allow their selection from a menu as oppose to being provided by the user
-			$sth->bindValue(':Developer', htmlspecialchars($Developer), PDO::PARAM_STR);
-			$sth->bindValue(':Publisher', htmlspecialchars($Publisher), PDO::PARAM_STR);
+			$sth->bindValue(':developer', htmlspecialchars($developer), PDO::PARAM_STR);
+			$sth->bindValue(':publisher', htmlspecialchars($publisher), PDO::PARAM_STR);
 
 			$sth->execute();
 			{
@@ -899,9 +897,9 @@ class TGDB
 				{
 					if(isset($$key) && htmlspecialchars($$key) != $value)
 					{
-						if($key == 'Overview')
+						if($key == 'overview')
 						{
-							$diff = xdiff_string_diff($Game['Overview'], htmlspecialchars($Overview), 1);
+							$diff = xdiff_string_diff($Game['overview'], htmlspecialchars($overview), 1);
 							if(empty($diff))
 							{
 								continue;
@@ -989,29 +987,27 @@ class TGDB
 		return ($dbh->inTransaction() || $res);
 	}
 
-	function InsertGame($user_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher, $Platform)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $developer, $publisher, $platform)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
 		{
-			$sth = $dbh->prepare("INSERT INTO games(GameTitle, Overview, ReleaseDateRevised, ReleaseDate, Players, coop, Developer, Publisher, Youtube, Alternates, Platform)
-			values (:GameTitle, :Overview, :ReleaseDateRevised, :ReleaseDate, :Players, :coop, :Developer, :Publisher, :YouTube, :Alternates, :Platform)");
-			$sth->bindValue(':GameTitle', htmlspecialchars($GameTitle), PDO::PARAM_STR);
-			$sth->bindValue(':Overview', htmlspecialchars($Overview), PDO::PARAM_STR);
-			$sth->bindValue(':ReleaseDateRevised', $ReleaseDateRevised, PDO::PARAM_STR);
-			$date = explode('-', $ReleaseDateRevised);
-			$sth->bindValue(':ReleaseDate', "$date[1]/$date[2]/$date[0]", PDO::PARAM_STR);
-			$sth->bindValue(':Players', $Players, PDO::PARAM_INT);
-			$sth->bindValue(':YouTube', htmlspecialchars($Youtube), PDO::PARAM_STR);
+			$sth = $dbh->prepare("INSERT INTO games(game_title, overview, release_date, players, coop, developer, publisher, youtube, alternates, platform)
+			values (:game_title, :overview, :release_date, :players, :coop, :developer, :publisher, :youtube, :alternates, :platform)");
+			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
+			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
+			$sth->bindValue(':release_date', $release_date, PDO::PARAM_STR);
+			$sth->bindValue(':players', $players, PDO::PARAM_INT);
+			$sth->bindValue(':youtube', htmlspecialchars($youtube), PDO::PARAM_STR);
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
-			$sth->bindValue(':Alternates', "", PDO::PARAM_STR);
-			$sth->bindValue(':Platform', $Platform, PDO::PARAM_INT);
+			$sth->bindValue(':alternates', "", PDO::PARAM_STR);
+			$sth->bindValue(':platform', $platform, PDO::PARAM_INT);
 
 			// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
 			// it will also mean, we will be able to standardise devs/publishers names
 			// this will allow their selection from a menu as oppose to being provided by the user
-			$sth->bindValue(':Developer', htmlspecialchars($Developer), PDO::PARAM_STR);
-			$sth->bindValue(':Publisher', htmlspecialchars($Publisher), PDO::PARAM_STR);
+			$sth->bindValue(':developer', htmlspecialchars($developer), PDO::PARAM_STR);
+			$sth->bindValue(':publisher', htmlspecialchars($publisher), PDO::PARAM_STR);
 
 			if($sth->execute())
 			{
@@ -1019,7 +1015,7 @@ class TGDB
 				$dbh->beginTransaction();
 				$this->InsertUserEdits($user_id, $game_id, 'game', '[NEW]');
 
-				$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Youtube'];
+				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developer', 'publisher', 'youtube'];
 				foreach($GameArrayFields as $key)
 				{
 					$diff = htmlspecialchars($$key);

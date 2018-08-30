@@ -91,8 +91,8 @@
                     <div class="card-body">
                         <p class="card-text">This API will return a list or a single game entry based on the provided parameter(s).</p>
                         <p class="card-text">This API calls can expects `name`, `id`, and `apikey`, while `include` and `fields` are optional.</p>
-                        <p class="card-text">`include` valid options: `boxart,Platform`.</p>
-                        <p class="card-text">`fields` valid options: `id,GameTitle,GameID,Players,ReleaseDate,ReleaseDateRevised,Developer,Publisher,Runtime,Genre,Actors,Overview,bannerrequest,created,lastupdated,lastupdatedRevised,Rating,requestcomment,locked,mirrorupdate,lockedby,Platform,coop,Youtube,os,processor,ram,hdd,video,sound,Alternates,author,updatedby,`</p>
+                        <p class="card-text">`include` valid options: `boxart,platform`.</p>
+                        <p class="card-text">`fields` valid options: `id,game_title,players,release_date,developer,publisher,runtime,genre,Actors,overview,bannerrequest,created,lastupdated,lastupdatedRevised,rating,requestcomment,locked,mirrorupdate,lockedby,platform,coop,youtube,os,processor,ram,hdd,video,sound,alternates,author,updatedby,`</p>
                         <p class="card-text">Note: these options are subject to change.</p>
                         <p class="card-text">Note: some of the fields options are reminent of old database and will be removed, while others will be renamed, so please keep an eye on this.</p>
                     </div>
@@ -100,11 +100,11 @@
 
                 <div class="card" style="margin-bottom:10px;">
                     <div class="card-header">
-                        /Games/Boxart?GameID=22,15,72
+                        /Games/Boxart?games_id=22,15,72
                     </div>
                     <div class="card-body">
                         <p class="card-text">This API will return a list or a single graphics entry based the provided parameter(s).</p>
-                        <p class="card-text">This API call expects `GameID`, and `apikey`, while `filter` is optional.</p>
+                        <p class="card-text">This API call expects `games_id`, and `apikey`, while `filter` is optional.</p>
                         <p class="card-text">`filter` valid options: `fanart,series,boxart,screenshot,platform-banner,platform-fanart,platform-boxart,clearlogo`.</p>
                         <p class="card-text">`filter` default value is `boxart`.</p>
                         <p class="card-text">Note: these options are subject to change.</p>

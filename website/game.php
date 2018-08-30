@@ -14,8 +14,8 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
-	$options = array("Overview" => true, "Players" => true, "Rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"Genre" => true, "Publisher" => true, "Platform" => true, "Youtube" => true);
+	$options = array("overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
+		"genre" => true, "publisher" => true, "platform" => true, "youtube" => true);
 	$API = TGDB::getInstance();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	if(empty($list))
@@ -34,10 +34,10 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 			$Game->boxart = $covers[$_REQUEST['id']];
 		}
 	}
-	$Platform = $API->GetPlatforms($Game->Platform, array("icon" => true, "overview" => true, "developer" => true));
-	if(isset($Platform[$Game->Platform]))
+	$Platform = $API->GetPlatforms($Game->platform, array("icon" => true, "overview" => true, "developer" => true));
+	if(isset($Platform[$Game->platform]))
 	{
-		$Platform = $Platform[$Game->Platform];
+		$Platform = $Platform[$Game->platform];
 	}
 }
 
@@ -60,13 +60,13 @@ if(!empty($box_cover->back))
 }
 
 $Header = new HEADER();
-$Header->setTitle("TGDB - Browse - Game - $Game->GameTitle");
+$Header->setTitle("TGDB - Browse - Game - $Game->game_title");
 $Header->appendRawHeader(function() { global $Game; ?>
 
-	<meta property="og:title" content="<?= $Game->GameTitle; ?>" />
+	<meta property="og:title" content="<?= $Game->game_title; ?>" />
 	<meta property="og:type" content="article" />
 	<meta property="og:image" content="<?= !empty($box_cover->front) ? $box_cover->front->thumbnail : "" ?>" />
-	<meta property="og:description" content="<?= htmlspecialchars($Game->Overview); ?>" />
+	<meta property="og:description" content="<?= htmlspecialchars($Game->overview); ?>" />
 
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">
@@ -84,7 +84,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 		{
 			fancyboxOpts.share.descr = function(instance, item)
 			{
-				return "<?= $Game->GameTitle ?>";
+				return "<?= $Game->game_title ?>";
 			};
 			$('[data-fancybox]').fancybox(fancyboxOpts);
 		});
@@ -165,7 +165,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
-							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->GameTitle, 'boxart'); ?>"/>
+							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
 							<?php endif; ?>
 							<div class="card-body">
 							<?php if(false) : ?>
@@ -177,16 +177,16 @@ $Header->appendRawHeader(function() { global $Game; ?>
 							<div class="card-body">
 								<?php if (!empty($Platform)) : ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<?php endif; if (!empty($Developer)) : ?>
-								<p>Developer: <?= $Game->Developer; ?></p>
-								<?php endif; if (!empty($Game->Publisher)) : ?>
-								<p>Publisher: <?= $Game->Publisher; ?></p>
-								<?php endif; if (!empty($Game->ReleaseDateRevised)) : ?>
-								<p>ReleaseDateRevised: <?= $Game->ReleaseDateRevised ;?></p>
+								<?php endif; if (!empty($developer)) : ?>
+								<p>Developer: <?= $Game->developer; ?></p>
+								<?php endif; if (!empty($Game->publisher)) : ?>
+								<p>Publisher: <?= $Game->publisher; ?></p>
+								<?php endif; if (!empty($Game->release_date)) : ?>
+								<p>release_date: <?= $Game->release_date ;?></p>
 								<?php endif; if (!empty($Game->PlatformDetails)) : ?>
 								<p>Platform: <?= $Game->PlatformDetails->name; ?></p>
-								<?php endif; if (!empty($Game->Players)) : ?>
-								<p>Players: <?= $Game->Players; ?></p>
+								<?php endif; if (!empty($Game->players)) : ?>
+								<p>Players: <?= $Game->players; ?></p>
 								<?php endif; if (!empty($Game->coop)) : ?>
 								<p>Co-op: <?= $Game->coop; ?></p>
 								<?php endif ?>
@@ -217,18 +217,18 @@ $Header->appendRawHeader(function() { global $Game; ?>
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
-								<h1><?= $Game->GameTitle;?></h1>
+								<h1><?= $Game->game_title;?></h1>
 							</div>
 							<div class="card-body">
-								<p><?= !empty($Game->Overview) ? $Game->Overview : "No overview is currently available for this title, please feel free to add one.";?></p>
-								<?php if (!empty($Game->Youtube)) : ?>
-								<p>Trailer: <a data-fancybox data-caption="Trailer" href="https://youtube.com/watch?v=<?= $Game->Youtube?>">YouTube</a></p>
+								<p><?= !empty($Game->overview) ? $Game->overview : "No overview is currently available for this title, please feel free to add one.";?></p>
+								<?php if (!empty($Game->youtube)) : ?>
+								<p>Trailer: <a data-fancybox data-caption="Trailer" href="https://youtube.com/watch?v=<?= $Game->youtube?>">YouTube</a></p>
 								<?php endif;?>
 							</div>
 							<div class="card-footer" style="text-align: center;">
 								<p>Share Via</p>
 								<!-- Twitter -->
-								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->GameTitle' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
+								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->game_title' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
 									<i class="fab fa-twitter"></i>
 								</div>
 								<!-- Facebook -->
@@ -244,7 +244,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 									<i class="fab fa-stumbleupon"></i>
 								</div>
 								<!-- Pinterest -->
-								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->GameTitle' on " . CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
+								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->game_title' on " . CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
 									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
@@ -321,7 +321,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								<legend>Control Panel</legend>
 							</div>
 							<div class="card-body">
-							<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->GameTitle]") ?>" class="btn btn-primary btn-block">Report</a></p>
+							<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->game_title]") ?>" class="btn btn-primary btn-block">Report</a></p>
 							<p><a href="/edit_game.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">Edit</a></p>
 							</div>
 						</div>

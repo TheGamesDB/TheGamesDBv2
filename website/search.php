@@ -100,8 +100,8 @@ $Header->setTitle("TGDB - Search");
 							<div class="card-body card-noboday" style="text-align:center;">
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
-								<p><?= $Game->GameTitle ?></p>
-								<p><?= $Game->ReleaseDateRevised ?></p>
+								<p><?= $Game->game_title ?></p>
+								<p><?= $Game->release_date ?></p>
 							</div>
 						</div>
 					</a>
