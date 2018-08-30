@@ -474,13 +474,13 @@ class TGDB
 		$qry = "";
 		switch($filter)
 		{
-			case 'fanart':
 			case 'series':
+				$filter = 'banner';
+			case 'fanart':
+			case 'banner':
 			case 'boxart':
 			case 'screenshot':
-			case 'platform-banner':
-			case 'platform-fanart':
-			case 'platform-boxart':
+			case 'icon':
 			case 'clearlogo':
 				if(!$is_filter)
 				{
@@ -492,7 +492,7 @@ class TGDB
 				{
 					$qry .=" OR ";
 				}
-				$qry .=" keytype = '$filter' ";
+				$qry .=" type = '$filter' ";
 		}
 		return $qry;
 	}

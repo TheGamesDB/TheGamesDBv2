@@ -75,11 +75,8 @@ $Fields = ['game_id', 'type', 'subtype'];
 			}
 			returnJSONAndDie("Invalid subtype selection: " . $_REQUEST['subtype']);
 		case 'fanart':
-		case 'series':
+		case 'banner':
 		case 'screenshot':
-		case 'platform-banner':
-		case 'platform-fanart':
-		case 'platform-boxart':
 		case 'clearlogo':
 			if(empty($_REQUEST['subtype']))
 			{
