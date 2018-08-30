@@ -262,12 +262,23 @@ $app->group('/Platforms', function()
 		$this->logger->info("TGDB '/Platforms' route");
 
 		$fields = Utils::parseRequestedFields();
+		$options = Utils::parseRequestOptions();
 
 		$API = TGDB::getInstance();
 		$list = $API->GetPlatformsList($fields);
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
+		if(isset($options['boxart']))
+		{
+			$PlatformIDs = array();
+			foreach($list as &$platform)
+			{
+				$PlatformIDs[] = $platform->id;
+			}
+			$JSON_Response['include']['images']['base_url'] = CommonUtils::getImagesBaseURL();
+			$JSON_Response['include']['images']['data'] = $API->GetPlatformBoxartByID($PlatformIDs, 0, 99999, ['boxart']);
+		}
 		return $response->withJson($JSON_Response);
 	});
 	$this->get('/ByPlatformID[/{id}]', function($request, $response, $args)
@@ -282,12 +293,23 @@ $app->group('/Platforms', function()
 		}
 
 		$fields = Utils::parseRequestedFields();
+		$options = Utils::parseRequestOptions();
 
 		$API = TGDB::getInstance();
 		$list = $API->GetPlatforms($IDs, $fields);
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
+		if(isset($options['boxart']))
+		{
+			$PlatformIDs = array();
+			foreach($list as &$platform)
+			{
+				$PlatformIDs[] = $platform->id;
+			}
+			$JSON_Response['include']['images']['base_url'] = CommonUtils::getImagesBaseURL();
+			$JSON_Response['include']['images']['data'] = $API->GetPlatformBoxartByID($PlatformIDs, 0, 99999, ['boxart']);
+		}
 		return $response->withJson($JSON_Response);
 	});
 	$this->get('/ByPlatformName[/{name}]', function($request, $response, $args)
@@ -309,12 +331,23 @@ $app->group('/Platforms', function()
 		}
 
 		$fields = Utils::parseRequestedFields();
+		$options = Utils::parseRequestOptions();
 
 		$API = TGDB::getInstance();
 		$list = $API->SearchPlatformByName($searchTerm, $fields);
 
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
+		if(isset($options['boxart']))
+		{
+			$PlatformIDs = array();
+			foreach($list as &$platform)
+			{
+				$PlatformIDs[] = $platform->id;
+			}
+			$JSON_Response['include']['images']['base_url'] = CommonUtils::getImagesBaseURL();
+			$JSON_Response['include']['images']['data'] = $API->GetPlatformBoxartByID($PlatformIDs, 0, 99999, ['boxart']);
+		}
 		return $response->withJson($JSON_Response);
 	});
 });
