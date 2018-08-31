@@ -229,6 +229,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 	}
@@ -859,7 +863,7 @@ class TGDB
 
 	function GetLatestGameBoxart($offset = 0, $limit = 20, $filters = 'boxart', $side = '')
 	{
-		$qry = "Select games_id as game_id, type as type, side, filename, resolution FROM banners WHERE 1 ";
+		$qry = "Select games_id as game_id, type, side, filename, resolution FROM banners WHERE 1 ";
 		$is_filter = false;
 		if(is_array($filters))
 		{
@@ -1284,19 +1288,19 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 		$Games_IDs;
-		if(is_array($IDs))
+		if(is_array($games_id))
 		{
-			if(!empty($IDs))
+			if(!empty($games_id))
 			{
-				foreach($IDs as $key => $val)
+				foreach($games_id as $key => $val)
 					if(is_numeric($val))
 						$valid_ids[] = $val;
 			}
 			$Games_IDs = implode(",", $valid_ids);
 		}
-		else if(is_numeric($IDs))
+		else if(is_numeric($games_id))
 		{
-			$Games_IDs = $IDs;
+			$Games_IDs = $games_id;
 		}
 		if(empty($Games_IDs))
 		{
