@@ -99,6 +99,36 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 			};
 			$('[data-fancybox]').fancybox(fancyboxOpts);
 
+			$('#reportbtn').click(function()
+			{
+				<?php if ($_user->isLoggedIn()) : ?>
+				var game_id = parseInt(prompt("Please enter the original game id", ""));
+				if(isNaN(game_id))
+				{
+					alert('Invalid game id.')
+					return;
+				}
+				$(this).append('<i class="fa fa-spinner fa-pulse"></i>');
+				$(this).attr("disabled", true);
+				$.ajax({
+					method: "POST",
+					url: "/actions/report_game.php",
+					data: {
+						game_id: <?= $Game->id ?>,
+						report_type:1,
+						metadata_0: game_id,
+					 }
+				})
+				.done(function( msg ) {
+					$('#reportbtn').attr("disabled", false);
+					$('#reportbtn').find('.fa').remove();
+					var response = JSON.parse(msg);
+					alert(msg);
+				});
+				<?php else : ?>
+				alert("You must login to use this feature.");
+				<?php endif; ?>
+			});
 
 			$('[data-toggle="bookmark"]').click(function()
 			{
@@ -399,7 +429,8 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<legend>Control Panel</legend>
 							</div>
 							<div class="card-body">
-							<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->game_title]") ?>" class="btn btn-primary btn-block">Report</a></p>
+							<p><button id="reportbtn" class="btn btn-primary btn-block">Report Duplicate</button></p>
+							<!--<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->game_title]") ?>" class="btn btn-primary btn-block">Report</a></p>-->
 							<p><a href="/edit_game.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">Edit</a></p>
 							</div>
 						</div>

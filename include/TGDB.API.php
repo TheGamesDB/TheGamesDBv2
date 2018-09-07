@@ -2044,6 +2044,85 @@ class TGDB
 		}
 		return $game_id;
 	}
+
+	function GetGamesReports($is_resolved, $offset = 0, $limit = 20)
+	{
+		$qry = "SELECT games_reports.*, games.game_title, games.platform FROM games_reports left join games on games_reports.games_id = games.id where games_reports.is_resolved = :is_resolved LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':is_resolved', $is_resolved, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function ReportGame($user_id, $username, $REQUEST)
+	{
+		$dbh = $this->database->dbh;
+		{
+			$sth = $dbh->prepare("Select * FROM games WHERE id = :game_id");
+			$sth->bindValue(':game_id', $REQUEST['game_id'], PDO::PARAM_INT);
+
+			if($sth->execute())
+			{
+				$Game = $sth->fetch(PDO::FETCH_ASSOC);
+			}
+			if(!isset($Game) || empty($Game))
+			{
+				return -1;
+			}
+		}
+		if($REQUEST['report_type'] == 1)
+		{
+			$sth = $dbh->prepare("Select * FROM games WHERE id = :game_id");
+			$sth->bindValue(':game_id', $REQUEST['metadata_0'], PDO::PARAM_INT);
+
+			if($sth->execute())
+			{
+				$Game = $sth->fetch(PDO::FETCH_ASSOC);
+			}
+			if(!isset($Game) || empty($Game))
+			{
+				return -2;
+			}
+		}
+
+		$qry = "INSERT INTO games_reports (user_id, username, games_id, type, metadata_0, extra, is_resolved) values (:user_id, :username, :games_id, :type, :metadata_0, :extra, 0)";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+		$sth->bindValue(':username', $username, PDO::PARAM_STR);
+
+		$sth->bindValue(':games_id', $REQUEST['game_id'], PDO::PARAM_INT);
+
+		$sth->bindValue(':type',  $REQUEST['report_type'], PDO::PARAM_INT);
+		$sth->bindValue(':metadata_0',  !empty($REQUEST['metadata_0']) ? $REQUEST['metadata_0'] : null, PDO::PARAM_STR);
+		$sth->bindValue(':extra', !empty($REQUEST['extra']) ? $REQUEST['extra'] : null, PDO::PARAM_STR);
+
+		return $sth->execute();
+	}
+
+	function ResolveGameReport($user_id, $username, $id)
+	{
+		$qry = "UPDATE games_reports SET is_resolved = 1, resolver_user_id=:user_id, resolver_username=:username WHERE id=:id;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+		$sth->bindValue(':username', $username, PDO::PARAM_STR);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
 }
 
 ?>
