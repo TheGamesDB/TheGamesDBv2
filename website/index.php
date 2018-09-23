@@ -117,9 +117,7 @@ $Header->appendRawHeader(function() { ?>
 					</div>
 				</div>
 
-				<iframe src="https://discordapp.com/widget?id=360271801315491840&theme=light" width="100%" height="500"
-					allowtransparency="true" frameborder="0"></iframe>
-
+				<iframe style="background-color: transparent;width:100%;height:500px;border:0;" src="https://discordapp.com/widget?id=360271801315491840&theme=light"></iframe>
 			</div>
 
 		</div>
