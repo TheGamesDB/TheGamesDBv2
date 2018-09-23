@@ -84,13 +84,13 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
 
-	<script type="text/javascript" defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
-	<script type="text/javascript" defer src="/js/fontawesome.5.0.10.js" crossorigin="anonymous"></script>
+	<script defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
+	<script defer src="/js/fontawesome.5.0.10.js" crossorigin="anonymous"></script>
 
-	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
-	<script type="text/javascript" src="/js/fancybox.config.js"></script>
+	<script src="/js/jquery.fancybox.3.3.5.js"></script>
+	<script src="/js/fancybox.config.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		$(document).ready(function()
 		{
 			fancyboxOpts.share.descr = function(instance, item)
@@ -171,7 +171,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 			});
 		});
 	</script>
-	<style type="text/css">
+	<style>
 		.cover
 		{
 			width: 100%;
