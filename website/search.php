@@ -96,7 +96,7 @@ $Header->setTitle("TGDB - Search");
 				<div style="padding-bottom:12px; height: 100%">
 					<a href="./game.php?id=<?= $Game->id ?>">
 						<div class="card border-primary" style="height: 100%">
-							<img class="card-img-top" alt="PosterIMG" src="<?= TGDBUtils::GetCover($Game, 'boxart', 'front', true, true, 'thumb') ?>">
+						<img class="card-img-top" alt="<?= $Game->game_title ?> cover" src="<?= TGDBUtils::GetCover($Game, 'boxart', 'front', true, true, 'thumb') ?>">
 							<div class="card-body card-noboday" style="text-align:center;">
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
