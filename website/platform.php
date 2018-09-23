@@ -71,10 +71,10 @@ $Header->appendRawHeader(function()
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
 
-	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
-	<script type="text/javascript" src="/js/fancybox.config.js"></script>
+	<script src="/js/jquery.fancybox.3.3.5.js"></script>
+	<script src="/js/fancybox.config.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		$(document).ready(function()
 		{
 			fancyboxOpts.share.descr = function(instance, item)
@@ -115,7 +115,7 @@ $Header->appendRawHeader(function()
 			</div>
 
 			<div class="col-xs-12 col-sm-8 col-md-8">
-				<div class="row" style="text-align: center; padding-bottom:10px" ;>
+				<div class="row" style="text-align: center; padding-bottom:10px">
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
@@ -150,20 +150,20 @@ $Header->appendRawHeader(function()
 							<div class="card-footer" style="text-align: center;">
 								<!-- chaning div to a, and data to href causes these to disappear on OSX, perhaps due to add blocker -->
 								<p>Share Via</p>
-								<div data="https://twitter.com/intent/tweet?text=<?= urlencode(" Checkout '$Platform->name' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
+								<div data-url="https://twitter.com/intent/tweet?text=<?= urlencode(" Checkout '$Platform->name' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id");?>" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" class="btn btn-twitter">
 									<i class="fab fa-twitter"></i>
 								</div>
-								<div data="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Facebook" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" class="btn btn-facebook">
+								<div data-url="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Facebook" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" class="btn btn-facebook">
 									<i class="fab fa-facebook"></i>
 								</div>
-								<div data="https://plus.google.com/share?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Google+" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" target="_blank" class="btn btn-googleplus">
+								<div data-url="https://plus.google.com/share?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Google+" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" class="btn btn-googleplus">
 									<i class="fab fa-google-plus"></i>
 								</div>
-								<div data="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-stumbleupon">
+								<div data-url="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" data-placement="top" class="btn btn-stumbleupon">
 									<i class="fab fa-stumbleupon"></i>
 								</div>
-								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode(" Checkout '$Platform->name' on " . CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id"); ?>&media=
-									<?= urlencode(TGDBUtils::GetCover($Platform, 'boxart', '', false, true, 'thumb')) ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
+								<div data-url="https://www.pinterest.com/pin/create/button/?description=<?= urlencode(" Checkout '$Platform->name' on " . CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id"); ?>&media=
+									<?= urlencode(TGDBUtils::GetCover($Platform, 'boxart', '', false, true, 'thumb')) ?>" title="Share on Pinterest" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" data-placement="top" class="btn btn-pinterest">
 									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
@@ -171,7 +171,7 @@ $Header->appendRawHeader(function()
 					</div>
 				</div>
 				<?php if(!empty($recent)) : ?>
-				<div class="row" style="text-align: center; padding-bottom:10px" ;>
+				<div class="row" style="text-align: center; padding-bottom:10px">
 					<div class="col">
 						<div class="card border-primary">
 							<h3 class="card-header">
