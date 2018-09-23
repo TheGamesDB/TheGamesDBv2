@@ -69,23 +69,23 @@ $Header->appendRawHeader(function()
 				<div class="card">
 					<form class="card-body" method="get" action="./search.php">
 						<fieldset>
-						<legend>Search by name</legend>
-						<div class="form-group row">
-							<label for="name" class="col-sm-2 col-form-label">Name</label>
-							<div class="col-sm-10">
-							<input name="name" type="text" class="form-control-plaintext" id="name" placeholder="God Of War...">
+							<legend>Search by name</legend>
+							<div class="form-group row">
+								<label for="name" class="col-sm-2 col-form-label">Name</label>
+								<div class="col-sm-10">
+								<input name="name" type="text" class="form-control-plaintext" id="name" placeholder="God Of War...">
+								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<label for="platformselect">Select Platform</label>
-							<select name="platform_id[]" multiple class="form-control" id="platformselect">
-							<option value="0" selected>All</option>
-							<?php foreach($PlatformList as $id => $Platform) :?>
-							<option value="<?= $id ?>"><?= $Platform->name ?></option>
-							<?php endforeach; ?>
-							</select>
-						</div>
-						<button type="submit" class="btn btn-primary">Submit</button>
+							<div class="form-group">
+								<label for="platformselect">Select Platform</label>
+								<select name="platform_id[]" multiple class="form-control" id="platformselect">
+								<option value="0" selected>All</option>
+								<?php foreach($PlatformList as $id => $Platform) :?>
+								<option value="<?= $id ?>"><?= $Platform->name ?></option>
+								<?php endforeach; ?>
+								</select>
+							</div>
+							<button type="submit" class="btn btn-primary">Submit</button>
 						</fieldset>
 					</form>
 				</div>
@@ -100,15 +100,17 @@ $Header->appendRawHeader(function()
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
-						<legend>Browse by platform</legend>
-						<div class="grid-container grid-col-config" style=" text-align: center">
-							<?php foreach($PlatformList as $id => $Platform) :?>
-							<a class="btn btn-link grid-item" href="./listgames.php?platform_id=<?= $id ?>">
-								<img src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
-								<p><?= $Platform->name ?></p>
-							</a>
-							<?php endforeach; ?>
-						</div>
+						<fieldset>
+							<legend>Browse by platform</legend>
+							<div class="grid-container grid-col-config" style=" text-align: center">
+								<?php foreach($PlatformList as $id => $Platform) :?>
+								<a class="btn btn-link grid-item" href="./listgames.php?platform_id=<?= $id ?>">
+									<img alt="<?= $Platform->name ?>" src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
+									<p><?= $Platform->name ?></p>
+								</a>
+								<?php endforeach; ?>
+							</div>
+						</fieldset>
 					</div>
 				</div>
 			</div>
