@@ -27,8 +27,8 @@ else
 	$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
 	$errorPage->print_die();
 }
-$covers = $API->GetGameBoxartByID($_REQUEST['id'], 0, 1, 'platform-boxart');
-$fanart = $API->GetGameBoxartByID($_REQUEST['id'], 0, 1, 'platform-fanart');
+$covers = $API->GetPlatformBoxartByID($_REQUEST['id'], 0, 1, 'boxart');
+$fanart = $API->GetPlatformBoxartByID($_REQUEST['id'], 0, 1, 'fanart');
 if(isset($covers) && !empty($covers))
 {
 	$Platform->boxart[] = $covers[$_REQUEST['id']][0];
@@ -63,7 +63,7 @@ $Header->appendRawHeader(function()
 
 	<meta property="og:title" content="<?= $Platform->name; ?>" />
 	<meta property="og:type" content="article" />
-	<meta property="og:image" content="<?= TGDBUtils::GetCover($Platform, 'platform-boxart', '', false,  true, 'thumb') ?>" />
+	<meta property="og:image" content="<?= TGDBUtils::GetCover($Platform, 'boxart', '', false,  true, 'thumb') ?>" />
 	<meta property="og:description" content="<?= htmlspecialchars($Platform->overview); ?>" />
 
 	<link href="/css/social-btn.css" rel="stylesheet">
@@ -93,7 +93,7 @@ $Header->appendRawHeader(function()
 		<div class="row" style="padding-bottom:10px;">
 			<div class="col">
 				<div id="cover" class="view-width" style="max-width: 100%; height: 300px; overflow: hidden; text-align: center;padding: 0px;;">
-					<img alt='CoverIMG' class="cover" style=" margin-top: -170px;" src="<?= TGDBUtils::GetCover($Platform, 'platform-fanart', '', false,  false, 'medium') ?>" />
+					<img alt='CoverIMG' class="cover" style=" margin-top: -170px;" src="<?= TGDBUtils::GetCover($Platform, 'fanart', '', false,  false, 'medium') ?>" />
 				</div>
 			</div>
 		</div>
@@ -105,7 +105,7 @@ $Header->appendRawHeader(function()
 				<div class="row">
 					<div class="col">
 						<div class="card border-primary">
-							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'platform-boxart', '', false,  true, 'thumb') ?>" />
+							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'boxart', '', false,  true, 'thumb') ?>" />
 							<div class="card-body">
 							<button onclick="alert('Not Implemented Yet!')" type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							</div>
@@ -163,7 +163,7 @@ $Header->appendRawHeader(function()
 									<i class="fab fa-stumbleupon"></i>
 								</div>
 								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode(" Checkout '$Platform->name' on " . CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id"); ?>&media=
-									<?= urlencode(TGDBUtils::GetCover($Platform, 'platform-boxart', '', false, true, 'thumb')) ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
+									<?= urlencode(TGDBUtils::GetCover($Platform, 'boxart', '', false, true, 'thumb')) ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
 									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
