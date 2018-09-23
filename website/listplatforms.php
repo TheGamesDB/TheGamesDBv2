@@ -68,15 +68,17 @@ $Header->appendRawHeader(function()
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
-						<legend>Platforms</legend>
-						<div class="grid-container grid-col-config" style=" text-align: center">
-							<?php foreach($PlatformList as  $Platform) :?>
-							<a class="btn btn-link grid-item" href="./platform.php?id=<?= $Platform->id ?>">
-								<img src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
-								<p><?= $Platform->name ?></p>
-							</a>
-							<?php endforeach; ?>
-						</div>
+						<fieldset>
+							<legend>Platforms</legend>
+							<div class="grid-container grid-col-config" style=" text-align: center">
+								<?php foreach($PlatformList as  $Platform) :?>
+								<a class="btn btn-link grid-item" href="./platform.php?id=<?= $Platform->id ?>">
+									<img alt="<?= $Platform->name?>" src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
+									<p><?= $Platform->name ?></p>
+								</a>
+								<?php endforeach; ?>
+							</div>
+						</fieldset>
 					</div>
 				</div>
 			</div>
