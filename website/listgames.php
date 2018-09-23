@@ -102,7 +102,9 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 			<div class="col-12 col-md-10">
 				<div class="card">
 					<div class="card-header">
-						<legend><img src="<?= CommonUtils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
+						<fieldset>
+							<legend><img src="<?= CommonUtils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
+						</fieldset>
 					</div>
 					<div class="card-body">
 						<p>Developer: <?= $Platform->developer ?></p>
@@ -116,7 +118,9 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 			<div class="col-12 col-md-10">
 				<div class="card">
 					<div class="card-header">
-						<legend><?= $DevInfo->name ?></legend>
+						<fieldset>
+							<legend><?= $DevInfo->name ?></legend>
+						</fieldset>
 					</div>
 					<div class="card-body">
 						<?= $listed_by ?>s overview have not been added yet.
