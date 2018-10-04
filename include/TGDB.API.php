@@ -23,9 +23,48 @@ class TGDB
 		return $instance;
 	}
 
+	private function PopulateOtherData(&$res, $fields)
+	{
+		$GameIDs = array();
+		foreach($res as $game)
+		{
+			$GameIDs[] = $game->id;
+		}
+		$devs = $this->GetGamesDevs($GameIDs, false);
+		if(isset($fields['genres']))
+		{
+			$genres = $this->GetGamesGenres($GameIDs, false);
+		}
+		if(isset($fields['publishers']))
+		{
+			$pubs = $this->GetGamesPubs($GameIDs, false);
+		}
+		
+		if(isset($fields['alternates']))
+		{
+			$alts = $this->GetGamesAlts($GameIDs, false);
+		}
+		foreach($res as $game)
+		{
+			$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
+			if(isset($fields['genres']))
+			{
+				$game->genres = (!empty($genres[$game->id])) ? $genres[$game->id] : NULL;
+			}
+			if(isset($fields['publishers']))
+			{
+				$game->publishers = (!empty($pubs[$game->id])) ? $pubs[$game->id] : NULL;
+			}
+			if(isset($fields['alternates']))
+			{
+				$game->alternates = !empty($alts[$game->id]) ? $alts[$game->id] : NULL;
+			}
+		}
+	}
+
 	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -80,6 +119,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 	}
@@ -107,7 +150,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -131,6 +174,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
@@ -141,7 +188,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -154,14 +201,14 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM games WHERE GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4)
+		$qry .= " FROM games WHERE game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4)
 		GROUP BY id ORDER BY CASE
-		WHEN GameTitle like :name5 THEN 3
-		WHEN GameTitle like :name6 THEN 0
-		WHEN GameTitle like :name7 THEN 1
-		WHEN GameTitle like :name8 THEN 2
+		WHEN game_title like :name5 THEN 3
+		WHEN game_title like :name6 THEN 0
+		WHEN game_title like :name7 THEN 1
+		WHEN game_title like :name8 THEN 2
 		ELSE 4
-		END, GameTitle LIMIT :limit OFFSET :offset";
+		END, game_title LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
 
@@ -182,6 +229,47 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
+	function SearchGamesByExactName($searchTerm, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games WHERE game_title=:game_title LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':game_title', $searchTerm);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 	}
@@ -190,7 +278,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -223,17 +311,17 @@ class TGDB
 
 		if(!empty($PlatformIDs))
 		{
-			$qry .= " Platform IN ($PlatformIDs) AND ";
+			$qry .= " platform IN ($PlatformIDs) AND ";
 		}
 
-		$qry .= " (GameTitle LIKE :name OR GameTitle=:name2 OR soundex(GameTitle) LIKE soundex(:name3) OR soundex(GameTitle) LIKE soundex(:name4))
+		$qry .= " (game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4))
 		GROUP BY id ORDER BY CASE
-		WHEN GameTitle like :name5 THEN 3
-		WHEN GameTitle like :name6 THEN 0
-		WHEN GameTitle like :name7 THEN 1
-		WHEN GameTitle like :name8 THEN 2
+		WHEN game_title like :name5 THEN 3
+		WHEN game_title like :name6 THEN 0
+		WHEN game_title like :name7 THEN 1
+		WHEN game_title like :name8 THEN 2
 		ELSE 4
-		END, GameTitle LIMIT :limit OFFSET :offset";
+		END, game_title LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
 
@@ -254,6 +342,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 	}
@@ -265,7 +357,7 @@ class TGDB
 
 	function GetGamesByDateByPlatform($IDs, $date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -287,7 +379,7 @@ class TGDB
 			$BeforeAfterDate = ">";
 		}
 
-		$qry .= " FROM games WHERE ReleaseDateRevised $BeforeAfterDate STR_TO_DATE(:date, '%d/%m/%Y') ";
+		$qry .= " FROM games WHERE release_date $BeforeAfterDate STR_TO_DATE(:date, '%d/%m/%Y') ";
 
 		if(is_array($IDs))
 		{
@@ -298,11 +390,11 @@ class TGDB
 						$PlatformIDsArr[] = $val;
 			}
 			$PlatformIDs = implode(",", $PlatformIDsArr);
-			$qry .= " AND Platform IN " . implode(",", $PlatformIDsArr) . " ";
+			$qry .= " AND platform IN " . implode(",", $PlatformIDsArr) . " ";
 		}
 		else if(is_numeric($IDs) && $IDs > 0)
 		{
-			$qry .= " AND Platform = $IDs ";
+			$qry .= " AND platform = $IDs ";
 		}
 
 
@@ -326,6 +418,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
@@ -334,7 +430,7 @@ class TGDB
 
 	function GetAllGames($offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -367,6 +463,10 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
@@ -375,7 +475,7 @@ class TGDB
 
 	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
 	{
-		$qry = "Select id, GameTitle, Developer, ReleaseDate, ReleaseDateRevised, Platform ";
+		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
 		{
@@ -388,7 +488,7 @@ class TGDB
 			}
 		}
 
-		$qry .= " FROM games WHERE lastupdatedRevised > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -:minutes MINUTE) ORDER BY lastupdatedRevised DESC LIMIT :limit OFFSET :offset";
+		$qry .= " FROM games WHERE last_updated > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -:minutes MINUTE) ORDER BY last_updated DESC LIMIT :limit OFFSET :offset";
 
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
@@ -400,10 +500,281 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
 			return $res;
 		}
 
 		return array();
+	}
+
+	function GetGamesByDevID($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+		$DevIDs = array();
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$DevIDsArr[] = $val;
+			}
+			$DevIDs = implode(",", $DevIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$DevIDs = $IDs;
+		}
+
+		if(empty($DevIDs))
+		{
+			return array();
+		}
+
+		$qry .= "WHERE id IN (SELECT games_id from games_devs where dev_id IN ($DevIDs)) ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
+	function GetGamesByPubID($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+		$PubIDs = array();
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PubIDsArr[] = $val;
+			}
+			$PubIDs = implode(",", $PubIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$PubIDs = $IDs;
+		}
+
+		if(empty($PubIDs))
+		{
+			return array();
+		}
+
+		$qry .= "WHERE id IN (SELECT games_id from games_pubs where pub_id IN ($PubIDs)) ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
+	function GetMissingGames($field, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		if(!$this->is_valid_games_col($field))
+		{
+			return array();
+		}
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+
+		$qry .= "WHERE $field = '' OR $field IS NULL ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			{
+				foreach($res as $game)
+				{
+					$GameIDs[] = $game->id;
+				}
+				$devs = $this->GetGamesDevs($GameIDs, false);
+				foreach($res as $game)
+				{
+					$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
+				}
+				if(isset($fields['publishers']))
+				{
+					$pubs = $this->GetGamesPubs($GameIDs, false);
+					foreach($res as $game)
+					{
+						$game->publishers = (!empty($pubs[$game->id])) ? $pubs[$game->id] : NULL;
+					}
+				}
+			}
+			return $res;
+		}
+	}
+
+	function GetMissingGamesImages($type, $sub_type = '', $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	{
+		$qry = "Select id, game_title, release_date, platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+		$side = '';
+		if($sub_type != '')
+		{
+			$side = 'AND side=:side';
+		}
+		$qry .= "WHERE id NOT IN (select games_id from banners where type=:type $side) ";
+		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
+		{
+			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
+			{
+				$ASCDESC == 'ASC';
+			}
+			$qry .= " ORDER BY $OrderBy $ASCDESC ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':type', $type, PDO::PARAM_STR);
+		if($sub_type != '')
+		{
+			$sth->bindValue(':side', $sub_type, PDO::PARAM_STR);
+		}
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			{
+				foreach($res as $game)
+				{
+					$GameIDs[] = $game->id;
+				}
+				$devs = $this->GetGamesDevs($GameIDs, false);
+				foreach($res as $game)
+				{
+					$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
+				}
+				if(isset($fields['publishers']))
+				{
+					$pubs = $this->GetGamesPubs($GameIDs, false);
+					foreach($res as $game)
+					{
+						$game->publishers = (!empty($pubs[$game->id])) ? $pubs[$game->id] : NULL;
+					}
+				}
+			}
+			return $res;
+		}
 	}
 
 	private function CreateBoxartFilterQuery($filter, &$is_filter)
@@ -411,13 +782,13 @@ class TGDB
 		$qry = "";
 		switch($filter)
 		{
-			case 'fanart':
 			case 'series':
+				$filter = 'banner';
+			case 'fanart':
+			case 'banner':
 			case 'boxart':
 			case 'screenshot':
-			case 'platform-banner':
-			case 'platform-fanart':
-			case 'platform-boxart':
+			case 'icon':
 			case 'clearlogo':
 				if(!$is_filter)
 				{
@@ -429,7 +800,7 @@ class TGDB
 				{
 					$qry .=" OR ";
 				}
-				$qry .=" keytype = '$filter' ";
+				$qry .=" type = '$filter' ";
 		}
 		return $qry;
 	}
@@ -457,7 +828,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select keyvalue as games_id, keytype as type, side, filename, resolution FROM banners WHERE keyvalue IN ($GameIDs) ";
+		$qry = "Select B.games_id, B.id, B.type, B.side, B.filename, B.resolution FROM banners B, (SELECT id FROM games WHERE id IN ($GameIDs) LIMIT :limit OFFSET :offset) T WHERE B.games_id = T.id ";
 		$is_filter = false;
 		if(is_array($filters))
 		{
@@ -475,7 +846,7 @@ class TGDB
 		{
 			$qry .=" )";
 		}
-		$qry .= " LIMIT :limit OFFSET :offset;";
+		$qry .= ";";
 
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
@@ -492,7 +863,7 @@ class TGDB
 
 	function GetLatestGameBoxart($offset = 0, $limit = 20, $filters = 'boxart', $side = '')
 	{
-		$qry = "Select keyvalue as game_id, keytype as type, side, filename, resolution FROM banners WHERE 1 ";
+		$qry = "Select games_id as game_id, type, side, filename, resolution FROM banners WHERE 1 ";
 		$is_filter = false;
 		if(is_array($filters))
 		{
@@ -649,6 +1020,62 @@ class TGDB
 		}
 	}
 
+	function GetPlatformBoxartByID($IDs = 0, $offset = 0, $limit = 20, $filters = 'boxart')
+	{
+		$PlatformIDs;
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$PlatformIDs = $IDs;
+		}
+
+		if(empty($PlatformIDs))
+		{
+			return array();
+		}
+
+		$qry = "Select platforms_id, id, type, filename FROM platforms_images WHERE platforms_id IN ($PlatformIDs) ";
+		$is_filter = false;
+		if(is_array($filters))
+		{
+			foreach($filters as $filter)
+			{
+				$qry .= $this->CreateBoxartFilterQuery($filter, $is_filter);
+			}
+		}
+		else
+		{
+			$qry .= $this->CreateBoxartFilterQuery($filters, $is_filter);
+		}
+
+		if($is_filter)
+		{
+			$qry .=" )";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
 	function GetGamesStats()
 	{
 		$dbh = $this->database->dbh;
@@ -658,10 +1085,315 @@ class TGDB
 		{
 			$res = $sth->fetchAll(PDO::FETCH_UNIQUE | PDO::FETCH_COLUMN);
 			{
-				$ret =  $dbh->query("select count(id) from games where Overview is not null", PDO::FETCH_COLUMN, 0);
+				$ret =  $dbh->query("select count(id) from games where overview is not null", PDO::FETCH_COLUMN, 0);
 				$res['overview'] = $ret->fetch();
 			}
 			return $res;
+		}
+	}
+
+	function GetGenres()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("SELECT id as n, id, genre as name FROM genres");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetPubsList()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM pubs_list order by name");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetDevsList()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM devs_list order by name");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetDevsListByIDs($IDs)
+	{
+		$dbh = $this->database->dbh;
+		$devs_IDs;
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$valid_ids[] = $val;
+			}
+			if(!empty($valid_ids))
+			{
+				$devs_IDs = implode(",", $valid_ids);
+			}
+		}
+		else if(is_numeric($IDs))
+		{
+			$devs_IDs = $IDs;
+		}
+		if(empty($devs_IDs))
+		{
+			return array();
+		}
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM devs_list where id IN($devs_IDs) order by name");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetGamesGenres($games_id, $include_game_id = true)
+	{
+		if(!empty($games_id) && is_array($games_id))
+		{
+			foreach($games_id as $key => $val)
+			{
+				if(is_numeric($val))
+				{
+					$valid_games_id[] = $val;
+				}
+			}
+			if(!empty($valid_games_id))
+			{
+				$games_id = implode(",", $valid_games_id);
+			}
+		}
+		else if(empty($games_id) || !is_numeric($games_id))
+		{
+			return array();
+		}
+		$dbh = $this->database->dbh;
+		$qry = "SELECT games_id as n, genres_id";
+		if($include_game_id)
+		{
+			$qry .= ", games_id";
+		}
+		$qry .= " FROM games_genre where games_id IN($games_id);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+		}
+	}
+
+	function GetGamesDevs($games_id, $include_game_id = true)
+	{
+		if(!empty($games_id) && is_array($games_id))
+		{
+			foreach($games_id as $key => $val)
+			{
+				if(is_numeric($val))
+				{
+					$valid_games_id[] = $val;
+				}
+			}
+			$games_id = implode(",", $valid_games_id);
+		}
+		else if(empty($games_id) || !is_numeric($games_id))
+		{
+			return array();
+		}
+		$dbh = $this->database->dbh;
+		$qry = "SELECT games_id as n, dev_id";
+		if($include_game_id)
+		{
+			$qry .= ", games_id";
+		}
+		$qry .= " FROM games_devs where games_id IN($games_id);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+		}
+	}
+
+	function GetGamesPubs($games_id, $include_game_id = true)
+	{
+		if(!empty($games_id) && is_array($games_id))
+		{
+			foreach($games_id as $key => $val)
+			{
+				if(is_numeric($val))
+				{
+					$valid_games_id[] = $val;
+				}
+			}
+			$games_id = implode(",", $valid_games_id);
+		}
+		else if(empty($games_id) || !is_numeric($games_id))
+		{
+			return array();
+		}
+		$dbh = $this->database->dbh;
+		$qry = "SELECT games_id as n, pub_id";
+		if($include_game_id)
+		{
+			$qry .= ", games_id";
+		}
+		$qry .= " FROM games_pubs where games_id IN($games_id);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+		}
+	}
+
+	function GetUserEdits($condition = '', $order = '', $offset = 0, $limit = 100)
+	{
+		if(empty($condition))
+		{
+			die("Error, empty condition.");
+		}
+		$orderby = "";
+		if(!empty($order))
+		{
+			$orderby = "order by $order";
+		}
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select id as edit_id, games_id as game_id, timestamp, type, value FROM user_edits
+		WHERE $condition $orderby LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			foreach($res as $edit)
+			{
+				if($edit->type == 'genres' || $edit->type == 'developers' || $edit->type == 'publishers')
+				{
+					$edit->value = json_decode($edit->value);
+				}
+			}
+			return $res;
+		}
+	}
+
+	function GetGamesAlts($games_id, $include_id = true)
+	{
+		$dbh = $this->database->dbh;
+		$Games_IDs;
+		if(is_array($games_id))
+		{
+			if(!empty($games_id))
+			{
+				foreach($games_id as $key => $val)
+					if(is_numeric($val))
+						$valid_ids[] = $val;
+			}
+			$Games_IDs = implode(",", $valid_ids);
+		}
+		else if(is_numeric($games_id))
+		{
+			$Games_IDs = $games_id;
+		}
+		if(empty($Games_IDs))
+		{
+			return array();
+		}
+		$qry = "SELECT games_id as n, name";
+		if($include_id)
+		{
+			$qry .= ", id, games_id";
+		}
+		$qry .= " FROM games_alts where games_id IN($Games_IDs);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+			return $res;
+		}
+	}
+
+	function GetUserEditsByTime($minutes = 1440, $offset = 0, $limit = 100)
+	{
+
+		return $this->GetUserEdits("timestamp > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -$minutes MINUTE)", "id DESC", $offset, $limit);
+
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select id as edit_id, games_id as game_id, timestamp, type, value FROM user_edits
+		WHERE timestamp > DATE_ADD(CURRENT_TIMESTAMP(), INTERVAL -:minutes MINUTE) order by id LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':minutes', $minutes, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ);
+		}
+	}
+
+	function GetUserEditsByID($id, $offset = 0, $limit = 100)
+	{
+		return $this->GetUserEdits("id > $id", "", $offset, $limit);
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select id as edit_id, games_id as game_id, timestamp, type, value FROM user_edits
+		WHERE id > :id LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ);
+		}
+	}
+
+	function GetPubsListByIDs($IDs)
+	{
+		$dbh = $this->database->dbh;
+		$devs_IDs;
+		if(is_array($IDs))
+		{
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$valid_ids[] = $val;
+			}
+			if(!empty($valid_ids))
+			{
+				$devs_IDs = implode(",", $valid_ids);
+			}
+		}
+		else if(is_numeric($IDs))
+		{
+			$devs_IDs = $IDs;
+		}
+		if(empty($devs_IDs))
+		{
+			return array();
+		}
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM pubs_list where id IN($devs_IDs) order by name");
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetESRBrating()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("SELECT id as n, id, name FROM ESRB_rating");
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
 		}
 	}
 
@@ -671,13 +1403,13 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$Total = array();
-		$sth = $dbh->prepare("SELECT DISTINCT keytype from banners");
+		$sth = $dbh->prepare("SELECT DISTINCT type from banners");
 		if($sth->execute())
 		{
 			$types = $sth->fetchAll(PDO::FETCH_COLUMN);
 			foreach($types as $type)
 			{
-				$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = :type and keyvalue IN (select id from games) GROUP BY keyvalue");
+				$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where type = :type and games_id IN (select id from games) GROUP BY games_id");
 				$sth->bindValue(':type', $type, PDO::PARAM_STR);
 				if($sth->execute())
 				{
@@ -685,12 +1417,12 @@ class TGDB
 				}
 			}
 			$Total['boxart'] = array();
-			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'front' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where type = 'boxart' and side = 'front' and games_id IN (select id from games) GROUP BY games_id");
 			if($sth->execute())
 			{
 				$Total['boxart']['front'] = $sth->rowCount();
 			}
-			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where keytype = 'boxart' and side = 'back' and keyvalue IN (select id from games) GROUP BY keyvalue");
+			$sth = $dbh->prepare("SELECT 1 as total FROM `banners` where type = 'boxart' and side = 'back' and games_id IN (select id from games) GROUP BY games_id");
 			if($sth->execute())
 			{
 				$Total['boxart']['back'] = $sth->rowCount();
@@ -716,6 +1448,7 @@ class TGDB
 					}
 				}
 			}
+			$dbh->query("update statistics set count = (select count(id) from games) where type = 'total';");
 		}
 	}
 
@@ -756,18 +1489,303 @@ class TGDB
 	}
 
 	/* Everything belowis not planned to be exposed through external API */
-	function InsertUserEdits($user_id, $game_id, $type, $diff, $subtype = '')
+
+	function InsertUserGameBookmark($users_id, $games_id, $is_booked)
 	{
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("INSERT INTO user_edits (users_id, games_id, type, diff) VALUES (:users_id, :games_id, :type, :diff);");
+
+		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, is_booked)
+		VALUES (:users_id, :games_id, :is_booked)
+		ON DUPLICATE KEY UPDATE is_booked = :is_booked2");
+		$sth->bindValue(':games_id', $games_id);
+		$sth->bindValue(':users_id', $users_id);
+		$sth->bindValue(':is_booked', $is_booked);
+		$sth->bindValue(':is_booked2', $is_booked);
+
+		return ($sth->execute());
+	}
+
+	function GetUserBookmarkedGames($users_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth->bindValue(':users_id', $users_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function isUserGameBookmarked($users_id, $games_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select is_booked FROM `user_games` where users_id=:users_id AND games_id=:games_id AND is_booked=1");
+		$sth->bindValue(':games_id', $games_id);
+		$sth->bindValue(':users_id', $users_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetch(PDO::FETCH_ASSOC);
+			return !empty($res) ? 1 : 0;
+		}
+		return 0;
+	}
+
+	function GetGameCount($searchTerm)
+	{
+		$dbh = $this->database->dbh;
+		
+		$qry = "select count(*) from (select count(id) as count from games where (game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3)
+		OR soundex(game_title) LIKE soundex(:name4)) GROUP BY id) search";
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+		if($sth->execute())
+		{
+			return $sth->fetch(PDO::FETCH_COLUMN);
+		}
+		return -1;
+	}
+
+	function InsertUserEdits($user_id, $game_id, $type, $value, $subtype = '')
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT INTO user_edits (users_id, games_id, type, value) VALUES (:users_id, :games_id, :type, :value);");
 		$sth->bindValue(':users_id', $user_id, PDO::PARAM_INT);
 		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
 		$sth->bindValue(':type', $type, PDO::PARAM_INT);
-		$sth->bindValue(':diff', $diff, PDO::PARAM_STR);
+		$sth->bindValue(':value', $value, PDO::PARAM_STR);
 		return $sth->execute();
 	}
 
-	function UpdateGame($user_id, $game_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher)
+	function InsertGamesGenre($game_id, $genres_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_genre (games_id, genres_id) VALUES (:games_id, :genres_id);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':genres_id', $genres_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function DeleteGamesGenre($game_id, $genres_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_genre  WHERE games_id=:games_id AND genres_id=:genres_id");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':genres_id', $genres_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function UpdateGamesGenre($user_id, $games_id, $new_ids)
+	{
+		$dbh = $this->database->dbh;
+		$is_changed = false;
+
+		$list = $this->GetGenres();
+
+		$current_ids = $this->GetGamesGenres($games_id);
+		if(isset($current_ids[$games_id]))
+		{
+			$current_ids = $current_ids[$games_id];
+		}
+		$valid_ids = array();
+
+		foreach($new_ids as $new_id)
+		{
+			if(isset($list[$new_id]))
+			{
+				$valid_ids[] = $new_id;
+
+				if(!in_array($new_id, $current_ids))
+				{
+					$res = $this->InsertGamesGenre($games_id, $new_id);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		foreach($current_ids as $current_id)
+		{
+			if(isset($list[$new_id]) && !in_array($current_id, $new_ids))
+			{
+				$res = $this->DeleteGamesGenre($games_id, $current_id);
+				if(!$dbh->inTransaction() && !$res)
+				{
+					return false;
+				}
+				$is_changed = true;
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_ids = array_unique($valid_ids);
+			if(!empty($valid_ids))
+			{
+				$genres_str = implode(",", $valid_ids);
+				$this->InsertUserEdits($user_id, $games_id, "genres", "[$genres_str]");
+			}
+		}
+		return true;
+	}
+
+	function InsertGamesDev($game_id, $dev_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_devs (games_id, dev_id) VALUES (:games_id, :dev_id);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':dev_id', $dev_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function DeleteGamesDev($game_id, $dev_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_devs  WHERE games_id=:games_id AND dev_id=:dev_id");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':dev_id', $dev_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function UpdateGamesDev($user_id, $games_id, $new_ids)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+		$list = $this->GetDevsListByIDs($new_ids);
+		$current_ids = $this->GetGamesDevs($games_id);
+		if(!empty($current_ids[$games_id]))
+		{
+			$current_ids = $current_ids[$games_id];
+		}
+
+		foreach($new_ids as $new_id)
+		{
+			if(isset($list[$new_id]))
+			{
+				$valid_ids[] = $new_id;
+
+				if(!in_array($new_id, $current_ids))
+				{
+					$res = $this->InsertGamesDev($games_id, $new_id);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		foreach($current_ids as $current_id)
+		{
+			if(isset($list[$new_id]) && !in_array($current_id, $new_ids))
+			{
+				$res = $this->DeleteGamesDev($games_id, $current_id);
+				if(!$dbh->inTransaction() && !$res)
+				{
+					return false;
+				}
+				$is_changed = true;
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_ids = array_unique($valid_ids);
+			if(!empty($valid_ids))
+			{
+				$ids_str = implode(",", $valid_ids);
+				$this->InsertUserEdits($user_id, $games_id, "developers", "[$ids_str]");
+			}
+		}
+		return true;
+	}
+
+	function InsertGamesPub($game_id, $pub_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_pubs (games_id, pub_id) VALUES (:games_id, :pub_id);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':pub_id', $pub_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function DeleteGamesPub($game_id, $pub_id)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_pubs WHERE games_id=:games_id AND pub_id=:pub_id");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':pub_id', $pub_id, PDO::PARAM_INT);
+		return $sth->execute();
+	}
+
+	function UpdateGamesPub($user_id, $games_id, $new_ids)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+		$list = $this->GetPubsListByIDs($new_ids);
+		$current_ids = $this->GetGamesPubs($games_id);
+		if(!empty($current_ids[$games_id]))
+		{
+			$current_ids = $current_ids[$games_id];
+		}
+
+		foreach($new_ids as $new_id)
+		{
+			if(isset($list[$new_id]))
+			{
+				$valid_ids[] = $new_id;
+
+				if(!in_array($new_id, $current_ids))
+				{
+					$res = $this->InsertGamesPub($games_id, $new_id);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		foreach($current_ids as $current_id)
+		{
+			if(isset($list[$new_id]) && !in_array($current_id, $new_ids))
+			{
+				$res = $this->DeleteGamesPub($games_id, $current_id);
+				if(!$dbh->inTransaction() && !$res)
+				{
+					return false;
+				}
+				$is_changed = true;
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_ids = array_unique($valid_ids);
+			if(!empty($valid_ids))
+			{
+				$ids_str = implode(",", $valid_ids);
+				$this->InsertUserEdits($user_id, $games_id, "publishers", "[$ids_str]");
+			}
+		}
+		return true;
+	}
+
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -785,25 +1803,61 @@ class TGDB
 		}
 
 		{
+			if(!empty($new_genres))
+			{
+				$this->UpdateGamesGenre($user_id, $game_id, $new_genres);
+			}
+			$rating = "";
+			$ratingsList = $this->GetESRBrating();
+			{
+				if(isset($ratingsList[$ratings]))
+				{
+					$rating = $ratingsList[$ratings]->name;
+				}
+			}
+
+			$valid_devs_id = array();
+			$developer = "";
+			$devs_list = $this->GetDevsListByIDs($new_developers);
+			foreach($new_developers as $dev_id)
+			{
+				if(isset($devs_list[$dev_id]))
+				{
+					$valid_devs_id[] = $devs_list[$dev_id]->name;
+				}
+			}
+			if(!empty($valid_devs_id))
+			{
+				$this->UpdateGamesDev($user_id, $game_id, $new_developers);
+				$developer = implode(" | ", $valid_devs_id);
+			}
+
+			$valid_pubs_id = array();
+			$pubs_list = $this->GetPubsListByIDs($new_publishers);
+			foreach($new_publishers as $pub_id)
+			{
+				if(isset($pubs_list[$pub_id]))
+				{
+					$valid_pubs_id[] = $pubs_list[$pub_id]->name;
+				}
+			}
+			if(!empty($valid_pubs_id))
+			{
+				$this->UpdateGamesPub($user_id, $game_id, $new_publishers);
+			}
+
 			$dbh->beginTransaction();
 
-			$sth = $dbh->prepare("UPDATE games SET GameTitle=:GameTitle, Overview=:Overview, ReleaseDateRevised=:ReleaseDateRevised, ReleaseDate=:ReleaseDate, Players=:Players, coop=:coop,
-			Developer=:Developer, Publisher=:Publisher, Youtube=:YouTube WHERE id=:game_id");
+			$sth = $dbh->prepare("UPDATE games SET game_title=:game_title, overview=:overview, release_date=:release_date, players=:players,
+			coop=:coop, youtube=:YouTube, rating=:rating WHERE id=:game_id");
 			$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
-			$sth->bindValue(':GameTitle', htmlspecialchars($GameTitle), PDO::PARAM_STR);
-			$sth->bindValue(':Overview', htmlspecialchars($Overview), PDO::PARAM_STR);
-			$sth->bindValue(':ReleaseDateRevised', $ReleaseDateRevised, PDO::PARAM_STR);
-			$date = explode('-', $ReleaseDateRevised);
-			$sth->bindValue(':ReleaseDate', "$date[1]/$date[2]/$date[0]", PDO::PARAM_STR);
-			$sth->bindValue(':Players', $Players, PDO::PARAM_INT);
-			$sth->bindValue(':YouTube', htmlspecialchars($Youtube), PDO::PARAM_STR);
+			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
+			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
+			$sth->bindValue(':release_date', $release_date, PDO::PARAM_STR);
+			$sth->bindValue(':players', $players, PDO::PARAM_INT);
+			$sth->bindValue(':YouTube', htmlspecialchars($youtube), PDO::PARAM_STR);
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
-
-			// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
-			// it will also mean, we will be able to standardise devs/publishers names
-			// this will allow their selection from a menu as oppose to being provided by the user
-			$sth->bindValue(':Developer', htmlspecialchars($Developer), PDO::PARAM_STR);
-			$sth->bindValue(':Publisher', htmlspecialchars($Publisher), PDO::PARAM_STR);
+			$sth->bindValue(':rating', $rating, PDO::PARAM_STR);
 
 			$sth->execute();
 			{
@@ -811,18 +1865,7 @@ class TGDB
 				{
 					if(isset($$key) && htmlspecialchars($$key) != $value)
 					{
-						if($key == 'Overview')
-						{
-							$diff = xdiff_string_diff($Game['Overview'], htmlspecialchars($Overview), 1);
-							if(empty($diff))
-							{
-								continue;
-							}
-						}
-						else
-						{
-							$diff = htmlspecialchars($$key);
-						}
+						$diff = htmlspecialchars($$key);
 						$this->InsertUserEdits($user_id, $game_id, $key, $diff);
 					}
 				}
@@ -835,8 +1878,9 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("DELETE FROM banners WHERE id=:id;");
+		$sth = $dbh->prepare("DELETE FROM banners WHERE id=:id and games_id=:games_id;");
 		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 		if($dbh->inTransaction() || $res)
 		{
@@ -849,7 +1893,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("DELETE FROM banners WHERE keyvalue=:game_id;");
+		$sth = $dbh->prepare("DELETE FROM banners WHERE games_id=:game_id;");
 		$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 		if($dbh->inTransaction() || $res)
@@ -873,10 +1917,10 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("INSERT INTO banners (keyvalue, keytype, side, filename, userid) VALUES (:keyvalue, :keytype, :side, :filename, :user_id); ");
+		$sth = $dbh->prepare("INSERT INTO banners (games_id, type, side, filename, userid) VALUES (:games_id, :type, :side, :filename, :user_id); ");
 		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
-		$sth->bindValue(':keyvalue', $game_id, PDO::PARAM_INT);
-		$sth->bindValue(':keytype', $type, PDO::PARAM_STR);
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':type', $type, PDO::PARAM_STR);
 		$sth->bindValue(':side', $side, PDO::PARAM_STR);
 		$sth->bindValue(':filename', $filename, PDO::PARAM_STR);
 		$res = $sth->execute();
@@ -887,42 +1931,86 @@ class TGDB
 		}
 		return ($dbh->inTransaction() || $res);
 	}
-	function DeleteGame($user_id, $game_id)
+
+	function DeleteGame($user_id, $games_id)
 	{
+		$this->DeleteAllGameImages($user_id, $games_id);
+
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("DELETE FROM games WHERE id=:game_id;");
-		$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
+		$dbh->beginTransaction();
+
+		$sth = $dbh->prepare("DELETE FROM games_pubs WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
+		$sth = $dbh->prepare("DELETE FROM games_genre WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
+		$sth = $dbh->prepare("DELETE FROM games_devs WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
+		$sth = $dbh->prepare("DELETE FROM games WHERE id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 		if($dbh->inTransaction() || $res)
 		{
-			$this->InsertUserEdits($user_id, $game_id, "game", "[REMOVED]");
+			$this->InsertUserEdits($user_id, $games_id, "game", "[REMOVED]");
 		}
-		return ($dbh->inTransaction() || $res);
+
+		return $dbh->commit();
 	}
 
-	function InsertGame($user_id, $GameTitle, $Overview, $Youtube, $ReleaseDateRevised, $Players, $coop, $Developer, $Publisher)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
 		{
-			$sth = $dbh->prepare("INSERT INTO games(GameTitle, Overview, ReleaseDateRevised, ReleaseDate, Players, coop, Developer, Publisher, Youtube, Alternates)
-			values (:GameTitle, :Overview, :ReleaseDateRevised, :ReleaseDate, :Players, :coop, :Developer, :Publisher, :YouTube, :Alternates)");
-			$sth->bindValue(':GameTitle', htmlspecialchars($GameTitle), PDO::PARAM_STR);
-			$sth->bindValue(':Overview', htmlspecialchars($Overview), PDO::PARAM_STR);
-			$sth->bindValue(':ReleaseDateRevised', $ReleaseDateRevised, PDO::PARAM_STR);
-			$date = explode('-', $ReleaseDateRevised);
-			$sth->bindValue(':ReleaseDate', "$date[1]/$date[2]/$date[0]", PDO::PARAM_STR);
-			$sth->bindValue(':Players', $Players, PDO::PARAM_INT);
-			$sth->bindValue(':YouTube', htmlspecialchars($Youtube), PDO::PARAM_STR);
-			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
-			$sth->bindValue(':Alternates', "", PDO::PARAM_STR);
+			$rating = "";
+			$ratingsList = $this->GetESRBrating();
+			{
+				if(isset($ratingsList[$ratings]))
+				{
+					$rating = $ratingsList[$ratings]->name;
+				}
+			}
 
-			// NOTE: these will be moved to own table, as a single game can have multiple devs/publishers
-			// it will also mean, we will be able to standardise devs/publishers names
-			// this will allow their selection from a menu as oppose to being provided by the user
-			$sth->bindValue(':Developer', htmlspecialchars($Developer), PDO::PARAM_STR);
-			$sth->bindValue(':Publisher', htmlspecialchars($Publisher), PDO::PARAM_STR);
+			$valid_devs_id = array();
+			$developer = "";
+			$devs_list = $this->GetDevsList();
+			foreach($new_developers as $dev_id)
+			{
+				if(isset($devs_list[$dev_id]))
+				{
+					$valid_devs_id[] = $devs_list[$dev_id]->name;
+				}
+			}
+			if(!empty($valid_devs_id))
+			{
+				$developer = implode(" | ", $valid_devs_id);
+			}
+
+			$valid_pubs_id = array();
+			$pubs_list = $this->GetPubsList();
+			foreach($new_publishers as $pub_id)
+			{
+				if(isset($pubs_list[$pub_id]))
+				{
+					$valid_pubs_id[] = $pubs_list[$pub_id]->name;
+				}
+			}
+			$sth = $dbh->prepare("INSERT INTO games(game_title, overview, release_date, players, coop, youtube, platform, rating)
+			values (:game_title, :overview, :release_date, :players, :coop, :youtube, :platform, :rating)");
+			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
+			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
+			$sth->bindValue(':release_date', $release_date, PDO::PARAM_STR);
+			$sth->bindValue(':players', $players, PDO::PARAM_INT);
+			$sth->bindValue(':youtube', htmlspecialchars($youtube), PDO::PARAM_STR);
+			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
+			$sth->bindValue(':platform', $platform, PDO::PARAM_INT);
+			$sth->bindValue(':rating', $rating, PDO::PARAM_STR);
 
 			if($sth->execute())
 			{
@@ -930,7 +2018,22 @@ class TGDB
 				$dbh->beginTransaction();
 				$this->InsertUserEdits($user_id, $game_id, 'game', '[NEW]');
 
-				$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Youtube'];
+				if(!empty($new_genres))
+				{
+					$this->UpdateGamesGenre($user_id, $game_id, $new_genres);
+				}
+
+				if(!empty($new_developers))
+				{
+					$this->UpdateGamesDev($user_id, $game_id, $new_developers);
+				}
+
+				if(!empty($new_publishers))
+				{
+					$this->UpdateGamesPub($user_id, $game_id, $new_publishers);
+				}
+
+				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'platform', 'rating'];
 				foreach($GameArrayFields as $key)
 				{
 					$diff = htmlspecialchars($$key);
@@ -940,6 +2043,85 @@ class TGDB
 			}
 		}
 		return $game_id;
+	}
+
+	function GetGamesReports($is_resolved, $offset = 0, $limit = 20)
+	{
+		$qry = "SELECT games_reports.*, games.game_title, games.platform FROM games_reports left join games on games_reports.games_id = games.id where games_reports.is_resolved = :is_resolved LIMIT :limit OFFSET :offset;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':is_resolved', $is_resolved, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function ReportGame($user_id, $username, $REQUEST)
+	{
+		$dbh = $this->database->dbh;
+		{
+			$sth = $dbh->prepare("Select * FROM games WHERE id = :game_id");
+			$sth->bindValue(':game_id', $REQUEST['game_id'], PDO::PARAM_INT);
+
+			if($sth->execute())
+			{
+				$Game = $sth->fetch(PDO::FETCH_ASSOC);
+			}
+			if(!isset($Game) || empty($Game))
+			{
+				return -1;
+			}
+		}
+		if($REQUEST['report_type'] == 1)
+		{
+			$sth = $dbh->prepare("Select * FROM games WHERE id = :game_id");
+			$sth->bindValue(':game_id', $REQUEST['metadata_0'], PDO::PARAM_INT);
+
+			if($sth->execute())
+			{
+				$Game = $sth->fetch(PDO::FETCH_ASSOC);
+			}
+			if(!isset($Game) || empty($Game))
+			{
+				return -2;
+			}
+		}
+
+		$qry = "INSERT INTO games_reports (user_id, username, games_id, type, metadata_0, extra, is_resolved) values (:user_id, :username, :games_id, :type, :metadata_0, :extra, 0)";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+		$sth->bindValue(':username', $username, PDO::PARAM_STR);
+
+		$sth->bindValue(':games_id', $REQUEST['game_id'], PDO::PARAM_INT);
+
+		$sth->bindValue(':type',  $REQUEST['report_type'], PDO::PARAM_INT);
+		$sth->bindValue(':metadata_0',  !empty($REQUEST['metadata_0']) ? $REQUEST['metadata_0'] : null, PDO::PARAM_STR);
+		$sth->bindValue(':extra', !empty($REQUEST['extra']) ? $REQUEST['extra'] : null, PDO::PARAM_STR);
+
+		return $sth->execute();
+	}
+
+	function ResolveGameReport($user_id, $username, $id)
+	{
+		$qry = "UPDATE games_reports SET is_resolved = 1, resolver_user_id=:user_id, resolver_username=:username WHERE id=:id;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+		$sth->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+		$sth->bindValue(':username', $username, PDO::PARAM_STR);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
 	}
 }
 

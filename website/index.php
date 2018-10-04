@@ -5,22 +5,22 @@ require_once __DIR__ . "/include/WebUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 
 $API = TGDB::getInstance();
-$soon = $API->GetGamesByDate(date("d/m/Y"), 0, 5, array('AFTER' => true), "ReleaseDateRevised", 'ASC');
-$recent = $API->GetGamesByDate(date("d/m/Y"), 0, 6, array('BEFORE' => true), "ReleaseDateRevised", 'DESC');
+$soon = $API->GetGamesByDate(date("d/m/Y"), 0, 5, array('AFTER' => true), "release_date", 'ASC');
+$recent = $API->GetGamesByDate(date("d/m/Y"), 0, 6, array('BEFORE' => true), "release_date", 'DESC');
 foreach($soon as $Game)
 {
-	$PlatformIDs[] = $Game->Platform;
+	$PlatformIDs[] = $Game->platform;
 }
 foreach($recent as $Game)
 {
 	$IDs[] = $Game->id;
-	$PlatformIDs[] = $Game->Platform;
+	$PlatformIDs[] = $Game->platform;
 }
-$lastupdated = $API->GetAllGames(0, 10, array('Overview' => true), "id", 'DESC');
+$lastupdated = $API->GetAllGames(0, 10, array('overview' => true), "id", 'DESC');
 foreach($lastupdated as $Game)
 {
 	$IDs[] = $Game->id;
-	$PlatformIDs[] = $Game->Platform;
+	$PlatformIDs[] = $Game->platform;
 }
 $Platforms = $API->GetPlatforms($PlatformIDs);
 $covers = $API->GetGameBoxartByID($IDs, 0, 9999);
@@ -58,9 +58,9 @@ $Header->appendRawHeader(function() { ?>
 				<div class="row">
 					<?php foreach($recent as $game) : ?>
 					<div class="col-6 col-md-2">
-						<a href="/game.php?id=<?= $game->id ?>" class="crop">
-							<span class="img" style="background-image:url('<?= TGDBUtils::GetCover($game, 'boxart', 'front', true,  true, 'thumb') ?>');">
-							<div class="cover-text-col-3 cover-text cover-text-bottom cover-text-hover"><?= $game->GameTitle ?></div>
+						<a href="/game.php?id=<?= $game->id ?>" style="padding-bottom: 10px;">
+							<img class="cover-overlay" src="<?= TGDBUtils::GetCover($game, 'boxart', 'front', true,  true, 'cropped_center_thumb_square') ?>">
+							<div class="cover-text-col-3 cover-text cover-text-bottom cover-text-hover"><?= $game->game_title ?></div>
 						</a>
 					</div>
 					<div class="clear"></div>
@@ -83,9 +83,10 @@ $Header->appendRawHeader(function() { ?>
 						</a>
 					</div>
 					<div class="col-9">
-						<h4><a href="/game.php?id=<?= $game->id ?>"><?= $game->GameTitle ?></a></h4>
+						<h4><a href="/game.php?id=<?= $game->id ?>"><?= $game->game_title ?></a></h4>
+						<h6 class="text-muted">Platform: <?= $Platforms[$game->platform]->name ?></h6>
 						<p>
-							<?= !empty($game->Overview) ? WebUtils::truncate($game->Overview, 200) : "No overview is currently available for this title, please feel free to add one."; ?>... <a href="/game.php?id=<?= $game->id ?>">Read More</a></p>
+							<?= !empty($game->overview) ? WebUtils::truncate($game->overview, 200) : "No overview is currently available for this title, please feel free to add one."; ?>... <a href="/game.php?id=<?= $game->id ?>">Read More</a></p>
 					</div>
 				</div>
 				<hr/>
@@ -104,9 +105,9 @@ $Header->appendRawHeader(function() { ?>
 								<tr>
 									<th scope="row">
 										<a href="/game.php?id=<?= $game->id ?>">
-											<?= $game->GameTitle ?>
+											<?= $game->game_title ?>
 											<br/>
-											<span class="text-muted"><?= $Platforms[$game->Platform]->name ?></span>
+											<span class="text-muted"><?= $Platforms[$game->platform]->name ?></span>
 										</a>
 									</th>
 								</tr>

@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . "/include/ErrorPage.class.php";
-if(!isset($_REQUEST['platformID']) || !is_numeric($_REQUEST['platformID']))
+if(
+	(!isset($_REQUEST['platform_id']) || !is_numeric($_REQUEST['platform_id']))
+	&&
+	(!isset($_REQUEST['dev_id']) || !is_numeric($_REQUEST['dev_id']))
+	&&
+	(!isset($_REQUEST['pub_id']) || !is_numeric($_REQUEST['pub_id']))
+	)
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
@@ -15,23 +21,57 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
-$Platform = $API->GetPlatforms($_REQUEST['platformID'], array("icon" => true, "overview" => true, "developer" => true));
-if(isset($Platform[$_REQUEST['platformID']]))
+
+$limit = 18;
+$page = PaginationUtils::getPage();
+$offset = ($page - 1) * $limit;
+if(isset($_REQUEST['dev_id']) && is_numeric($_REQUEST['dev_id']))
 {
-	$Platform = $Platform[$_REQUEST['platformID']];
+	$listed_by = "Developer";
+	$list = $API->GetGamesByDevID($_REQUEST['dev_id'], $offset, $limit+1, array(), "game_title");
+	$DevInfo = $API->GetDevsListByIDs($_REQUEST['dev_id']);
+	if(!empty($DevInfo))
+	{
+		$DevInfo = $DevInfo[$_REQUEST['dev_id']];
+	}
+}
+else if(isset($_REQUEST['pub_id']) && is_numeric($_REQUEST['pub_id']))
+{
+	$listed_by = "Publisher";
+	$list = $API->GetGamesByPubID($_REQUEST['pub_id'], $offset, $limit+1, array(), "game_title");
+	$DevInfo = $API->GetPubsListByIDs($_REQUEST['pub_id']);
+	if(!empty($DevInfo))
+	{
+		$DevInfo = $DevInfo[$_REQUEST['pub_id']];
+	}
+}
+else if(isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id']))
+{
+	$listed_by = "Platform";
+	$Platform = $API->GetPlatforms($_REQUEST['platform_id'], array("icon" => true, "overview" => true, "developer" => true));
+	if(isset($Platform[$_REQUEST['platform_id']]))
+	{
+		$Platform = $Platform[$_REQUEST['platform_id']];
+	}
+	else
+	{
+		$errorPage = new ErrorPage();
+		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
+		$errorPage->print_die();
+	}
+	$list = $API->GetGameListByPlatform($_REQUEST['platform_id'], $offset, $limit+1, array(), "game_title");
 }
 else
 {
 	$errorPage = new ErrorPage();
 	$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
-	$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
+	$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR . " (2)");
 	$errorPage->print_die();
 }
 
-$limit = 18;
-$page = PaginationUtils::getPage();
-$offset = ($page - 1) * $limit;
-$list = $API->GetGameListByPlatform($_REQUEST['platformID'], $offset, $limit+1, array(), "GameTitle");
+
+
 if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);
@@ -52,12 +92,12 @@ if(isset($IDs) && !empty($IDs))
 	}
 }
 $Header = new HEADER();
-$Header->setTitle("TGDB - Browser - Game By Platform");
+$Header->setTitle("TGDB - Browser - Game By $listed_by");
 ?>
 <?= $Header->print(); ?>
 
 	<div class="container-fluid">
-
+	<?php if(isset($Platform)) : ?>
 		<div class="row justify-content-center" style="margin:10px;">
 			<div class="col-12 col-md-10">
 				<div class="card">
@@ -71,6 +111,20 @@ $Header->setTitle("TGDB - Browser - Game By Platform");
 				</div>
 			</div>
 		</div>
+	<?php elseif(isset($DevInfo)) : ?>
+		<div class="row justify-content-center" style="margin:10px;">
+			<div class="col-12 col-md-10">
+				<div class="card">
+					<div class="card-header">
+						<legend><?= $DevInfo->name ?></legend>
+					</div>
+					<div class="card-body">
+						<?= $listed_by ?>s overview have not been added yet.
+					</div>
+				</div>
+			</div>
+		</div>
+	<?php endif; ?>
 
 		<div class="row row-eq-height justify-content-center" style="margin:10px;">
 		<?php if(isset($list) && !empty($list)) : foreach($list as $Game) : ?>
@@ -82,8 +136,8 @@ $Header->setTitle("TGDB - Browser - Game By Platform");
 							<div class="card-body card-noboday" style="text-align:center;">
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
-								<p><?= $Game->GameTitle ?></p>
-								<p><?= $Game->ReleaseDateRevised ?></p>
+								<p><?= $Game->game_title ?></p>
+								<p><?= $Game->release_date ?></p>
 							</div>
 						</div>
 					</a>

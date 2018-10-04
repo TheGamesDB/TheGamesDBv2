@@ -100,6 +100,21 @@ class Utils
 		}
 		return $IDs;
 	}
+
+	static function htmlspecialchars_decodeArrayRecursive(&$array)
+	{
+		foreach($array as &$sub_array_item)
+		{
+			if(is_array($sub_array_item) || is_object($sub_array_item))
+			{
+				Utils::htmlspecialchars_decodeArrayRecursive($sub_array_item);
+			}
+			else if(!is_numeric($sub_array_item) && !empty($sub_array_item))
+			{
+				$sub_array_item = htmlspecialchars_decode($sub_array_item);
+			}
+		}
+	}
 }
 
 ?>

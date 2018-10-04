@@ -38,7 +38,7 @@ if(isset($fanart) && !empty($fanart))
 	$Platform->boxart[] = $fanart[$_REQUEST['id']][0];
 	$fanart = true;
 }
-$recent = $API->GetGamesByDateByPlatform($_REQUEST['id'], date("d/m/Y"), 0, 6, array('BEFORE' => true), "ReleaseDateRevised", 'DESC');
+$recent = $API->GetGamesByDateByPlatform($_REQUEST['id'], date("d/m/Y"), 0, 6, array('BEFORE' => true), "release_date", 'DESC');
 foreach($recent as $Game)
 {
 	$IDs[] = $Game->id;
@@ -107,7 +107,7 @@ $Header->appendRawHeader(function()
 						<div class="card border-primary">
 							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'platform-boxart', '', false,  true, 'thumb') ?>" />
 							<div class="card-body">
-								<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
+							<button onclick="alert('Not Implemented Yet!')" type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							</div>
 						</div>
 					</div>
@@ -126,24 +126,22 @@ $Header->appendRawHeader(function()
 									<?= $Platform->overview;?></p>
 							</div>
 							<div class="card-body">
-								<?php if(!empty($Game->Developer)) : ?>
-								<p>Developer:
-									<?= $Game->Developer; ?></p>
-								<?php endif; if(!empty($Game->Publisher)) : ?>
-								<p>Publisher:
-									<?= $Game->Publisher; ?></p>
-								<?php endif; if(!empty($Game->ReleaseDate)) : ?>
-								<p>ReleaseDate:
-									<?= $Game->ReleaseDate ;?></p>
-								<?php endif; if(!empty($Game->PlatformDetails)) : ?>
-								<p>Platform:
-									<?= $Game->PlatformDetails->name; ?></p>
-								<?php endif; if(!empty($Game->Players)) : ?>
-								<p>Players:
-									<?= $Game->Players; ?></p>
-								<?php endif; if(!empty($Game->coop)) : ?>
-								<p>Co-op:
-									<?= $Game->coop; ?></p>
+								<?php if(!empty($Platform->manufacturer)) : ?>
+								<p>Manufacturer: <?= $Platform->manufacturer; ?></p>
+								<?php endif; if(!empty($Platform->developer)) : ?>
+								<p>Developer: <?= $Platform->developer; ?></p>
+								<?php endif; if(!empty($Platform->media)) : ?>
+								<p>Media Medium: <?= $Platform->media ;?></p>
+								<?php endif; if(!empty($Platform->cpu)) : ?>
+								<p>CPU: <?= $Platform->cpu ;?></p>
+								<?php endif; if(!empty($Platform->memory)) : ?>
+								<p>Memory: <?= $Platform->memory ;?></p>
+								<?php endif; if(!empty($Platform->graphics)) : ?>
+								<p>Graphics: <?= $Platform->graphics ;?></p>
+								<?php endif; if(!empty($Platform->sound)) : ?>
+								<p>Sound: <?= $Platform->sound ;?></p>
+								<?php endif; if(!empty($Platform->display)) : ?>
+								<p>Display: <?= $Platform->display ;?></p>
 								<?php endif; if(!empty($Platform->youtube)) : ?>
 								<p><a data-fancybox data-caption="Trailer" href="http://youtube.com/watch?v=<?= $Platform->youtube;?>">Watch Trailer</a>
 								</p>
@@ -191,7 +189,7 @@ $Header->appendRawHeader(function()
 													</div>
 													<div class="card-footer bg-secondary" style="text-align:center;">
 														<p>
-															<?= WebUtils::truncate($Game->GameTitle, 20, true) ?></p>
+															<?= WebUtils::truncate($Game->game_title, 20, true) ?></p>
 													</div>
 												</div>
 											</a>
@@ -199,7 +197,7 @@ $Header->appendRawHeader(function()
 									</div>
 									<?php endforeach; ?>
 									<div class="col-md-12">
-										<a href="/listgames.php?platformID=<?= $Platform->id ?>" class="btn btn-info" role="button" style="width:100%;">See More</a>
+										<a href="/listgames.php?platform_id=<?= $Platform->id ?>" class="btn btn-info" role="button" style="width:100%;">See More</a>
 									</div>
 								</div>
 							</div>

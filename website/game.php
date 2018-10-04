@@ -11,11 +11,14 @@ require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
+require_once __DIR__ . "/include/login.phpbb.class.php";
+
+$_user = phpBBuser::getInstance();
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
-	$options = array("Overview" => true, "Players" => true, "Rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"Genre" => true, "Publisher" => true, "Platform" => true, "Youtube" => true);
+	$options = array("overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true);
 	$API = TGDB::getInstance();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	if(empty($list))
@@ -33,19 +36,27 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 		{
 			$Game->boxart = $covers[$_REQUEST['id']];
 		}
+		if($_user->isLoggedIn())
+		{
+			$Game->is_booked = $API->isUserGameBookmarked($_user->GetUserID(), $Game->id);
+		}
 	}
-	$Platform = $API->GetPlatforms($Game->Platform, array("icon" => true, "overview" => true, "developer" => true));
-	if(isset($Platform[$Game->Platform]))
+	$Platform = $API->GetPlatforms($Game->platform, array("icon" => true, "overview" => true, "developer" => true));
+	if(isset($Platform[$Game->platform]))
 	{
-		$Platform = $Platform[$Game->Platform];
+		$Platform = $Platform[$Game->platform];
 	}
 }
 
+$GenresList = $API->GetGenres();
+$DevsList = $API->GetDevsListByIDs($Game->developers);
+$PubsList = $API->GetPubsListByIDs($Game->publishers);
 
 $fanarts = TGDBUtils::GetAllCovers($Game, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($Game, 'screenshot', '');
-$banners = TGDBUtils::GetAllCovers($Game, 'series', '');
-$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners);
+$banners = TGDBUtils::GetAllCovers($Game, 'banner', '');
+$clearlogos = TGDBUtils::GetAllCovers($Game, 'clearlogo', '');
+$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) && empty($clearlogos);
 
 $box_cover =  new \stdClass();
 $box_cover->front = TGDBUtils::GetAllCovers($Game, 'boxart', 'front');
@@ -60,13 +71,13 @@ if(!empty($box_cover->back))
 }
 
 $Header = new HEADER();
-$Header->setTitle("TGDB - Browse - Game - $Game->GameTitle");
-$Header->appendRawHeader(function() { global $Game; ?>
+$Header->setTitle("TGDB - Browse - Game - $Game->game_title");
+$Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
-	<meta property="og:title" content="<?= $Game->GameTitle; ?>" />
+	<meta property="og:title" content="<?= $Game->game_title; ?>" />
 	<meta property="og:type" content="article" />
 	<meta property="og:image" content="<?= !empty($box_cover->front) ? $box_cover->front->thumbnail : "" ?>" />
-	<meta property="og:description" content="<?= htmlspecialchars($Game->Overview); ?>" />
+	<meta property="og:description" content="<?= htmlspecialchars($Game->overview); ?>" />
 
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">
@@ -84,9 +95,80 @@ $Header->appendRawHeader(function() { global $Game; ?>
 		{
 			fancyboxOpts.share.descr = function(instance, item)
 			{
-				return "<?= $Game->GameTitle ?>";
+				return "<?= $Game->game_title ?>";
 			};
 			$('[data-fancybox]').fancybox(fancyboxOpts);
+
+			$('#reportbtn').click(function()
+			{
+				<?php if ($_user->isLoggedIn()) : ?>
+				var game_id = parseInt(prompt("Please enter the original game id", ""));
+				if(isNaN(game_id))
+				{
+					alert('Invalid game id.')
+					return;
+				}
+				$(this).append('<i class="fa fa-spinner fa-pulse"></i>');
+				$(this).attr("disabled", true);
+				$.ajax({
+					method: "POST",
+					url: "/actions/report_game.php",
+					data: {
+						game_id: <?= $Game->id ?>,
+						report_type:1,
+						metadata_0: game_id,
+					 }
+				})
+				.done(function( msg ) {
+					$('#reportbtn').attr("disabled", false);
+					$('#reportbtn').find('.fa').remove();
+					var response = JSON.parse(msg);
+					alert(msg);
+				});
+				<?php else : ?>
+				alert("You must login to use this feature.");
+				<?php endif; ?>
+			});
+
+			$('[data-toggle="bookmark"]').click(function()
+			{
+				<?php if ($_user->isLoggedIn()) : ?>
+				$(this).append('<i class="fa fa-spinner fa-pulse"></i>');
+				$(this).attr("disabled", true);
+				$.ajax({
+					method: "POST",
+					url: "/actions/add_game_bookmark.php",
+					data: {
+						games_id: <?= $Game->id ?>,
+						is_booked: $('[data-toggle="bookmark"]').data("is-booked"),
+					 }
+				})
+					.done(function( msg ) {
+					$('[data-toggle="bookmark"]').attr("disabled", false);
+					$('[data-toggle="bookmark"]').find('.fa').remove();
+					var response = JSON.parse(msg);
+					if (response['code'] == 0 )
+					{
+						if (response['msg'] == 1)
+						{
+							$('[data-toggle="bookmark"]')[0].innerHTML='Remove From Collection';
+							$('[data-toggle="bookmark"]').removeClass( "btn-secondary" ).addClass( "btn-danger" );
+							$('[data-toggle="bookmark"]').data("is-booked", 0);
+						}
+						else
+						{
+							$('[data-toggle="bookmark"]')[0].innerHTML='Add To Collection';
+							$('[data-toggle="bookmark"]').removeClass( "btn-danger" ).addClass( "btn-secondary" );
+							$('[data-toggle="bookmark"]').data("is-booked", 1);
+						}
+					} else {
+						alert("Bookmark failed, refresh page and try again.");
+					}
+				});
+				<?php else : ?>
+				alert("You must login to use this feature.");
+				<?php endif; ?>
+			});
 		});
 	</script>
 	<style type="text/css">
@@ -165,31 +247,35 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
-							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->GameTitle, 'boxart'); ?>"/>
+							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
 							<?php endif; ?>
 							<div class="card-body">
-							<?php if(false) : ?>
-								<button type="button" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection <span class="glyphicon glyphicon-ok"></span></button>
+							<?php if(isset($Game->is_booked) && $Game->is_booked == 1) : ?>
+								<button type="button" data-is-booked="0" data-toggle="bookmark" class="btn btn-danger btn-block btn-wrap-text">Remove From Collection</button>
 							<?php else: ?>
-								<button type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
+								<button type="button" data-is-booked="1" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							<?php endif;?>
 							</div>
 							<div class="card-body">
 								<?php if (!empty($Platform)) : ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<?php endif; if (!empty($Developer)) : ?>
-								<p>Developer: <?= $Game->Developer; ?></p>
-								<?php endif; if (!empty($Game->Publisher)) : ?>
-								<p>Publisher: <?= $Game->Publisher; ?></p>
-								<?php endif; if (!empty($Game->ReleaseDateRevised)) : ?>
-								<p>ReleaseDateRevised: <?= $Game->ReleaseDateRevised ;?></p>
+								<?php endif; if (!empty($Game->developers) && !empty($DevsList)) : ?>
+								<p>Developer(s): <?php $last_key = end(array_keys($DevsList)); foreach($DevsList as $key => $Dev) : ?>
+								<a href="listgames.php?dev_id=<?= $Dev->id ?>"><?= $Dev->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<?php endforeach; ?></p>
+								<?php endif;  if (!empty($Game->publishers) && !empty($PubsList)) : ?>
+								<p>Publishers(s): <?php $last_key = end(array_keys($PubsList)); foreach($PubsList as $key => $pub) : ?>
+								<a href="listgames.php?pub_id=<?= $pub->id ?>"><?= $pub->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<?php endforeach; ?></p>
+								<?php endif; if (!empty($Game->release_date)) : ?>
+								<p>ReleaseDate: <?= $Game->release_date ;?></p>
 								<?php endif; if (!empty($Game->PlatformDetails)) : ?>
 								<p>Platform: <?= $Game->PlatformDetails->name; ?></p>
-								<?php endif; if (!empty($Game->Players)) : ?>
-								<p>Players: <?= $Game->Players; ?></p>
+								<?php endif; if (!empty($Game->players)) : ?>
+								<p>Players: <?= $Game->players; ?></p>
 								<?php endif; if (!empty($Game->coop)) : ?>
 								<p>Co-op: <?= $Game->coop; ?></p>
-								<?php endif ?>
+								<?php endif; ?>
 							</div>
 						</div>
 					</div>
@@ -217,18 +303,23 @@ $Header->appendRawHeader(function() { global $Game; ?>
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
-								<h1><?= $Game->GameTitle;?></h1>
+								<h1><?= $Game->game_title;?></h1>
+								<?php if(!empty($Game->alternates)) : ?><h6 class="text-muted">Also know as: <?= implode(" | ", $Game->alternates) ?></h6><?php endif; ?>
 							</div>
 							<div class="card-body">
-								<p><?= !empty($Game->Overview) ? $Game->Overview : "No overview is currently available for this title, please feel free to add one.";?></p>
-								<?php if (!empty($Game->Youtube)) : ?>
-								<p>Trailer: <a data-fancybox data-caption="Trailer" href="https://youtube.com/watch?v=<?= $Game->Youtube?>">YouTube</a></p>
-								<?php endif;?>
+								<p><?= !empty($Game->overview) ? $Game->overview : "No overview is currently available for this title, please feel free to add one.";?></p>
+								<?php if (!empty($Game->youtube)) : ?>
+								<p>Trailer: <a data-fancybox data-caption="Trailer" href="https://youtube.com/watch?v=<?= $Game->youtube?>">YouTube</a></p>
+								<?php endif; if (!empty($Game->rating)) : ?>
+								<p>ESRB Rating: <?= $Game->rating; ?></p>
+								<?php endif; if (!empty($Game->genres)) : //$gens_id = (json_decode($Game->genres)); ?>
+								<p>Genre(s): <?php foreach($Game->genres as $gen_id) { echo $GenresList[$gen_id]->name . " | "; } ?></p>
+								<?php endif; ?>
 							</div>
 							<div class="card-footer" style="text-align: center;">
 								<p>Share Via</p>
 								<!-- Twitter -->
-								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->GameTitle' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
+								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->game_title' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
 									<i class="fab fa-twitter"></i>
 								</div>
 								<!-- Facebook -->
@@ -244,7 +335,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 									<i class="fab fa-stumbleupon"></i>
 								</div>
 								<!-- Pinterest -->
-								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->GameTitle' on " . CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
+								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->game_title' on " . CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
 									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
@@ -287,7 +378,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 									<?php endif; ?>
 
 									<?php if(!empty($cover = array_shift($banners))) : ?>
-									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
+									<div class="col-8" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="banners" data-caption="Banner" href="<?= $cover->original ?>">
 											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
 											<img src="/images/ribbonBanners.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
@@ -298,7 +389,24 @@ $Header->appendRawHeader(function() { global $Game; ?>
 										<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
+									<?php if(!empty($cover = array_shift($clearlogos))) : ?>
+								</div>
+								<div class="row justify-content-center">
+
+									<div class="col-5" style="margin-bottom:10px; overflow:hidden;">
+										<a class="fancybox-thumb" data-fancybox="clearlogos" data-caption="Clearlogo" href="<?= $cover->original ?>">
+											<img style ="background-color: black;"class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
+											<img src="/images/ribbonClearlogos.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+										</a>
+										<?php while($cover = array_shift($clearlogos)) : ?>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="clearlogos" data-caption="Clearlogo"
+												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+										<?php endwhile; ?>
+									</div>
+									<?php endif; ?>
 									<?php if($is_graphics_empty) : ?>
+								</div>
+								<div class="row justify-content-center">
 									<div class="col-12" style="margin-bottom:10px; overflow:hidden;">
 										<h5>No fanarts/screenshots/banners found, be the 1st to add them.</h5>
 									</div>
@@ -321,7 +429,8 @@ $Header->appendRawHeader(function() { global $Game; ?>
 								<legend>Control Panel</legend>
 							</div>
 							<div class="card-body">
-							<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->GameTitle]") ?>" class="btn btn-primary btn-block">Report</a></p>
+							<p><button id="reportbtn" class="btn btn-primary btn-block">Report Duplicate</button></p>
+							<!--<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->game_title]") ?>" class="btn btn-primary btn-block">Report</a></p>-->
 							<p><a href="/edit_game.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">Edit</a></p>
 							</div>
 						</div>

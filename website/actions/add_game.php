@@ -22,20 +22,24 @@ else
 }
 
 
-$GameArrayFields = ['GameTitle', 'Overview', 'ReleaseDateRevised', 'Players', 'coop', 'Developer', 'Publisher', 'Youtube'];
+$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developers', 'publishers', 'platform', 'youtube', 'genres', 'rating'];
 foreach($GameArrayFields as $field)
 {
 	if(!isset($_REQUEST[$field]))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
 	}
-	if(empty($_REQUEST[$field]) && ($field != 'Youtube' && $field != 'Overview' && $field != 'Publisher'))
+	else if(empty($_REQUEST[$field]) && ($field != 'youtube' && $field != 'overview'))
 	{
 		returnJSONAndDie(-1, "field is empty: ($field).");
 	}
+	else if(($field == 'developers' || $field == 'publishers') && (empty($_REQUEST[$field]) || count($_REQUEST[$field]) < 1 || empty($_REQUEST[$field][0])))
+	{
+		//returnJSONAndDie(-2, "$field field is empty, if $field is not listed, please request it on the forum.");
+	}
 }
 
-$date = explode('-', $_REQUEST['ReleaseDateRevised']);
+$date = explode('-', $_REQUEST['release_date']);
 if(!checkdate($date[1], $date[2], $date[0]))
 {
 	returnJSONAndDie(-1, "Invalid Date Format");
@@ -48,8 +52,8 @@ try
 {
 
 	$API = TGDB::getInstance();
-	$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['GameTitle'],  $_REQUEST['Overview'], $_REQUEST['Youtube'], $_REQUEST['ReleaseDateRevised'],
-		$_REQUEST['Players'], $_REQUEST['coop'], $_REQUEST['Developer'], $_REQUEST['Publisher']);
+	$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
+		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['platform'], $_REQUEST['genres'], $_REQUEST['rating']);
 
 	if($res)
 	{

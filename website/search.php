@@ -10,10 +10,10 @@ $list = array();
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList(array("icon" => true));
-if(isset($_GET['platformID']) && !empty($_GET['platformID']) && !in_array(0, $_GET['platformID']))
+if(isset($_GET['platform_id']) && !empty($_GET['platform_id']) && !in_array(0, $_GET['platform_id']))
 {
-	$platformIDs = $_GET['platformID'];
-	foreach($_GET['platformID'] as $platform_id)
+	$platformIDs = $_GET['platform_id'];
+	foreach($_GET['platform_id'] as $platform_id)
 	{
 		$platformIDs[$platform_id] = true;
 	}
@@ -23,13 +23,13 @@ if(isset($_GET['name']) && !empty($_GET['name']))
 	$limit = 18;
 	$page = PaginationUtils::getPage();
 	$offset = ($page - 1) * $limit;
-	if(!isset($_GET['platformID']) || !is_array($_GET['platformID']) || in_array(0, $_GET['platformID']))
+	if(!isset($_GET['platform_id']) || !is_array($_GET['platform_id']) || in_array(0, $_GET['platform_id']))
 	{
 		$list = $API->SearchGamesByName($_GET['name'], $offset, $limit + 1);
 	}
 	else
 	{
-		$list = $API->SearchGamesByNameByPlatformID($_GET['name'], $_GET['platformID'], $offset, $limit + 1);
+		$list = $API->SearchGamesByNameByPlatformID($_GET['name'], $_GET['platform_id'], $offset, $limit + 1);
 	}
 	$search_term = htmlspecialchars($_GET['name']);
 	if($has_next_page = count($list) > $limit)
@@ -75,7 +75,7 @@ $Header->setTitle("TGDB - Search");
 							</div>
 							<div class="form-group">
 								<label for="platformselect">Select Platform</label>
-								<select name="platformID[]" multiple class="form-control" id="platformselect">
+								<select name="platform_id[]" multiple class="form-control" id="platformselect">
 								<option value="0"  <?= isset($platformIDs) ? "" : "selected" ?>>All</option>
 								<?php foreach($PlatformList as $id => $Platform) :?>
 								<option value="<?= $id ?>" <?= isset($platformIDs[$id]) ? "selected" : "" ?>><?= $Platform->name ?></option>
@@ -100,8 +100,8 @@ $Header->setTitle("TGDB - Search");
 							<div class="card-body card-noboday" style="text-align:center;">
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
-								<p><?= $Game->GameTitle ?></p>
-								<p><?= $Game->ReleaseDateRevised ?></p>
+								<p><?= $Game->game_title ?></p>
+								<p><?= $Game->release_date ?></p>
 							</div>
 						</div>
 					</a>

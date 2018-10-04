@@ -21,7 +21,7 @@ else
 	}
 }
 
-if(!isset($_REQUEST['game_id']) || !is_numeric($_REQUEST['game_id']))
+if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR);
 }
@@ -32,30 +32,9 @@ try
 {
 
 	$API = TGDB::getInstance();
-	if(empty($API->GetGameByID($_REQUEST['game_id'], 0, 1)))
-	{
-		returnJSONAndDie(0, "No game in record to delete.");
-	}
+	
 
-	$covers = $API->GetGameBoxartByID($_REQUEST['game_id'], 0, 99, 'ALL');
-
-	if(!empty($covers) && ($covers = $covers[$_REQUEST['game_id']]))
-	{
-		$sizes = ["original", "small", "thumb", "cropped_center_thumb", "medium", "large"];
-		foreach($covers as $cover)
-		{
-			foreach($sizes as $size)
-			{
-				$image_to_delete = __DIR__ . "/../../cdn/images/$size/" . $cover->filename;
-				if(file_exists($image_to_delete))
-				{
-					unlink($image_to_delete);
-				}
-			}
-		}
-	}
-
-	$res = $API->DeleteGame($_user->GetUserID(), $_REQUEST['game_id']);
+	$res = $API->ResolveGameReport($_user->GetUserID(), $_user->GetUsername(), $_REQUEST['id']);
 
 	returnJSONAndDie(1, "success!!");
 	

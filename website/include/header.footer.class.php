@@ -111,19 +111,20 @@ class HEADER
 			</form>
 			<ul class="navbar-nav my-2 my-lg-0">
 				<?php if($_user->isLoggedIn()) : ?>
-				<li class="nav-item mr-0 dropdown">
-					<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
-						style="padding-bottom: 10px;"><img width="25px" src="<?= $_user->GetAvatar() ?>"
-						style="border-radius: 50%;"> <?= $_user->GetUsername() ?> <span class="glyphicon glyphicon-star" aria-hidden="true"></span>
+				<div class="nav-item mr-0 dropdown">
+					<button class="btn btn-link dropdown-toggle font-weight-bold" style="color:white;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+						<img width="25px" src="<?= $_user->GetAvatar() ?>" style="border-radius: 50%;">
+						<?= $_user->GetUsername() ?>
+						<span class="glyphicon glyphicon-star" aria-hidden="true"></span>
 						<span class="caret"></span>
-					</a>
-					<div class="dropdown-menu">
+					</button>
+					<div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
 						<a class="dropdown-item" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $_user->GetUserID() ?>">Forum Profile</a>
 						<a class="dropdown-item" href="/add_game.php">Add New Game</a>
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $_user->GetUserSessionID()); ?>">Logout</a>
 					</div>
-				</li>
+				</div>
 				<?php else : ?>
 				<li class="nav-item mr-0">
 					<a class="nav-link" href="/login.php">Log in</a>
@@ -138,9 +139,9 @@ class HEADER
 <?php
 class FOOTER
 {
-	public static $_time_start = 0;	
+	public static $_time_start = 0;
 	public static function print()
-	{ ?>
+	{ global $_user;?>
 		<footer class="container-fluid bg-dark" style="margin-top:10px; padding: 20px;">
 			<div class="container">
 				<div class="row">
@@ -151,11 +152,14 @@ class FOOTER
 						<h5>Get started</h5>
 						<ul>
 							<li><a href="/">Home</a></li>
-							<li><a href="#">Sign up</a></li>
+							<?php if(empty($_user) || !$_user->isLoggedIn()) : ?>
+							<li><a href="https://forums.thegamesdb.net/ucp.php?mode=register">Sign up</a></li>
+							<?php endif; ?>
 							<li><a href="/browse.php">Games</a></li>
 							<li><a href="/listplatforms.php">Platforms</a></li>
 						</ul>
 					</div>
+					<?php if(false) : ?>
 					<div class="col-sm-2">
 						<h5>About us</h5>
 						<ul>
@@ -172,13 +176,14 @@ class FOOTER
 							<li><a href="https://forums.thegamesdb.net/">Forums</a></li>
 						</ul>
 					</div>
+					<?php endif;?>
 					<div class="col-sm-3">
 						<div class="social-networks">
 							<a href="https://twitter.com/thegamesdb" class="twitter"><i class="fab fa-twitter"></i></a>
 							<a href="https://www.facebook.com/thegamesdb/" class="facebook"><i class="fab fa-facebook"></i></a>
 							<a href="https://plus.google.com/116977810662942577082" class="google"><i class="fab fa-google-plus"></i></a>
 						</div>
-						<button type="button" class="btn btn-info">Contact us</button>
+						<a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin" role="button" class="btn btn-info">Contact us</a>
 					</div>
 				</div>
 

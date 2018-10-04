@@ -1,27 +1,22 @@
 <?php
 require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
-$PlatformList = $API->GetPlatformsList(array("icon" => true));
+$PubsList = $API->GetPubsList();
 
-$PlatformIDs = array();
-foreach($PlatformList as &$platform)
+
+
+$alpha_list = array();
+foreach($PubsList as $pub)
 {
-	$PlatformIDs[] = $platform->id;
+	$alpha_list[strtoupper($pub->name[0])][] = $pub;
 }
-$icons = $API->GetPlatformBoxartByID($PlatformIDs, 0, 99999, ['icon']);
-foreach($PlatformList as &$platform)
-{
-	if(isset($icons[$platform->id]))
-	{
-		$platform->boxart = &$icons[$platform->id];
-	}
-}
+
+
 $Header = new HEADER();
-$Header->setTitle("TGDB - Browse - Platforms");
+$Header->setTitle("TGDB - Browse - Publishers");
 $Header->appendRawHeader(function()
 { ?>
 	<style>
@@ -59,6 +54,11 @@ $Header->appendRawHeader(function()
 			padding: 12px;
 			text-align: center;
 		}
+		p
+		{
+			word-break: break-all;
+			white-space: normal;
+		}
 	</style>
 <?php });?>
 <?= $Header->print(); ?>
@@ -68,15 +68,24 @@ $Header->appendRawHeader(function()
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
-						<legend>Platforms</legend>
+					<?php foreach($alpha_list as $key => $pub) : ?>
+						 <a href="#<?= $key ?>"><?= $key ?></a> 
+					<?php endforeach; ?>
+					</div>
+					<div class="card-body">
+						<legend>Pubs</legend>
+						<?php foreach($alpha_list as $key => $val_publist) : ?>
+						<h2 id="<?= $key ?>"><?= $key ?></h2><hr/>
 						<div class="grid-container grid-col-config" style=" text-align: center">
-							<?php foreach($PlatformList as  $Platform) :?>
-							<a class="btn btn-link grid-item" href="./platform.php?id=<?= $Platform->id ?>">
-								<img src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
-								<p><?= $Platform->name ?></p>
+							<?php foreach($val_publist as $pub) :?>
+							<a class="btn btn-link grid-item" href="./listgames.php?pub_id=<?= $pub->id ?>">
+							<p><?= $pub->name ?></p>
 							</a>
 							<?php endforeach; ?>
 						</div>
+						<hr/>
+						<?php endforeach; ?>
+
 					</div>
 				</div>
 			</div>

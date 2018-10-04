@@ -2,8 +2,8 @@
 
 class CommonUtils
 {
-	static public $WEBSITE_BASE_URL = "https://beta.thegamesdb.net/";
-	static public $API_BASE_URL = "https://api.beta.thegamesdb.net";
+	static public $WEBSITE_BASE_URL = "https://thegamesdb.net/";
+	static public $API_BASE_URL = "https://api.thegamesdb.net";
 	static public $BOXART_BASE_URL = "https://cdn.thegamesdb.net/images/";
 
 	static function getImagesBaseURL()
