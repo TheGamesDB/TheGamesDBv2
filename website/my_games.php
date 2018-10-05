@@ -28,12 +28,12 @@ $page = PaginationUtils::getPage();
 $limit = 18;
 $offset = ($page - 1) * $limit;
 $list = $API->GetUserBookmarkedGames($_user->GetUserID(), $offset, $limit + 1);
+$Platform_IDs = $API->GetUserBookmarkedGamesPlatforms($_user->GetUserID());
 $listed_by = "My Games";
 
 if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);
-	$Platform_IDs[] = $Game->platform;
 }
 
 foreach($list as $Game)

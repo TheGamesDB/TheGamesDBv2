@@ -1554,6 +1554,19 @@ class TGDB
 		}
 	}
 
+	function GetUserBookmarkedGamesPlatforms($users_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select DISTINCT platforms_id FROM `user_games` WHERE users_id=:users_id AND is_booked=1");
+		$sth->bindValue(':users_id', $users_id);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_COLUMN);
+			return $res;
+		}
+	}
+
 	function isUserGameBookmarked($users_id, $games_id)
 	{
 		$dbh = $this->database->dbh;

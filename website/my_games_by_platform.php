@@ -37,6 +37,7 @@ $offset = ($page - 1) * $limit;
 if(isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id']))
 {
 	$list = $API->GetUserBookmarkedGamesByPlatformID($_user->GetUserID(), $_REQUEST['platform_id'], $offset, $limit + 1);
+	$Platform_IDs = $API->GetUserBookmarkedGamesPlatforms($_user->GetUserID());
 
 	if($has_next_page = subarray_item_count($list) > $limit)
 	{
@@ -104,8 +105,12 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 						<fieldset>
 							<legend>Platforms</legend>
 							<div class="grid-container grid-col-config" style=" text-align: center">
+								<a class="btn btn-link grid-item" href="/my_games.php">
+								<img alt="recently added" style="height:48px;padding: 2px;" src="/images/if_recent-time-search-reload-time_2075824.svg">
+									<p>Recently added</p>
+								</a>
 								<?php foreach($platforms as $platform) :?>
-								<a class="btn btn-link grid-item" href="#platform-<?= $platform->id ?>">
+								<a class="btn btn-link grid-item" href="/my_games.php?platform_id=<?= $platform->id ?>">
 									<img alt="<?= $platform->name?>" src="<?= TGDBUtils::GetCover($platform, 'icon', '', true,  true, 'original') ?>">
 									<p><?= $platform->name ?></p>
 								</a>
