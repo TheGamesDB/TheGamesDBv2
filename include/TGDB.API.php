@@ -1505,6 +1505,35 @@ class TGDB
 		return ($sth->execute());
 	}
 
+	function GetUserBookmarkedGamesByPlatform($users_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth->bindValue(':users_id', $users_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
+	function GetUserBookmarkedGamesByPlatformID($users_id, $platform_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.platform = :platform_id AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth->bindValue(':users_id', $users_id);
+		$sth->bindValue(':platform_id', $platform_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
 	function GetUserBookmarkedGames($users_id)
 	{
 		$dbh = $this->database->dbh;
