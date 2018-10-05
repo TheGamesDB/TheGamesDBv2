@@ -75,8 +75,16 @@ if(isset($IDs) && !empty($IDs))
 if(isset($Platform_IDs) && !empty($Platform_IDs))
 {
 	$platforms = $API->GetPlatforms(array_unique($Platform_IDs), ['name']);
-
 }
+$icons = $API->GetPlatformBoxartByID($Platform_IDs, 0, 99999, ['icon']);
+foreach($platforms as &$platform)
+{
+	if(isset($icons[$platform->id]))
+	{
+		$platform->boxart = &$icons[$platform->id];
+	}
+}
+unset($platform)
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browser - Game By $listed_by");
 ?>
@@ -84,13 +92,32 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 
 	<div class="container-fluid">
 		<div class="row row-eq-height justify-content-center" style="margin:10px;">
-		<?php if(isset($list) && !empty($list)) : foreach($list as $per_platform_list) : ?>
-			<div class="col-12">
+			<div class="col-md-10">
+				<div class="card">
+					<div class="card-body">
+						<fieldset>
+							<legend>Platforms</legend>
+							<div class="grid-container grid-col-config" style=" text-align: center">
+								<?php foreach($platforms as $platform) :?>
+								<a class="btn btn-link grid-item" href="#platform-<?= $platform->id ?>">
+									<img alt="<?= $platform->name?>" src="<?= TGDBUtils::GetCover($platform, 'icon', '', true,  true, 'original') ?>">
+									<p><?= $platform->name ?></p>
+								</a>
+								<?php endforeach; ?>
+							</div>
+						</fieldset>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row row-eq-height justify-content-center" style="margin:10px;">
+		<?php if(isset($list) && !empty($list)) : foreach($list as $platform_id => $per_platform_list) : ?>
+			<div class="col-12" id="platform-<?= $platforms[$platform_id]->id ?>">
 				<br/>
 				<h2 style="text-align:center;">
-					<?= $platforms[$per_platform_list[0]->platform]->name ?><?= (!isset($page)) ? "(" . count($per_platform_list) . ")" : "";?>
+					<?= $platforms[$platform_id]->name ?><?= (!isset($page)) ? "(" . count($per_platform_list) . ")" : "";?>
 					<?php if(!isset($page) && count($per_platform_list) > 6) : ?>
-					<a style="text-decoration: underline;" href="/my_games.php?platform_id=<?= $per_platform_list[0]->platform ?>">More</a>
+					<a style="text-decoration: underline;" href="/my_games.php?platform_id=<?= $platform_id ?>">More</a>
 					<?php endif; ?>
 				</h2>
 				<hr/>
