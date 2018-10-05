@@ -1505,7 +1505,7 @@ class TGDB
 		return ($sth->execute());
 	}
 
-	function GetUserBookmarkedGamesByPlatform($users_id)
+	function GetUserBookmarkedGamesGroupByPlatform($users_id)
 	{
 		$dbh = $this->database->dbh;
 
@@ -1519,17 +1519,22 @@ class TGDB
 		}
 	}
 
-	function GetUserBookmarkedGamesByPlatformID($users_id, $platform_id)
+	function GetUserBookmarkedGamesByPlatformID($users_id, $platform_id, $offset = 0, $limit = 18)
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.platform = :platform_id AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G
+		where UG.users_id=:users_id AND UG.is_booked=1 AND G.platform = :platform_id AND G.id = UG.games_id ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
+		
 		$sth->bindValue(':users_id', $users_id);
 		$sth->bindValue(':platform_id', $platform_id);
 
+		$sth->bindValue(':offset', $offset);
+		$sth->bindValue(':limit', $limit);
+
 		if($sth->execute())
 		{
-			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
 			return $res;
 		}
 	}

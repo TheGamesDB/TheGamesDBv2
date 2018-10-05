@@ -1,5 +1,4 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
 
 require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/PaginationUtils.class.php";
@@ -19,36 +18,52 @@ if(!$_user->isLoggedIn())
 	$errorPage->print_die();
 }
 
+function subarray_item_count($array) 
+{
+	$count = 0;
+	foreach($array as $sub_array)
+	{
+		$count += count($sub_array);
+	}
+
+	return $count;
+}
 
 $API = TGDB::getInstance();
-$limit = 18;
-$page = PaginationUtils::getPage();
-$offset = ($page - 1) * $limit;
+$listed_by = "My Games";
+if(isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id']))
 {
-    $listed_by = "My Games";
-    //TODO: limit return per platform
-	$list = $API->GetUserBookmarkedGamesByPlatform($_user->GetUserID());
+	$page = PaginationUtils::getPage();
+	$limit = 18;
+	$offset = ($page - 1) * $limit;
+	$list = $API->GetUserBookmarkedGamesByPlatformID($_user->GetUserID(), $_REQUEST['platform_id'], $offset, $limit + 1);
+
+	if($has_next_page = subarray_item_count($list) > $limit)
+	{
+		unset($list[$limit]);
+	}
+}
+else
+{
+	$limit = 6;
+	$list = $API->GetUserBookmarkedGamesGroupByPlatform($_user->GetUserID());
 }
 
 
-if($has_next_page = count($list) > $limit)
+foreach($list as $platform_id => $per_platform_list)
 {
-	unset($list[$limit]);
-}
-foreach($list as $per_platform_list)
-{
-	foreach($per_platform_list as $Game)
+	foreach(array_slice($per_platform_list,0, $limit) as $Game)
 	{
 		$IDs[] = $Game->id;
-		$Platform_IDs[] = $Game->platform;
 	}	
+	$Platform_IDs[] = $platform_id;
 }
 if(isset($IDs) && !empty($IDs))
 {
 	$covers = $API->GetGameBoxartByID($IDs, 0, 9999);
 	foreach($list as $per_platform_list)
 	{
-		foreach($per_platform_list as $Game)
+		foreach(array_slice($per_platform_list,0, $limit) as $Game)
 		{
 			if(isset($covers[$Game->id]))
 			{
@@ -72,10 +87,15 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 		<?php if(isset($list) && !empty($list)) : foreach($list as $per_platform_list) : ?>
 			<div class="col-12">
 				<br/>
-				<h2 style="text-align:center;"><?= $platforms[$per_platform_list[0]->platform]->name ?>(<?= count($per_platform_list) ?>)</h2>
+				<h2 style="text-align:center;">
+					<?= $platforms[$per_platform_list[0]->platform]->name ?><?= (!isset($page)) ? "(" . count($per_platform_list) . ")" : "";?>
+					<?php if(!isset($page) && count($per_platform_list) > 6) : ?>
+					<a style="text-decoration: underline;" href="/my_games.php?platform_id=<?= $per_platform_list[0]->platform ?>">More</a>
+					<?php endif; ?>
+				</h2>
 				<hr/>
 			</div>
-			<?php foreach($per_platform_list as $Game) : ?>
+			<?php foreach(array_slice($per_platform_list,0, $limit) as $Game) : ?>
 				<div class="col-6 col-md-2">
 					<div style="padding-bottom:12px; height: 100%">
 						<a href="./game.php?id=<?= $Game->id ?>">
@@ -102,7 +122,7 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 			</div>
 		<?php endif; ?>
 		</div>
-		<?= PaginationUtils::Create($has_next_page); ?>
+		<?= (isset($page)) ? PaginationUtils::Create($has_next_page) : "";?>
 	</div>
 
 <?php FOOTER::print(); ?>
