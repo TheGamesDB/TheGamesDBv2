@@ -112,7 +112,7 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 			<div class="col-12 col-md-10">
 				<div class="card">
 					<div class="card-body">
-						<h3>No associated games.</h3>
+						<h3>Please add games to your collection first.</h3>
 					</div>
 				</div>
 			</div>
