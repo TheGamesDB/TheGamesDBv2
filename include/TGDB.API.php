@@ -1490,14 +1490,15 @@ class TGDB
 
 	/* Everything belowis not planned to be exposed through external API */
 
-	function InsertUserGameBookmark($users_id, $games_id, $is_booked)
+	function InsertUserGameBookmark($users_id, $Game, $is_booked)
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, is_booked)
-		VALUES (:users_id, :games_id, :is_booked)
+		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, platforms_id, is_booked)
+		VALUES (:users_id, :games_id, :platforms_id, :is_booked)
 		ON DUPLICATE KEY UPDATE is_booked = :is_booked2");
-		$sth->bindValue(':games_id', $games_id);
+		$sth->bindValue(':games_id', $Game->id);
+		$sth->bindValue(':platforms_id', $Game->platform);
 		$sth->bindValue(':users_id', $users_id);
 		$sth->bindValue(':is_booked', $is_booked);
 		$sth->bindValue(':is_booked2', $is_booked);
