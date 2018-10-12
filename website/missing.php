@@ -15,15 +15,32 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
+$PlatformList = $API->GetPlatformsList();
+if(isset($_GET['platform_id']) && !empty($_GET['platform_id']) && !in_array(0, $_GET['platform_id']))
+{
+	$platformIDs = $_GET['platform_id'];
+	foreach($_GET['platform_id'] as $platform_id)
+	{
+		$platformIDs[$platform_id] = true;
+	}
+}
 
 $limit = 18;
 $page = PaginationUtils::getPage();
 $offset = ($page - 1) * $limit;
 if(isset($_REQUEST['type']))
 {
+	if(!isset($_REQUEST['platform_id']) || !is_array($_REQUEST['platform_id']) || in_array(0, $_REQUEST['platform_id']))
+	{
+		$platform_id = 0;
+	}
+	else
+	{
+		$platform_id = $_REQUEST['platform_id'];
+	}
 	if($_REQUEST['type'] == 'overview')
 	{
-		$list = $API->GetMissingGames($_REQUEST['type'], $offset, $limit+1, ['platform'], "game_title");
+		$list = $API->GetMissingGames($_REQUEST['type'], $platform_id, $offset, $limit+1, ['platform'], "game_title");
 	}
 	else
 	{
@@ -32,7 +49,7 @@ if(isset($_REQUEST['type']))
 		{
 			$sub_type = $_REQUEST['sub_type'];
 		}
-		$list = $API->GetMissingGamesImages($_REQUEST['type'], $sub_type ,$offset, $limit+1, ['platform'], "game_title");
+		$list = $API->GetMissingGamesImages($_REQUEST['type'], $sub_type, $platform_id, $offset, $limit+1, ['platform'], "game_title");
 	}
 	$Platforms = $API->GetPlatforms($PlatformIDs);
 
@@ -74,6 +91,34 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 <?= $Header->print(); ?>
 
 	<div class="container-fluid">
+			<div class="row justify-content-center" style="margin:10px;">
+				<div class="col-12 col-md-10">
+
+					<div class="card">
+						<form class="card-body" method="get">
+							<fieldset>
+							<legend>Filter by platform</legend>
+							<div class="form-group">
+								<label for="platformselect">Select Platform</label>
+								<select name="platform_id[]" multiple class="form-control" id="platformselect">
+								<option value="0"  <?= isset($platformIDs) ? "" : "selected" ?>>All</option>
+								<?php foreach($PlatformList as $id => $Platform) :?>
+								<option value="<?= $id ?>" <?= isset($platformIDs[$id]) ? "selected" : "" ?>><?= $Platform->name ?></option>
+								<?php endforeach; ?>
+								</select>
+							</div>
+							<input name="type" value="<?= $_REQUEST['type'] ?>" type="hidden" />
+							<?php if(!empty($sub_type)): ?>
+							<input name="sub_type" value="<?= $subtype ?>" type="hidden" />
+							<?php endif; ?>
+							<button type="submit" class="btn btn-primary">Submit</button>
+							</fieldset>
+						</form>
+					</div>
+
+				</div>
+			</div>
+
 		<div class="row row-eq-height justify-content-center" style="margin:10px;">
 		<?php if(isset($list) && !empty($list)) : foreach($list as $Game) : ?>
 			<div class="col-6 col-md-2">
