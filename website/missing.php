@@ -109,7 +109,7 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 							</div>
 							<input name="type" value="<?= $_REQUEST['type'] ?>" type="hidden" />
 							<?php if(!empty($sub_type)): ?>
-							<input name="sub_type" value="<?= $subtype ?>" type="hidden" />
+							<input name="sub_type" value="<?= $sub_type ?>" type="hidden" />
 							<?php endif; ?>
 							<button type="submit" class="btn btn-primary">Submit</button>
 							</fieldset>
