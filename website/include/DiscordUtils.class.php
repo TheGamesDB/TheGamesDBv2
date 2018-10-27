@@ -55,9 +55,8 @@ class DiscordUtils
 
 		try
 		{
-			//TODO: move htmlspecialchars_decodeArrayRecursive to CommonUtils::
-			//htmlspecialchars_decodeArrayRecursive($old_game_data);
-			//htmlspecialchars_decodeArrayRecursive($new_game_data);
+			CommonUtils::htmlspecialchars_decodeArrayRecursive($old_game_data);
+			CommonUtils::htmlspecialchars_decodeArrayRecursive($new_game_data);
 
 			$embeds = array();
 			$embeds["author"] = array(
@@ -149,7 +148,7 @@ class DiscordUtils
 		{
 			$API = TGDB::getInstance();
 			$game = $API->GetGameByID($game_id, 0, 1)[0];
-			//htmlspecialchars_decodeArrayRecursive($game->game_title);
+			CommonUtils::htmlspecialchars_decodeArrayRecursive($game);
 
 			$embeds = array();
 			$embeds["author"] = array(

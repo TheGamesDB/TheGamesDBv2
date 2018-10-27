@@ -62,7 +62,7 @@ $app->group('/Games', function()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 
@@ -116,7 +116,7 @@ $app->group('/Games', function()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 
@@ -165,7 +165,7 @@ $app->group('/Games', function()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
 		if(count($list) > 0)
@@ -244,7 +244,7 @@ $app->group('/Games', function()
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "updates" => $list);
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
@@ -265,7 +265,7 @@ $app->group('/Platforms', function()
 		$API = TGDB::getInstance();
 		$list = $API->GetPlatformsList($fields);
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 		if(isset($options['boxart']))
@@ -297,7 +297,7 @@ $app->group('/Platforms', function()
 		$API = TGDB::getInstance();
 		$list = $API->GetPlatforms($IDs, $fields);
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 		if(isset($options['boxart']))
@@ -336,7 +336,7 @@ $app->group('/Platforms', function()
 		$API = TGDB::getInstance();
 		$list = $API->SearchPlatformByName($searchTerm, $fields);
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "platforms" => $list);
 		if(isset($options['boxart']))
@@ -392,7 +392,7 @@ $app->get('/Genres', function($request, $response, $args)
 	$API = TGDB::getInstance();
 	$list = $API->GetGenres();
 
-	Utils::htmlspecialchars_decodeArrayRecursive($list);
+	CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 	$JSON_Response = Utils::getStatus(200);
 	$JSON_Response['data'] = array("count" => count($list), "genres" => $list);
 	return $response->withJson($JSON_Response);
@@ -406,7 +406,7 @@ $app->group('/Developers', function()
 		$API = TGDB::getInstance();
 		$list = $API->GetDevsList();
 
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "developers" => $list);
 		return $response->withJson($JSON_Response);
@@ -421,7 +421,7 @@ $app->group('/Publishers', function()
 		$API = TGDB::getInstance();
 		$list = $API->GetPubsList();
 		
-		Utils::htmlspecialchars_decodeArrayRecursive($list);
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), "publishers" => $list);
 		return $response->withJson($JSON_Response);
