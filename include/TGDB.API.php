@@ -1646,13 +1646,7 @@ class TGDB
 			$valid_alt_name = array_unique($valid_alt_name);
 			if(!empty($valid_alt_name))
 			{
-				$qouted_alt_names = array();
-				foreach($valid_alt_name as $alt_name)
-				{
-					$qouted_alt_names[] = "\"" . $alt_name . "\"";
-				}
-				$alt_str = implode(", ", $qouted_alt_names);
-				$this->InsertUserEdits($user, $games_id, "alternates", "[$alt_str]");
+				$this->InsertUserEdits($user_id, $games_id, "alternates", json_encode($valid_alt_name));
 			}
 		}
 		return true;
@@ -1726,8 +1720,7 @@ class TGDB
 			$valid_ids = array_unique($valid_ids);
 			if(!empty($valid_ids))
 			{
-				$genres_str = implode(",", $valid_ids);
-				$this->InsertUserEdits($user_id, $games_id, "genres", "[$genres_str]");
+				$this->InsertUserEdits($user_id, $games_id, "genres", json_encode($valid_ids, JSON_NUMERIC_CHECK));
 			}
 		}
 		return true;
@@ -1799,8 +1792,7 @@ class TGDB
 			$valid_ids = array_unique($valid_ids);
 			if(!empty($valid_ids))
 			{
-				$ids_str = implode(",", $valid_ids);
-				$this->InsertUserEdits($user_id, $games_id, "developers", "[$ids_str]");
+				$this->InsertUserEdits($user_id, $games_id, "developers", json_encode($valid_ids, JSON_NUMERIC_CHECK));
 			}
 		}
 		return true;
@@ -1872,8 +1864,7 @@ class TGDB
 			$valid_ids = array_unique($valid_ids);
 			if(!empty($valid_ids))
 			{
-				$ids_str = implode(",", $valid_ids);
-				$this->InsertUserEdits($user_id, $games_id, "publishers", "[$ids_str]");
+				$this->InsertUserEdits($user_id, $games_id, "publishers", json_encode($valid_ids, JSON_NUMERIC_CHECK));
 			}
 		}
 		return true;
