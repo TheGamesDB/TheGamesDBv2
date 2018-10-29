@@ -1564,6 +1564,90 @@ class TGDB
 		return $sth->execute();
 	}
 
+	function InsertGamesAltName($game_id, $alt_name)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_alts (games_id, name, SOUNDEX) VALUES (:games_id, :alt_name, soundex(:alt_name2));");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':alt_name', $alt_name, PDO::PARAM_STR);
+		$sth->bindValue(':alt_name2', $alt_name, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function DeleteGamesAltName($game_id, $alt_name)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_alts  WHERE games_id=:games_id AND name=:alt_name");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':alt_name', $alt_name, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function UpdateGamesAltName($user, $games_id, $new_alt_names)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+
+		$current_alt_names = $this->GetGamesAlts($games_id, false);
+		if(!empty($current_alt_names[$games_id]))
+		{
+			$current_alt_names = $current_alt_names[$games_id];
+		}
+		if(!empty($new_alt_names))
+		{
+			foreach($new_alt_names as $new_alt_name)
+			{
+				if(!empty($new_alt_name))
+				{
+					$valid_alt_name[] = $new_alt_name;
+
+					if(!in_array($new_alt_name, $current_alt_names, true))
+					{
+						$res = $this->InsertGamesAltName($games_id, $new_alt_name);
+						if(!$dbh->inTransaction() && !$res)
+						{
+							return false;
+						}
+						$is_changed = true;
+					}
+				}
+			}
+		}
+
+		if(!empty($current_alt_names))
+		{
+			foreach($current_alt_names as $current_alt_name)
+			{
+				if(!in_array($current_alt_name, $new_alt_names, true))
+				{
+					$res = $this->DeleteGamesAltName($games_id, $current_alt_name);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_alt_name = array_unique($valid_alt_name);
+			if(!empty($valid_alt_name))
+			{
+				$qouted_alt_names = array();
+				foreach($valid_alt_name as $alt_name)
+				{
+					$qouted_alt_names[] = "\"" . $alt_name . "\"";
+				}
+				$alt_str = implode(", ", $qouted_alt_names);
+				$this->InsertUserEdits($user, $games_id, "alternates", "[$alt_str]");
+			}
+		}
+		return true;
+	}
+
 	function InsertGamesGenre($game_id, $genres_id)
 	{
 		$dbh = $this->database->dbh;
@@ -1785,7 +1869,7 @@ class TGDB
 		return true;
 	}
 
-	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -1803,6 +1887,8 @@ class TGDB
 		}
 
 		{
+			$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
+
 			if(!empty($new_genres))
 			{
 				$this->UpdateGamesGenre($user_id, $game_id, $new_genres);
@@ -1963,7 +2049,7 @@ class TGDB
 		return $dbh->commit();
 	}
 
-	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
@@ -2031,6 +2117,11 @@ class TGDB
 				if(!empty($new_publishers))
 				{
 					$this->UpdateGamesPub($user_id, $game_id, $new_publishers);
+				}
+
+				if(!empty($alternate_names))
+				{
+					$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
 				}
 
 				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'platform', 'rating'];
