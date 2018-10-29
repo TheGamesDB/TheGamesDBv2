@@ -1275,9 +1275,14 @@ class TGDB
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 			foreach($res as $edit)
 			{
-				if($edit->type == 'genres' || $edit->type == 'developers' || $edit->type == 'publishers' || $edit->type == 'alternates')
+				//Note, these listing return a json array of data, thus must be decoded to any array to be encoded correctly later
+				switch($edit->type)
 				{
-					$edit->value = json_decode($edit->value);
+					case 'genres':
+					case 'developers':
+					case 'publishers':
+					case 'alternates':
+						$edit->value = json_decode($edit->value);
 				}
 			}
 			return $res;
