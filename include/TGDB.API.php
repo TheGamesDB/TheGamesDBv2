@@ -1275,7 +1275,7 @@ class TGDB
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 			foreach($res as $edit)
 			{
-				if($edit->type == 'genres' || $edit->type == 'developers' || $edit->type == 'publishers')
+				if($edit->type == 'genres' || $edit->type == 'developers' || $edit->type == 'publishers' || $edit->type == 'alternates')
 				{
 					$edit->value = json_decode($edit->value);
 				}
@@ -1596,6 +1596,11 @@ class TGDB
 		}
 		if(!empty($new_alt_names))
 		{
+			foreach($new_alt_names as &$new_alt_name)
+			{
+				$new_alt_name = trim($new_alt_name);
+			}
+			unset($new_alt_name);
 			foreach($new_alt_names as $new_alt_name)
 			{
 				if(!empty($new_alt_name))
