@@ -95,7 +95,9 @@ class HEADER
 					</a>
 					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
 						<a class="dropdown-item" href="/browse.php">Games</a>
-						<a class="dropdown-item" href="/listplatforms.php">Platforms</a>
+						<a class="dropdown-item" href="/list_platforms.php">Platforms</a>
+						<a class="dropdown-item" href="/list_devs.php">Developers</a>
+						<a class="dropdown-item" href="/list_pubs.php">Publishers</a>
 					</div>
 				</li>
 				<li class="nav-item">
@@ -155,7 +157,9 @@ class FOOTER
 							<li><a href="https://forums.thegamesdb.net/ucp.php?mode=register">Sign up</a></li>
 							<?php endif; ?>
 							<li><a href="/browse.php">Games</a></li>
-							<li><a href="/listplatforms.php">Platforms</a></li>
+							<li><a href="/list_platforms.php">Platforms</a></li>
+							<li><a href="/list_devs.php">Developers</a></li>
+							<li><a href="/list_pubs.php">Publishers</a></li>
 						</ul>
 					</div>
 					<?php if(false) : ?>

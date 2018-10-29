@@ -104,7 +104,7 @@ $Header->appendRawHeader(function()
 							<legend>Browse by platform</legend>
 							<div class="grid-container grid-col-config" style=" text-align: center">
 								<?php foreach($PlatformList as $id => $Platform) :?>
-								<a class="btn btn-link grid-item" href="./listgames.php?platform_id=<?= $id ?>">
+								<a class="btn btn-link grid-item" href="./list_games.php?platform_id=<?= $id ?>">
 									<img alt="<?= $Platform->name ?>" src="<?= TGDBUtils::GetCover($Platform, 'icon', '', true,  true, 'original') ?>">
 									<p><?= $Platform->name ?></p>
 								</a>

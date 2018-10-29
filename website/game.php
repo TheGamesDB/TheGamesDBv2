@@ -261,11 +261,11 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
 								<?php endif; if (!empty($Game->developers) && !empty($DevsList)) : ?>
 								<p>Developer(s): <?php $last_key = end(array_keys($DevsList)); foreach($DevsList as $key => $Dev) : ?>
-								<a href="listgames.php?dev_id=<?= $Dev->id ?>"><?= $Dev->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<a href="list_games.php?dev_id=<?= $Dev->id ?>"><?= $Dev->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
 								<?php endforeach; ?></p>
 								<?php endif;  if (!empty($Game->publishers) && !empty($PubsList)) : ?>
 								<p>Publishers(s): <?php $last_key = end(array_keys($PubsList)); foreach($PubsList as $key => $pub) : ?>
-								<a href="listgames.php?pub_id=<?= $pub->id ?>"><?= $pub->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<a href="list_games.php?pub_id=<?= $pub->id ?>"><?= $pub->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
 								<?php endforeach; ?></p>
 								<?php endif; if (!empty($Game->release_date)) : ?>
 								<p>ReleaseDate: <?= $Game->release_date ;?></p>

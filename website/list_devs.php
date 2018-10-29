@@ -4,19 +4,19 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
-$PubsList = $API->GetPubsList();
+$DevsList = $API->GetDevsList();
 
 
 
 $alpha_list = array();
-foreach($PubsList as $pub)
+foreach($DevsList as $Dev)
 {
-	$alpha_list[strtoupper($pub->name[0])][] = $pub;
+	$alpha_list[strtoupper($Dev->name[0])][] = $Dev;
 }
 
 
 $Header = new HEADER();
-$Header->setTitle("TGDB - Browse - Publishers");
+$Header->setTitle("TGDB - Browse - Developers");
 $Header->appendRawHeader(function()
 { ?>
 	<style>
@@ -68,18 +68,18 @@ $Header->appendRawHeader(function()
 			<div class="col-md-10">
 				<div class="card">
 					<div class="card-body">
-					<?php foreach($alpha_list as $key => $pub) : ?>
+					<?php foreach($alpha_list as $key => $Dev) : ?>
 						 <a href="#<?= $key ?>"><?= $key ?></a> 
 					<?php endforeach; ?>
 					</div>
 					<div class="card-body">
-						<legend>Pubs</legend>
-						<?php foreach($alpha_list as $key => $val_publist) : ?>
+						<legend>Devs</legend>
+						<?php foreach($alpha_list as $key => $val_Devlist) : ?>
 						<h2 id="<?= $key ?>"><?= $key ?></h2><hr/>
 						<div class="grid-container grid-col-config" style=" text-align: center">
-							<?php foreach($val_publist as $pub) :?>
-							<a class="btn btn-link grid-item" href="./listgames.php?pub_id=<?= $pub->id ?>">
-							<p><?= $pub->name ?></p>
+							<?php foreach($val_Devlist as $Dev) :?>
+							<a class="btn btn-link grid-item" href="./list_games.php?dev_id=<?= $Dev->id ?>">
+							<p><?= $Dev->name ?></p>
 							</a>
 							<?php endforeach; ?>
 						</div>
