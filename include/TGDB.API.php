@@ -1593,6 +1593,7 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$is_changed = false;
+		$valid_alt_name = array();
 
 		$current_alt_names = $this->GetGamesAlts($games_id, false);
 		if(!empty($current_alt_names[$games_id]))
@@ -1674,6 +1675,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 		$is_changed = false;
+		$valid_ids = array();
 
 		$list = $this->GetGenres();
 
@@ -1749,6 +1751,8 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$is_changed = false;
+		$valid_ids = array();
+
 		$list = $this->GetDevsListByIDs($new_ids);
 		$current_ids = $this->GetGamesDevs($games_id);
 		if(!empty($current_ids[$games_id]))
@@ -1821,6 +1825,8 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$is_changed = false;
+		$valid_ids = array();
+
 		$list = $this->GetPubsListByIDs($new_ids);
 		$current_ids = $this->GetGamesPubs($games_id);
 		if(!empty($current_ids[$games_id]))
