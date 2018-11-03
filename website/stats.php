@@ -8,32 +8,10 @@ $API = TGDB::getInstance();
 $Stats = $API->GetGamesStats();
 
 $limit = 75;
+$list = $API->GetLatestGameBoxartStats($limit);
+
 $PsudoGame = new stdClass();
-$PsudoGame->boxart = array();
-$PsudoGame->boxart = array_merge(
-	$PsudoGame->boxart,
-	$API->GetLatestGameBoxart(0, $limit, 'fanart')
-);
-$PsudoGame->boxart = array_merge(
-	$PsudoGame->boxart,
-	$API->GetLatestGameBoxart(0, $limit, 'screenshot')
-);
-$PsudoGame->boxart = array_merge(
-	$PsudoGame->boxart,
-	$API->GetLatestGameBoxart(0, $limit, 'banner')
-);
-$PsudoGame->boxart = array_merge(
-	$PsudoGame->boxart,
-	$API->GetLatestGameBoxart(0, $limit, 'clearlogo')
-);
-$PsudoGame->boxart = array_merge(
-	$PsudoGame->boxart,
-	$API->GetLatestGameBoxart(0, $limit, 'boxart', 'front')
-);
-$PsudoGame->boxart = array_merge(
-	$PsudoGame->boxart,
-	$API->GetLatestGameBoxart(0, $limit, 'boxart', 'back')
-);
+$PsudoGame->boxart = $list;
 
 $fanarts = TGDBUtils::GetAllCovers($PsudoGame, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($PsudoGame, 'screenshot', '');
