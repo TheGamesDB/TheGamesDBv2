@@ -210,8 +210,10 @@ $app->group('/Games', function()
 		$list = $API->GetGameBoxartByID($GameIDs, $offset, $limit+1, $filters);
 
 		if($has_next_page = count($list) > $limit)
-			unset($list[end(array_keys($list))]);
-
+		{
+			$list_keys = array_keys($list);
+			unset($list[end($list_keys)]);
+		}
 		$JSON_Response = Utils::getStatus(200);
 		$JSON_Response['data'] = array("count" => count($list), 'base_url' => CommonUtils::getImagesBaseURL(), "images" => $list);
 		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
