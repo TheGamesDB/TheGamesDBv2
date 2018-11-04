@@ -861,6 +861,48 @@ class TGDB
 		}
 	}
 
+	function GetGameBoxartTypes()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare('SELECT DISTINCT type, side FROM `banners`;');
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function GetLatestGameBoxartStats($limit = 20)
+	{
+		$type_list = $this->GetGameBoxartTypes();
+
+		$queries = array();
+		foreach($type_list as $type)
+		{
+			$qry = "(Select games_id as game_id, type, side, filename, resolution FROM banners WHERE type = '$type->type'";
+
+			if(!empty($type->side) && ($type->side == 'front' || $type->side == 'back'))
+			{
+				$qry .= " AND side = '$type->side' ";
+			}
+			$qry .= " ORDER BY id DESC LIMIT $limit)";
+			$queries[] = $qry;
+		}
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare(implode(" Union ", $queries));
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
 	function GetLatestGameBoxart($offset = 0, $limit = 20, $filters = 'boxart', $side = '')
 	{
 		$qry = "Select games_id as game_id, type, side, filename, resolution FROM banners WHERE 1 ";
