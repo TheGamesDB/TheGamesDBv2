@@ -1517,19 +1517,54 @@ class TGDB
 
 	/* Everything belowis not planned to be exposed through external API */
 
-	function InsertUserGameBookmark($users_id, $games_id, $is_booked)
+	function InsertUserGameBookmark($users_id, $Game, $is_booked)
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, is_booked)
-		VALUES (:users_id, :games_id, :is_booked)
+		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, platforms_id, is_booked)
+		VALUES (:users_id, :games_id, :platforms_id, :is_booked)
 		ON DUPLICATE KEY UPDATE is_booked = :is_booked2");
-		$sth->bindValue(':games_id', $games_id);
+		$sth->bindValue(':games_id', $Game->id);
+		$sth->bindValue(':platforms_id', $Game->platform);
 		$sth->bindValue(':users_id', $users_id);
 		$sth->bindValue(':is_booked', $is_booked);
 		$sth->bindValue(':is_booked2', $is_booked);
 
 		return ($sth->execute());
+	}
+
+	function GetUserBookmarkedGamesGroupByPlatform($users_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth->bindValue(':users_id', $users_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
+	function GetUserBookmarkedGamesByPlatformID($users_id, $platform_id, $offset = 0, $limit = 18)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G
+		where UG.users_id=:users_id AND UG.is_booked=1 AND G.platform = :platform_id AND G.id = UG.games_id ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
+		
+		$sth->bindValue(':users_id', $users_id);
+		$sth->bindValue(':platform_id', $platform_id);
+
+		$sth->bindValue(':offset', $offset);
+		$sth->bindValue(':limit', $limit);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
 	}
 
 	function GetUserBookmarkedGames($users_id)
@@ -1542,6 +1577,19 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function GetUserBookmarkedGamesPlatforms($users_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select DISTINCT platforms_id FROM `user_games` WHERE users_id=:users_id AND is_booked=1");
+		$sth->bindValue(':users_id', $users_id);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_COLUMN);
 			return $res;
 		}
 	}
