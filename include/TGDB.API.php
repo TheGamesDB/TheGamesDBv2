@@ -659,7 +659,7 @@ class TGDB
 			}
 			$valid_platform_ids = implode(",", $valid_platform_ids_arr);
 		}
-		else if(is_numeric($platform_ids))
+		else if(is_numeric($platform_ids) && $platform_ids != 0)
 		{
 			$valid_platform_ids = $platform_ids;
 		}
