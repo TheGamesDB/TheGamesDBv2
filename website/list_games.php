@@ -34,6 +34,13 @@ if(isset($_REQUEST['dev_id']) && is_numeric($_REQUEST['dev_id']))
 	{
 		$DevInfo = $DevInfo[$_REQUEST['dev_id']];
 	}
+	else
+	{
+		$errorPage = new ErrorPage();
+		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
+		$errorPage->print_die();
+	}
 }
 else if(isset($_REQUEST['pub_id']) && is_numeric($_REQUEST['pub_id']))
 {
@@ -43,6 +50,13 @@ else if(isset($_REQUEST['pub_id']) && is_numeric($_REQUEST['pub_id']))
 	if(!empty($DevInfo))
 	{
 		$DevInfo = $DevInfo[$_REQUEST['pub_id']];
+	}
+	else
+	{
+		$errorPage = new ErrorPage();
+		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
+		$errorPage->print_die();
 	}
 }
 else if(isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id']))
