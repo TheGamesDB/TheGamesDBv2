@@ -42,7 +42,7 @@ $app->group('/Games', function()
 		$fields = Utils::parseRequestedFields();
 
 		$API = TGDB::getInstance();
-		if(isset($_REQUEST['filter']['platform']) && (!is_array($_REQUEST['filter']['platform'] || !in_array(0, $_REQUEST['filter']['platform']))))
+		if(isset($_REQUEST['filter']['platform']) && (!is_array($_REQUEST['filter']['platform']) || !in_array(0, $_REQUEST['filter']['platform'])))
 		{
 			if(!is_array($_REQUEST['filter']['platform']))
 			{
