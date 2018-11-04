@@ -1687,7 +1687,7 @@ class TGDB
 		return $sth->execute();
 	}
 
-	function UpdateGamesAltName($user, $games_id, $new_alt_names)
+	function UpdateGamesAltName($user_id, $games_id, $new_alt_names)
 	{
 		$dbh = $this->database->dbh;
 
