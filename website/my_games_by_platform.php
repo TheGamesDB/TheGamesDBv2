@@ -6,7 +6,7 @@ require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/include/WebUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
-
+require_once __DIR__ . "/include/ErrorPage.class.php";
 
 require_once __DIR__ . "/include/login.phpbb.class.php";
 $_user = phpBBUser::getInstance();
