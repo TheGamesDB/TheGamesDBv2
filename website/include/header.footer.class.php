@@ -121,6 +121,7 @@ class HEADER
 						<span class="caret"></span>
 					</button>
 					<div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
+						<a class="dropdown-item" href="/my_games.php">My Games</a>
 						<a class="dropdown-item" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $_user->GetUserID() ?>">Forum Profile</a>
 						<div class="dropdown-divider"></div>
 						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $_user->GetUserSessionID()); ?>">Logout</a>
