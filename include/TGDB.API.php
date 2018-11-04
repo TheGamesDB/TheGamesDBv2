@@ -186,55 +186,7 @@ class TGDB
 
 	function SearchGamesByName($searchTerm, $offset = 0, $limit = 20, $fields = array())
 	{
-		$dbh = $this->database->dbh;
-
-		$qry = "Select id, game_title, release_date, platform ";
-
-		if(!empty($fields))
-		{
-			foreach($fields as $key => $enabled)
-			{
-				if($enabled && $this->is_valid_games_col($key))
-				{
-					$qry .= ", $key ";
-				}
-			}
-		}
-
-		$qry .= " FROM games WHERE game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4)
-		GROUP BY id ORDER BY CASE
-		WHEN game_title like :name5 THEN 3
-		WHEN game_title like :name6 THEN 0
-		WHEN game_title like :name7 THEN 1
-		WHEN game_title like :name8 THEN 2
-		ELSE 4
-		END, game_title LIMIT :limit OFFSET :offset";
-
-		$sth = $dbh->prepare($qry);
-
-		$sth->bindValue(':name', "%$searchTerm%");
-		$sth->bindValue(':name2', $searchTerm);
-		$sth->bindValue(':name3', "$searchTerm%");
-		$sth->bindValue(':name4', "% %$searchTerm% %");
-
-		$sth->bindValue(':name5', "%$searchTerm");
-		$sth->bindValue(':name6', $searchTerm);
-		$sth->bindValue(':name7', "$searchTerm%");
-		$sth->bindValue(':name8', "% %$searchTerm% %");
-
-
-		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
-		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
-
-		if($sth->execute())
-		{
-			$res = $sth->fetchAll(PDO::FETCH_OBJ);
-			if(!empty($res))
-			{
-				$this->PopulateOtherData($res, $fields);
-			}
-			return $res;
-		}
+		return $this->SearchGamesByNameByPlatformID($searchTerm, '', $offset, $limit, $fields);
 	}
 
 	function SearchGamesByExactName($searchTerm, $offset = 0, $limit = 20, $fields = array())
@@ -278,19 +230,6 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, game_title, release_date, platform ";
-
-		if(!empty($fields))
-		{
-			foreach($fields as $key => $enabled)
-			{
-				if($enabled && $this->is_valid_games_col($key))
-				{
-					$qry .= ", $key ";
-				}
-			}
-		}
-
 		$PlatformIDs = array();
 		if(is_array($IDs))
 		{
@@ -307,21 +246,45 @@ class TGDB
 			$PlatformIDs = $IDs;
 		}
 
-		$qry .= " FROM games WHERE ";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
 
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", games.$key ";
+				}
+			}
+		}
+		$qry .= " FROM games,
+		(
+			SELECT games_names_merged.id, @rank := @rank + 1 AS rank FROM
+			(
+				(
+					SELECT games_id as id, name as game_title, SOUNDEX from games_alts
+					WHERE name LIKE :name OR name=:name2 OR SOUNDEX LIKE soundex(:name3) OR SOUNDEX LIKE soundex(:name4)
+				)
+				UNION
+				(
+					SELECT id, game_title, SOUNDEX from games
+					WHERE game_title LIKE :name_2 OR game_title=:name_2_2 OR SOUNDEX LIKE soundex(:name_2_3) OR SOUNDEX LIKE soundex(:name_2_4)
+				)
+			) games_names_merged, (SELECT @rank := 0) t1
+			ORDER BY CASE
+			WHEN game_title like :name_3_2 THEN 0
+			WHEN game_title like :name_3_3 THEN 1
+			WHEN game_title like :name_3_4 THEN 2
+			WHEN game_title like :name_3 THEN 3
+			ELSE 4
+			END, game_title
+		) games_ordered where games.id = games_ordered.id ";
 		if(!empty($PlatformIDs))
 		{
-			$qry .= " platform IN ($PlatformIDs) AND ";
+			$qry .= " AND games.platform IN ($PlatformIDs) ";
 		}
-
-		$qry .= " (game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4))
-		GROUP BY id ORDER BY CASE
-		WHEN game_title like :name5 THEN 3
-		WHEN game_title like :name6 THEN 0
-		WHEN game_title like :name7 THEN 1
-		WHEN game_title like :name8 THEN 2
-		ELSE 4
-		END, game_title LIMIT :limit OFFSET :offset";
+		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
 
@@ -330,11 +293,15 @@ class TGDB
 		$sth->bindValue(':name3', "$searchTerm%");
 		$sth->bindValue(':name4', "% %$searchTerm% %");
 
-		$sth->bindValue(':name5', "%$searchTerm");
-		$sth->bindValue(':name6', $searchTerm);
-		$sth->bindValue(':name7', "$searchTerm%");
-		$sth->bindValue(':name8', "% %$searchTerm% %");
+		$sth->bindValue(':name_2', "%$searchTerm%");
+		$sth->bindValue(':name_2_2', $searchTerm);
+		$sth->bindValue(':name_2_3', "$searchTerm%");
+		$sth->bindValue(':name_2_4', "% %$searchTerm% %");
 
+		$sth->bindValue(':name_3', "%$searchTerm");
+		$sth->bindValue(':name_3_2', $searchTerm);
+		$sth->bindValue(':name_3_3', "$searchTerm%");
+		$sth->bindValue(':name_3_4', "% %$searchTerm% %");
 
 		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
