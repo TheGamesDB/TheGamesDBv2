@@ -1582,12 +1582,15 @@ class TGDB
 		}
 	}
 
-	function GetUserBookmarkedGames($users_id)
+	function GetUserBookmarkedGames($users_id, $offset = 0, $limit = 18)
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id  ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
 		$sth->bindValue(':users_id', $users_id);
+
+		$sth->bindValue(':offset', $offset);
+		$sth->bindValue(':limit', $limit);
 
 		if($sth->execute())
 		{
