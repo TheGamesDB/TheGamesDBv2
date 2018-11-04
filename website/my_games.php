@@ -64,7 +64,7 @@ foreach($platforms as &$platform)
 		$platform->boxart = &$icons[$platform->id];
 	}
 }
-unset($platform)
+unset($platform);
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browser - Game By $listed_by");
 ?>
