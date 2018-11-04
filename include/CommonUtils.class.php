@@ -18,6 +18,21 @@ class CommonUtils
 			"large" => CommonUtils::$BOXART_BASE_URL . "large/",
 		];
 	}
+
+	static function htmlspecialchars_decodeArrayRecursive(&$array)
+	{
+		foreach($array as &$sub_array_item)
+		{
+			if(is_array($sub_array_item) || is_object($sub_array_item))
+			{
+				CommonUtils::htmlspecialchars_decodeArrayRecursive($sub_array_item);
+			}
+			else if(!is_numeric($sub_array_item) && !empty($sub_array_item))
+			{
+				$sub_array_item = htmlspecialchars_decode($sub_array_item);
+			}
+		}
+	}
 }
 
 ?>

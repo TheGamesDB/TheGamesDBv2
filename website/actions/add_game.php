@@ -47,6 +47,7 @@ if(!checkdate($date[1], $date[2], $date[0]))
 
 
 require_once __DIR__ . "/../../include/TGDB.API.php";
+require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 try
 {
@@ -57,6 +58,9 @@ try
 
 	if($res)
 	{
+		$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true];
+		$new_game_data = $API->GetGameByID($res, 0, 1, $filters)[0];
+		DiscordUtils::PostGameUpdate($_user, [], $new_game_data, 0);
 		returnJSONAndDie(1, $res);
 	}
 
