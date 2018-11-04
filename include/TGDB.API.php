@@ -642,12 +642,28 @@ class TGDB
 		}
 	}
 
-	function GetMissingGames($field, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	function GetMissingGames($field, $platform_ids = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		if(!$this->is_valid_games_col($field))
 		{
 			return array();
 		}
+
+		if(is_array($platform_ids))
+		{
+			if(!empty($platform_ids))
+			{
+				foreach($platform_ids as $platform_id)
+					if(is_numeric($platform_id))
+						$valid_platform_ids_arr[] = $platform_id;
+			}
+			$valid_platform_ids = implode(",", $valid_platform_ids_arr);
+		}
+		else if(is_numeric($platform_ids))
+		{
+			$valid_platform_ids = $platform_ids;
+		}
+
 		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
@@ -664,7 +680,11 @@ class TGDB
 		$qry .= " FROM games ";
 
 
-		$qry .= "WHERE $field = '' OR $field IS NULL ";
+		$qry .= "WHERE ($field = '' OR $field IS NULL) ";
+		if(isset($valid_platform_ids))
+		{
+			$qry .= "AND (platform IN ($valid_platform_ids)) ";
+		}
 		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
 		{
 			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
@@ -707,8 +727,23 @@ class TGDB
 		}
 	}
 
-	function GetMissingGamesImages($type, $sub_type = '', $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	function GetMissingGamesImages($type, $sub_type = '', $platform_ids = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
+
+		if(is_array($platform_ids))
+		{
+			if(!empty($platform_ids))
+			{
+				foreach($platform_ids as $platform_id)
+					if(is_numeric($platform_id))
+						$valid_platform_ids_arr[] = $platform_id;
+			}
+			$valid_platform_ids = implode(",", $valid_platform_ids_arr);
+		}
+		else if(is_numeric($platform_ids))
+		{
+			$valid_platform_ids = $platform_ids;
+		}
 		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
@@ -729,7 +764,11 @@ class TGDB
 		{
 			$side = 'AND side=:side';
 		}
-		$qry .= "WHERE id NOT IN (select games_id from banners where type=:type $side) ";
+		$qry .= "WHERE (id NOT IN (select games_id from banners where type=:type $side)) ";
+		if($platform_id > 0)
+		{
+			$qry .= "AND (platform IN ($valid_platform_ids)) ";
+		}
 		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
 		{
 			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
