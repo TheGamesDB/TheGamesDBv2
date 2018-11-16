@@ -226,7 +226,7 @@ class TGDB
 		}
 	}
 
-	function SearchGamesByNameByPlatformID($searchTerm, $IDs, $offset = 0, $limit = 20, $fields = array())
+	function SearchGamesByNameByPlatformID($game_title, $IDs, $offset = 0, $limit = 20, $fields = array())
 	{
 		$dbh = $this->database->dbh;
 
@@ -288,6 +288,7 @@ class TGDB
 
 		$sth = $dbh->prepare($qry);
 
+		$searchTerm = htmlspecialchars($game_title);
 		$sth->bindValue(':name', "%$searchTerm%");
 		$sth->bindValue(':name2', $searchTerm);
 		$sth->bindValue(':name3', "$searchTerm%");
