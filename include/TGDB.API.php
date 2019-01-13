@@ -349,7 +349,7 @@ class TGDB
 			}
 			$PlatformIDs = implode(",", $PlatformIDsArr);
 		}
-		else if(is_numeric($PlatformIDs_unfiltered))
+		else if(is_numeric($PlatformIDs_unfiltered) && $PlatformIDs_unfiltered > 0)
 		{
 			$PlatformIDs = $PlatformIDs_unfiltered;
 		}
