@@ -36,7 +36,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("release_date" => true, "overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true);
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "serials" => true);
 	$API = TGDB::getInstance();
 	$GenreList = $API->GetGenres();
 	$ESRBRating = $API->GetESRBRating();
@@ -488,43 +488,59 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 			});
 		});
 	</script>
-	<script type="text/template" id="template-alt-field">
+	<script type="text/template" id="template-multi-field">
 		<div class="input-group mb-3">
-			<input name="alternate_names[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
+			<input id="field" name="field[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
 			<div class="input-group-append">
-				<button class="btn btn-success add-more" type="button">+</button>
+				<button class="btn btn-success" type="button">+</button>
 			</div>
 		</div>
 	</script>
 	<script>
 		$(document).ready(function()
 		{
-
-			function remove_me()
+			function remove_me(type)
 			{
-				$('.remove-me').click(function(e)
+				$('.remove-me-' + type).click(function(e)
 				{
 					e.preventDefault();
 					$(this).parent().parent().remove();
 				});
 			}
-			function add_more()
+			function add_more(type)
 			{
-				$(".add-more").click(function(e){
+				$(".add-more-" + type).click(function(e){
 					e.preventDefault();
-					$("#alt_fields").append($.trim($('#template-alt-field').clone().html()));
 
-					$(this).removeClass("btn-success add-more").addClass("btn-danger remove-me");
+					var ele = $($.trim($('#template-multi-field').clone().html()));
+					ele.find(".btn").addClass("add-more-" + type);
+					input_field = ele.find("#field");
+					if(type == "serials")
+					{
+						input_field.attr('name', "serials");
+						input_field.attr('placeholder', 'Serial(s)');
+					}
+					else
+					{
+						input_field.attr('name', "alternate_names");
+						input_field.attr('placeholder', 'Alt Name(s)');
+					}
+
+					$("#" + type + "_fields").append(ele);
+
+					$(this).removeClass("btn-success add-more-" + type).addClass("btn-danger remove-me-" + type);
 					$(this).text("-");
 
-					$(".add-more, .remove-me").unbind("click");
+					$(".add-more-" + type + ", .remove-me-" + type).unbind("click");
 
-					add_more();
-					remove_me();
+					add_more(type);
+					remove_me(type);
 				});
 			}
-			add_more();
-			remove_me();
+			add_more("alts");
+			remove_me("alts");
+			add_more("serials");
+			remove_me("serials");
 		});
 
 </script>
@@ -598,19 +614,19 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 						<div class="card border-primary">
 							<div class="card-header">
 								<h1><input style="width:100%" name="game_title" value="<?= $Game->game_title?>"/></h1>
-								<div id="alt_fields">
+								<div id="alts_fields">
 									<?php while(!empty($Game->alternates) && !empty($alt_name = array_shift($Game->alternates))) : ?>
 									<div class="input-group mb-3">
 										<input value="<?= $alt_name ?>" name="alternate_names[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
 										<div class="input-group-append">
-											<button class="btn btn-danger remove-me" type="button">-</button>
+											<button class="btn btn-danger remove-me-alts" type="button">-</button>
 										</div>
 									</div>
 									<?php endwhile; ?>
 									<div class="input-group mb-3">
 										<input name="alternate_names[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
 										<div class="input-group-append">
-											<button class="btn btn-success add-more" type="button">+</button>
+											<button class="btn btn-success add-more-alts" type="button">+</button>
 										</div>
 									</div>
 								</div>
@@ -653,6 +669,24 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										<label for="rating-<?= $rate->id; ?>"><span></span><?= $rate->name; ?></label>
 									</div>
 									<?php endforeach; ?>
+								</div>
+							</div>
+							<div class="card-footer">
+								<div id="serials_fields">
+									<?php while(!empty($Game->serials) && !empty($serial = array_shift($Game->serials))) : ?>
+									<div class="input-group mb-3">
+										<input value="<?= $serial ?>" name="serials[]" type="text" class="form-control" placeholder="Serial(s)"/>
+										<div class="input-group-append">
+											<button class="btn btn-danger remove-me-serials" type="button">-</button>
+										</div>
+									</div>
+									<?php endwhile; ?>
+									<div class="input-group mb-3">
+										<input name="serials[]" type="text" class="form-control" placeholder="Serial(s)"/>
+										<div class="input-group-append">
+											<button class="btn btn-success add-more-serials" type="button">+</button>
+										</div>
+									</div>
 								</div>
 							</div>
 						</div>
