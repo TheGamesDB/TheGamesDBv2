@@ -233,6 +233,7 @@ class TGDB
 		$PlatformIDs = array();
 		if(is_array($IDs))
 		{
+			$PlatformIDsArr = array();
 			if(!empty($IDs))
 			{
 				foreach($IDs as $key => $val)
