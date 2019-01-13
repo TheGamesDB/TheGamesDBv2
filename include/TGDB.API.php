@@ -44,6 +44,11 @@ class TGDB
 		{
 			$alts = $this->GetGamesAlts($GameIDs, false);
 		}
+
+		if(isset($fields['serials']))
+		{
+			$serials = $this->GetGamesSerials($GameIDs, false);
+		}
 		foreach($res as $game)
 		{
 			$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
@@ -58,6 +63,10 @@ class TGDB
 			if(isset($fields['alternates']))
 			{
 				$game->alternates = !empty($alts[$game->id]) ? $alts[$game->id] : NULL;
+			}
+			if(isset($fields['serials']))
+			{
+				$game->serials = !empty($serials[$game->id]) ? $serials[$game->id] : NULL;
 			}
 		}
 	}
@@ -1477,6 +1486,42 @@ class TGDB
 		}
 	}
 
+	function GetGamesSerials($games_id, $include_id = true)
+	{
+		$dbh = $this->database->dbh;
+		$Games_IDs;
+		if(is_array($games_id))
+		{
+			if(!empty($games_id))
+			{
+				foreach($games_id as $key => $val)
+					if(is_numeric($val))
+						$valid_ids[] = $val;
+			}
+			$Games_IDs = implode(",", $valid_ids);
+		}
+		else if(is_numeric($games_id))
+		{
+			$Games_IDs = $games_id;
+		}
+		if(empty($Games_IDs))
+		{
+			return array();
+		}
+		$qry = "SELECT games_id as n, serial";
+		if($include_id)
+		{
+			$qry .= ", id, games_id";
+		}
+		$qry .= " FROM games_serials where games_id IN($Games_IDs);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+			return $res;
+		}
+	}
+
 	function GetUserEditsByTime($minutes = 1440, $offset = 0, $limit = 100)
 	{
 
@@ -1848,10 +1893,87 @@ class TGDB
 		if($is_changed)
 		{
 			$valid_alt_name = array_unique($valid_alt_name);
-			if(!empty($valid_alt_name))
+			$this->InsertUserEdits($user_id, $games_id, "alternates", json_encode($valid_alt_name));
+		}
+		return true;
+	}
+
+	function InsertGamesSerial($game_id, $serial)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_serials (games_id, serial) VALUES (:games_id, :serial);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':serial', $serial, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function DeleteGamesSerial($game_id, $serial)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_serials  WHERE games_id=:games_id AND serial=:serial");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':serial', $serial, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function UpdateGamesSerial($user_id, $games_id, $new_serials)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+		$valid_serial = array();
+
+		$current_serials = $this->GetGamesSerials($games_id, false);
+		if(!empty($current_serials[$games_id]))
+		{
+			$current_serials = $current_serials[$games_id];
+		}
+		if(!empty($new_serials))
+		{
+			foreach($new_serials as &$new_serial)
 			{
-				$this->InsertUserEdits($user_id, $games_id, "alternates", json_encode($valid_alt_name));
+				$new_serial = trim($new_serial);
 			}
+			unset($new_serial);
+			foreach($new_serials as $new_serial)
+			{
+				if(!empty($new_serial))
+				{
+					$valid_serial[] = $new_serial;
+
+					if(!in_array($new_serial, $current_serials, true))
+					{
+						$res = $this->InsertGamesSerial($games_id, $new_serial);
+						if(!$dbh->inTransaction() && !$res)
+						{
+							return false;
+						}
+						$is_changed = true;
+					}
+				}
+			}
+		}
+
+		if(!empty($current_serials))
+		{
+			foreach($current_serials as $current_serial)
+			{
+				if(!in_array($current_serial, $new_serials, true))
+				{
+					$res = $this->DeleteGamesSerial($games_id, $current_serial);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_serial = array_unique($valid_serial);
+			$this->InsertUserEdits($user_id, $games_id, "serials", json_encode($valid_serial));
 		}
 		return true;
 	}
@@ -2079,7 +2201,7 @@ class TGDB
 		return true;
 	}
 
-	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names, $serials)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -2098,6 +2220,8 @@ class TGDB
 
 		{
 			$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
+
+			$this->UpdateGamesSerial($user_id, $game_id, $serials);
 
 			if(!empty($new_genres))
 			{
@@ -2236,9 +2360,18 @@ class TGDB
 
 		$dbh->beginTransaction();
 
+		$sth = $dbh->prepare("DELETE FROM games_alts WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
+		$sth = $dbh->prepare("DELETE FROM games_serials WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
 		$sth = $dbh->prepare("DELETE FROM games_pubs WHERE games_id=:games_id;");
 		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
 		$res = $sth->execute();
+
 
 		$sth = $dbh->prepare("DELETE FROM games_genre WHERE games_id=:games_id;");
 		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
@@ -2259,7 +2392,7 @@ class TGDB
 		return $dbh->commit();
 	}
 
-	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names, $serials)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
@@ -2332,6 +2465,11 @@ class TGDB
 				if(!empty($alternate_names))
 				{
 					$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
+				}
+
+				if(!empty($serials))
+				{
+					$this->UpdateGamesSerial($user_id, $game_id, $serials);
 				}
 
 				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'platform', 'rating'];
