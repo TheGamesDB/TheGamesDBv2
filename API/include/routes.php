@@ -267,6 +267,80 @@ $app->group('/Games', function()
 
 		return $response->withJson($JSON_Response);
 	});
+	$this->get('/ByGameSerialID[/{id}]', function($request, $response, $args)
+	{
+		if(isset($args['id']))
+		{
+			$serialIDs = $args['id'];
+		}
+		else if(isset($_REQUEST['id']))
+		{
+			$serialIDs = $_REQUEST['id'];
+		}
+		else
+		{
+			$JSON_Response = Utils::getStatus(406);
+			return $response->withJson($JSON_Response, $JSON_Response['code']);
+		}
+
+		$limit = 20;
+		$page = Utils::getPage();
+		$offset = ($page - 1) * $limit;
+		$options = Utils::parseRequestOptions();
+		$fields = Utils::parseRequestedFields();
+
+		$API = TGDB::getInstance();
+		if(isset($_REQUEST['filter']['platform']) && (!is_array($_REQUEST['filter']['platform']) || !in_array(0, $_REQUEST['filter']['platform'])))
+		{
+			if(!is_array($_REQUEST['filter']['platform']))
+			{
+				$PlatformsIDs = explode(",", $_REQUEST['filter']['platform']);
+			}
+			else
+			{
+				$PlatformsIDs = $_REQUEST['filter']['platform'];
+			}
+			$list = $API->SearchGamesBySerialIDByPlatformID($serialIDs, $PlatformsIDs, $offset, $limit + 1, $fields);
+		}
+		else
+		{
+			$list = $API->SearchGamesBySerialID($serialIDs, $offset, $limit+1, $fields);
+		}
+
+		if($has_next_page = count($list) > $limit)
+			unset($list[$limit]);
+
+		CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
+		$JSON_Response = Utils::getStatus(200);
+		$JSON_Response['data'] = array("count" => count($list), "games" => $list);
+
+		if(count($list) > 0)
+		{
+			if(isset($options['boxart']) && $options['boxart'])
+			{
+				$IDs = array();
+				foreach($list as $game)
+				{
+					$IDs[] = $game->id;
+				}
+				$JSON_Response['include']['boxart']['base_url'] = CommonUtils::getImagesBaseURL();
+				$JSON_Response['include']['boxart']['data'] = $API->GetGameBoxartByID($IDs, 0, 999, 'boxart');
+			}
+			if(isset($options['platform']) && $options['platform'])
+			{
+				$PlatformsIDs = array();
+				foreach($list as $game)
+				{
+					$PlatformsIDs[] = $game->platform;
+				}
+				$JSON_Response['include']['platform']['data'] = $API->GetPlatforms($PlatformsIDs);
+			}
+		}
+
+		$JSON_Response['pages'] = Utils::getJsonPageUrl($page, $has_next_page);
+
+		return $response->withJson($JSON_Response);
+	});
 	$this->get('/Images[/{games_id}]', function($request, $response, $args)
 	{
 		$this->logger->info("TGDB '/Games/Images' route");

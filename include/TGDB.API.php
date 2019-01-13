@@ -319,6 +319,108 @@ class TGDB
 		}
 	}
 
+	function SearchGamesBySerialID($games_serial_unfiltered, $offset = 0, $limit = 20, $fields = array())
+	{
+		return $this->SearchGamesBySerialIDByPlatformID($games_serial_unfiltered, 0, $offset, $limit, $fields);
+	}
+
+	function SearchGamesBySerialIDByPlatformID($games_serial_unfiltered, $PlatformIDs_unfiltered, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$PlatformIDs = array();
+		if(is_array($PlatformIDs_unfiltered))
+		{
+			$PlatformIDsArr = array();
+			if(!empty($PlatformIDs_unfiltered))
+			{
+				foreach($PlatformIDs_unfiltered as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+		}
+		else if(is_numeric($PlatformIDs_unfiltered))
+		{
+			$PlatformIDs = $PlatformIDs_unfiltered;
+		}
+
+		if(!empty($games_serial_unfiltered))
+		{
+			$games_serial_arr = explode(",", $games_serial_unfiltered);
+			$valid_chars = "abcdefghijklmnopqrstuvwxyz1234567890-_.";
+			$games_serial_arr_filter = [];
+			foreach($games_serial_arr as $serial)
+			{
+				$i = 0;
+				while($i < strlen($serial))
+				{
+					$j = 0;
+					while($j < strlen($valid_chars))
+					{
+						if(strtolower($serial[$i]) == $valid_chars[$j])
+						{
+							// Valid
+							break;
+						}
+						++$j;
+					}
+					if($j == strlen($valid_chars))
+					{
+						// Invalid
+						break;
+					}
+					++$i;
+				}
+				if($i == strlen($serial))
+				{
+					$games_serial_arr_filter[] = $serial;
+				}
+			}
+			if(!empty($games_serial_arr_filter))
+			{
+				$games_serials = "\"" . implode("\",\"", $games_serial_arr_filter) . "\"";
+			}
+			else
+			{
+				return array();
+			}
+		}
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", games.$key ";
+				}
+			}
+		}
+		$qry .= " FROM games, games_serials where games.id = games_serials.games_id and games_serials.serial in ($games_serials) ";
+		if(!empty($PlatformIDs))
+		{
+			$qry .= " AND games.platform IN ($PlatformIDs) ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
 	function GetGamesByDate($date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		return $this->GetGamesByDateByPlatform(0, $date, $offset, $limit, $fields, $OrderBy, $ASCDESC);
