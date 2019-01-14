@@ -517,12 +517,12 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 					input_field = ele.find("#field");
 					if(type == "serials")
 					{
-						input_field.attr('name', "serials");
+						input_field.attr('name', "serials[]");
 						input_field.attr('placeholder', 'Serial(s)');
 					}
 					else
 					{
-						input_field.attr('name', "alternate_names");
+						input_field.attr('name', "alternate_names[]");
 						input_field.attr('placeholder', 'Alt Name(s)');
 					}
 
