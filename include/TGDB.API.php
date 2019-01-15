@@ -1441,6 +1441,7 @@ class TGDB
 					case 'developers':
 					case 'publishers':
 					case 'alternates':
+					case 'serials':
 						$edit->value = json_decode($edit->value);
 				}
 			}
