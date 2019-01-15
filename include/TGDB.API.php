@@ -1690,6 +1690,20 @@ class TGDB
 
 	/* Everything belowis not planned to be exposed through external API */
 
+	function GetTitleIDPattern($platform_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select * FROM `games_serials_patterns` where platform_id = :platform_id");
+		$sth->bindValue(':platform_id', $platform_id);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
 	function InsertUserGameBookmark($users_id, $Game, $is_booked)
 	{
 		$dbh = $this->database->dbh;
