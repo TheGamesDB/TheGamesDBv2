@@ -326,6 +326,99 @@ class TGDB
 		}
 	}
 
+	function SearchGamesByName_Natural($searchTerm, $offset = 0, $limit = 20, $fields = array())
+	{
+		return $this->SearchGamesByNameByPlatformID_Natural($searchTerm, '', $offset, $limit, $fields);
+	}
+
+	function SearchGamesByNameByPlatformID_Natural($game_title, $IDs, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$PlatformIDs = array();
+		if(is_array($IDs))
+		{
+			$PlatformIDsArr = array();
+			if(!empty($IDs))
+			{
+				foreach($IDs as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+		}
+		else if(is_numeric($IDs))
+		{
+			$PlatformIDs = $IDs;
+		}
+
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", games.$key ";
+				}
+			}
+		}
+		$qry .= " FROM games,
+		(
+			SELECT games_names_merged.id, games_names_merged.score, @rank := @rank + 1 AS rank FROM
+			(
+				(
+					SELECT games_id as id, name as game_title, MATCH (name) AGAINST (:name IN NATURAL LANGUAGE MODE) as score from games_alts
+					WHERE  MATCH (name) AGAINST (:name2 IN NATURAL LANGUAGE MODE) > 0
+				)
+				UNION
+				(
+					SELECT id, game_title, MATCH (game_title) AGAINST (:name3 IN NATURAL LANGUAGE MODE) as score from games
+					WHERE MATCH (game_title) AGAINST (:name4 IN NATURAL LANGUAGE MODE) > 0
+				)
+			) games_names_merged, (SELECT @rank := 0) t1
+			ORDER BY CASE
+				WHEN game_title like :name_3 THEN 0
+				WHEN game_title like :name_3_1 THEN 1
+				WHEN game_title like :name_3_2 THEN 2
+				WHEN game_title like :name_3_3 THEN 3
+				ELSE 4
+				END, game_title
+		) games_ordered where games.id = games_ordered.id ";
+		if(!empty($PlatformIDs))
+		{
+			$qry .= " AND games.platform IN ($PlatformIDs) ";
+		}
+		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$searchTerm = htmlspecialchars($game_title);
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+
+		$sth->bindValue(':name_3', $searchTerm);
+		$sth->bindValue(':name_3_1', "$searchTerm%");
+		$sth->bindValue(':name_3_2', "% %$searchTerm% %");
+		$sth->bindValue(':name_3_3', "%$searchTerm");
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
 	function SearchGamesBySerialID($games_serial_unfiltered, $offset = 0, $limit = 20, $fields = array())
 	{
 		return $this->SearchGamesBySerialIDByPlatformID($games_serial_unfiltered, 0, $offset, $limit, $fields);
