@@ -2462,6 +2462,13 @@ class TGDB
 				$dbh->beginTransaction();
 				$this->InsertUserEdits($user_id, $game_id, 'game', '[NEW]');
 
+				$GameArrayFields = ['platform', 'game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'rating'];
+				foreach($GameArrayFields as $key)
+				{
+					$diff = htmlspecialchars($$key);
+					$this->InsertUserEdits($user_id, $game_id, $key, $diff);
+				}
+
 				if(!empty($new_genres))
 				{
 					$this->UpdateGamesGenre($user_id, $game_id, $new_genres);
@@ -2487,12 +2494,6 @@ class TGDB
 					$this->UpdateGamesSerial($user_id, $game_id, $serials);
 				}
 
-				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'platform', 'rating'];
-				foreach($GameArrayFields as $key)
-				{
-					$diff = htmlspecialchars($$key);
-					$this->InsertUserEdits($user_id, $game_id, $key, $diff);
-				}
 				$dbh->commit();
 			}
 		}
