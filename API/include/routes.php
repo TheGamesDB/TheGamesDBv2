@@ -40,6 +40,7 @@ $app->group('/v1.1/Games', function()
 		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
+		$natural_search = isset($_REQUEST['mode']) && $_REQUEST['mode'] = "natural";
 
 		$API = TGDB::getInstance();
 		if(isset($_REQUEST['filter']['platform']) && (!is_array($_REQUEST['filter']['platform']) || !in_array(0, $_REQUEST['filter']['platform'])))
@@ -52,11 +53,25 @@ $app->group('/v1.1/Games', function()
 			{
 				$PlatformsIDs = $_REQUEST['filter']['platform'];
 			}
-			$list = $API->SearchGamesByNameByPlatformID($searchTerm, $PlatformsIDs, $offset, $limit + 1, $fields);
+			if($natural_search)
+			{
+				$list = $API->SearchGamesByNameByPlatformID_Natural($searchTerm, $PlatformsIDs, $offset, $limit + 1, $fields);
+			}
+			else
+			{
+				$list = $API->SearchGamesByNameByPlatformID($searchTerm, $PlatformsIDs, $offset, $limit + 1, $fields);
+			}
 		}
 		else
 		{
-			$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $fields);
+			if($natural_search)
+			{
+				$list = $API->SearchGamesByName_Natural($searchTerm, $offset, $limit+1, $fields);
+			}
+			else
+			{
+				$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $fields);
+			}
 		}
 
 		if($has_next_page = count($list) > $limit)
@@ -118,6 +133,7 @@ $app->group('/Games', function()
 		$offset = ($page - 1) * $limit;
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
+		$natural_search = isset($_REQUEST['mode']) && $_REQUEST['mode'] = "natural";
 
 		$API = TGDB::getInstance();
 		if(isset($_REQUEST['filter']['platform']) && (!is_array($_REQUEST['filter']['platform']) || !in_array(0, $_REQUEST['filter']['platform'])))
@@ -130,11 +146,25 @@ $app->group('/Games', function()
 			{
 				$PlatformsIDs = $_REQUEST['filter']['platform'];
 			}
-			$list = $API->SearchGamesByNameByPlatformID($searchTerm, $PlatformsIDs, $offset, $limit + 1, $fields);
+			if($natural_search)
+			{
+				$list = $API->SearchGamesByNameByPlatformID_Natural($searchTerm, $PlatformsIDs, $offset, $limit + 1, $fields);
+			}
+			else
+			{
+				$list = $API->SearchGamesByNameByPlatformID($searchTerm, $PlatformsIDs, $offset, $limit + 1, $fields);
+			}
 		}
 		else
 		{
-			$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $fields);
+			if($natural_search)
+			{
+				$list = $API->SearchGamesByName_Natural($searchTerm, $offset, $limit+1, $fields);
+			}
+			else
+			{
+				$list = $API->SearchGamesByName($searchTerm, $offset, $limit+1, $fields);
+			}
 		}
 
 		if($has_next_page = count($list) > $limit)
