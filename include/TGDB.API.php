@@ -49,6 +49,12 @@ class TGDB
 		{
 			$serials = $this->GetGamesSerials($GameIDs, false);
 		}
+
+		if(isset($fields['hashes']))
+		{
+			$hashes = $this->GetGamesHashes($GameIDs, false);
+		}
+
 		foreach($res as $game)
 		{
 			$game->developers = (!empty($devs[$game->id])) ? $devs[$game->id] : NULL;
@@ -67,6 +73,10 @@ class TGDB
 			if(isset($fields['serials']))
 			{
 				$game->serials = !empty($serials[$game->id]) ? $serials[$game->id] : NULL;
+			}
+			if(isset($fields['hashes']))
+			{
+				$game->hashes = !empty($hashes[$game->id]) ? $hashes[$game->id] : NULL;
 			}
 		}
 	}
@@ -1537,6 +1547,7 @@ class TGDB
 					case 'publishers':
 					case 'alternates':
 					case 'serials':
+					case 'hashes':
 						$edit->value = json_decode($edit->value);
 				}
 			}
@@ -2086,6 +2097,177 @@ class TGDB
 		return true;
 	}
 
+	function GetGamesHashes($games_id, $include_id = true)
+	{
+		$dbh = $this->database->dbh;
+		$Games_IDs;
+		if(is_array($games_id))
+		{
+			if(!empty($games_id))
+			{
+				foreach($games_id as $key => $val)
+					if(is_numeric($val))
+						$valid_ids[] = $val;
+			}
+			$Games_IDs = implode(",", $valid_ids);
+		}
+		else if(is_numeric($games_id))
+		{
+			$Games_IDs = $games_id;
+		}
+		if(empty($Games_IDs))
+		{
+			return array();
+		}
+		$qry = "SELECT games_id as n";
+		if($include_id)
+		{
+			$qry .= ", id, games_id";
+		}
+		$qry .= ", hash, type FROM games_hashes where games_id IN($Games_IDs);";
+		$sth = $dbh->prepare($qry);
+		if($sth->execute())
+		{
+			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
+			return $res;
+		}
+	}
+
+	function InsertGamesHash($game_id, $hash, $type)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_hashes (games_id, hash, type) VALUES (:games_id, :hash, :type);");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':hash', $hash, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function DeleteGamesHash($game_id, $hash)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_hashes  WHERE games_id=:games_id AND hash=:hash");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':hash', $hash, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function array_unique_hashes($arr)
+	{
+		$temp_array =[];
+		$key_array = [];
+
+		foreach($arr as $val)
+		{
+			$keys = array_keys($val);
+			break;
+		}
+		foreach($arr as $val)
+		{
+			{
+				$val_0 = $val[$keys[0]];
+				$val_1 = $val[$keys[1]];
+				if(!isset($key_array[$val_0]))
+				{
+					$key_array[$val_0] = [];
+				}
+
+				if(!isset($key_array[$val_0][$val_1]))
+				{
+					$key_array[$val_0][$val_1] = 0;
+				}
+				$key_array[$val_0][$val_1] += 1;
+			}
+		}
+		foreach($key_array as $val_0 => $subval)
+		{
+			foreach($subval as $val_1 => $count)
+			{
+				$temp_array[] =
+				[
+					"hash"=> $val_0,
+					"type" => $val_1
+				];
+			}
+		}
+		return $temp_array;
+	}
+
+	function UpdateGamesHash($user_id, $games_id, $new_hashs)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+		$valid_hash = array();
+
+		$current_hashs = $this->GetGamesHashs($games_id, false);
+		if(!empty($current_hashs[$games_id]))
+		{
+			$current_hashs = $current_hashs[$games_id];
+		}
+		if(!empty($new_hashs))
+		{
+			foreach($new_hashs as &$new_hash)
+			{
+				$new_hash = trim($new_hash);
+			}
+			unset($new_hashl);
+			foreach($new_hashs as $new_hash)
+			{
+				if(!empty($new_hash))
+				{
+					$type = "";
+					foreach(["crc32" => "[a-Z0-9]{8}", "sha1" => "[a-Z0-9]{40}"] as $key => $pattern)
+					{
+						if(preg_match_all("/$pattern/", $new_hash, $matches))
+						{
+							if(count($matches[0]) == 1 && $matches[0][0] == $new_hash)
+							{
+								$type = $key;
+								break;
+							}
+						}
+					}
+					if(!empty($type))
+					{
+						$valid_hash[] = ["hash" => $new_hash, "type" => $type];
+						if(!in_array($new_hash, $current_hashs, true))
+						{
+							$res = $this->InsertGamesHash($games_id, $new_hash, $type);
+							if(!$dbh->inTransaction() && !$res)
+							{
+								return false;
+							}
+							$is_changed = true;
+						}
+					}
+				}
+			}
+		}
+
+		if(!empty($current_hashs))
+		{
+			foreach($current_hashs as $current_hash)
+			{
+				if(!in_array($current_hash, $new_hashs, true))
+				{
+					$res = $this->DeleteGamesHash($games_id, $current_hash);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_hash = $this->array_unique_hashes($valid_hash);
+			$this->InsertUserEdits($user_id, $games_id, "hashes", json_encode($valid_hash));
+		}
+		return true;
+	}
+
 	function InsertGamesGenre($game_id, $genres_id)
 	{
 		$dbh = $this->database->dbh;
@@ -2467,6 +2649,10 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$dbh->beginTransaction();
+
+		$sth = $dbh->prepare("DELETE FROM games_hashes WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
 
 		$sth = $dbh->prepare("DELETE FROM games_alts WHERE games_id=:games_id;");
 		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
