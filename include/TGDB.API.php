@@ -531,6 +531,111 @@ class TGDB
 		}
 	}
 
+	function SearchGamesByHashByPlatformID($games_hash_unfiltered, $PlatformIDs_unfiltered, $filter_type, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		$PlatformIDs = array();
+		if(is_array($PlatformIDs_unfiltered))
+		{
+			$PlatformIDsArr = array();
+			if(!empty($PlatformIDs_unfiltered))
+			{
+				foreach($PlatformIDs_unfiltered as $key => $val)
+					if(is_numeric($val))
+						$PlatformIDsArr[] = $val;
+			}
+			$PlatformIDs = implode(",", $PlatformIDsArr);
+		}
+		else if(is_numeric($PlatformIDs_unfiltered) && $PlatformIDs_unfiltered > 0)
+		{
+			$PlatformIDs = $PlatformIDs_unfiltered;
+		}
+
+		if(!empty($games_hash_unfiltered))
+		{
+			$games_hashes_arr = explode(",", $games_hash_unfiltered);
+			$valid_chars = "abcdefghijklmnopqrstuvwxyz1234567890";
+			$games_hashes_arr_filter = [];
+			foreach($games_hashes_arr as $hash)
+			{
+				$i = 0;
+				while($i < strlen($hash))
+				{
+					$j = 0;
+					while($j < strlen($valid_chars))
+					{
+						if(strtolower($hash[$i]) == $valid_chars[$j])
+						{
+							// Valid
+							break;
+						}
+						++$j;
+					}
+					if($j == strlen($valid_chars))
+					{
+						// Invalid
+						break;
+					}
+					++$i;
+				}
+				if($i == strlen($hash))
+				{
+					$games_hash_arr_filter[] = $hash;
+				}
+			}
+			if(!empty($games_hash_arr_filter))
+			{
+				$games_hashes = "\"" . implode("\",\"", $games_hash_arr_filter) . "\"";
+			}
+			else
+			{
+				return array();
+			}
+		}
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", games.$key ";
+				}
+			}
+		}
+		$qry .= " FROM games, games_hashes where games.id = games_hashes.games_id and games_hashes.hashes in ($games_hashes) ";
+		if(!empty($filter_type))
+		{
+			$qry .= " AND games_hashes.hashes = :type";
+		}
+
+		if(!empty($PlatformIDs))
+		{
+			$qry .= " AND games.platform IN ($PlatformIDs) ";
+		}
+		$qry .= " LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+		if(!empty($filter_type))
+		{
+			$sth->bindValue(':type', $type, PDO::PARAM_STR);
+		}
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
 	function GetGamesByDate($date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		return $this->GetGamesByDateByPlatform(0, $date, $offset, $limit, $fields, $OrderBy, $ASCDESC);
