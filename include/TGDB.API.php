@@ -2212,7 +2212,7 @@ class TGDB
 
 		if($is_changed)
 		{
-			$valid_uid = array_unique($valid_uid);
+			$valid_uid = $this->array_unique_hashes($valid_uid, ["uid", "games_uids_patterns_id"]);
 			$this->InsertUserEdits($user_id, $games_id, "uids", json_encode($valid_uid));
 		}
 		return true;
@@ -2272,7 +2272,7 @@ class TGDB
 		return $sth->execute();
 	}
 
-	function array_unique_hashes($arr)
+	function array_unique_hashes($arr, $field_names)
 	{
 		$temp_array =[];
 		$key_array = [];
@@ -2305,8 +2305,8 @@ class TGDB
 			{
 				$temp_array[] =
 				[
-					"hash"=> $val_0,
-					"type" => $val_1
+					$field_names[0] => $val_0,
+					$field_names[1] => $val_1
 				];
 			}
 		}
@@ -2383,7 +2383,7 @@ class TGDB
 
 		if($is_changed)
 		{
-			$valid_hash = $this->array_unique_hashes($valid_hash);
+			$valid_hash = $this->array_unique_hashes($valid_hash, ["hash", "type"]);
 			$this->InsertUserEdits($user_id, $games_id, "hashes", json_encode($valid_hash));
 		}
 		return true;
