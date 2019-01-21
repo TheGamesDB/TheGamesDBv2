@@ -59,7 +59,7 @@ try
 				$res = $API->DeleteGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['image_id'], $cover->type);
 				if($res)
 				{
-					DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], '', $_REQUEST['type'], $_REQUEST['sub_type'], 2);
+					DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], '',  $cover->type, $cover->side, 2);
 					returnJSONAndDie(1, "success!!");
 				}
 			}
