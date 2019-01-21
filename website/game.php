@@ -315,7 +315,14 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<?php endif; if (!empty($Game->genres)) : //$gens_id = (json_decode($Game->genres)); ?>
 								<p>Genre(s): <?php foreach($Game->genres as $gen_id) { echo $GenresList[$gen_id]->name . " | "; } ?></p>
 								<?php endif;if (!empty($Game->uids)) : ?>
-								<p>UID(s): <?= implode(" | ", $Game->uids) ?></p>
+								<?php
+								$uids = [];
+									foreach($Game->uids as $item)
+									{
+										$uids[] = $item->uid;
+									}
+								?>
+								<p>UID(s): <?= implode(" | ", $uids) ?></p>
 								<?php endif; ?>
 							</div>
 							<div class="card-footer" style="text-align: center;">

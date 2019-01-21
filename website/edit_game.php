@@ -675,7 +675,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<div id="uids_fields">
 									<?php while(!empty($Game->uids) && !empty($uid = array_shift($Game->uids))) : ?>
 									<div class="input-group mb-3">
-										<input value="<?= $uid ?>" name="uids[]" type="text" class="form-control" placeholder="UID(s)"/>
+										<input value="<?= $uid->uid ?>" name="uids[]" type="text" class="form-control" placeholder="UID(s)"/>
 										<div class="input-group-append">
 											<button class="btn btn-danger remove-me-uids" type="button">-</button>
 										</div>
