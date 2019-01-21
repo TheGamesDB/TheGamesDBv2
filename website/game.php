@@ -18,7 +18,7 @@ $_user = phpBBuser::getInstance();
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "serials" => true);
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "uids" => true);
 	$API = TGDB::getInstance();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	if(empty($list))
@@ -314,8 +314,8 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<p>ESRB Rating: <?= $Game->rating; ?></p>
 								<?php endif; if (!empty($Game->genres)) : //$gens_id = (json_decode($Game->genres)); ?>
 								<p>Genre(s): <?php foreach($Game->genres as $gen_id) { echo $GenresList[$gen_id]->name . " | "; } ?></p>
-								<?php endif;if (!empty($Game->serials)) : ?>
-								<p>Serial(s): <?= implode(" | ", $Game->serials) ?></p>
+								<?php endif;if (!empty($Game->uids)) : ?>
+								<p>UID(s): <?= implode(" | ", $Game->uids) ?></p>
 								<?php endif; ?>
 							</div>
 							<div class="card-footer" style="text-align: center;">

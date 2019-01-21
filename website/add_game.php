@@ -245,10 +245,10 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 					var ele = $($.trim($('#template-multi-field').clone().html()));
 					ele.find(".btn").addClass("add-more-" + type);
 					input_field = ele.find("#field");
-					if(type == "serials")
+					if(type == "uids")
 					{
-						input_field.attr('name', "serials");
-						input_field.attr('placeholder', 'Serial(s)');
+						input_field.attr('name', "uids");
+						input_field.attr('placeholder', 'UID(s)');
 					}
 					else
 					{
@@ -269,8 +269,8 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 			}
 			add_more("alts");
 			remove_me("alts");
-			add_more("serials");
-			remove_me("serials");
+			add_more("uids");
+			remove_me("uids");
 		});
 
 </script>
@@ -377,11 +377,11 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 								</div>
 							</div>
 							<div class="card-footer">
-								<div id="serials_fields">
+								<div id="uids_fields">
 									<div class="input-group mb-3">
-										<input name="serials[]" type="text" class="form-control" placeholder="Serial(s)"/>
+										<input name="uids[]" type="text" class="form-control" placeholder="UID(s)"/>
 										<div class="input-group-append">
-											<button class="btn btn-success add-more-serials" type="button">+</button>
+											<button class="btn btn-success add-more-uids" type="button">+</button>
 										</div>
 									</div>
 								</div>

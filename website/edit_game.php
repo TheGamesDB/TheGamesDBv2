@@ -36,7 +36,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("release_date" => true, "overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "serials" => true);
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "uids" => true);
 	$API = TGDB::getInstance();
 	$GenreList = $API->GetGenres();
 	$ESRBRating = $API->GetESRBRating();
@@ -515,10 +515,10 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 					var ele = $($.trim($('#template-multi-field').clone().html()));
 					ele.find(".btn").addClass("add-more-" + type);
 					input_field = ele.find("#field");
-					if(type == "serials")
+					if(type == "uids")
 					{
-						input_field.attr('name', "serials[]");
-						input_field.attr('placeholder', 'Serial(s)');
+						input_field.attr('name', "uids[]");
+						input_field.attr('placeholder', 'UID(s)');
 					}
 					else
 					{
@@ -539,8 +539,8 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 			}
 			add_more("alts");
 			remove_me("alts");
-			add_more("serials");
-			remove_me("serials");
+			add_more("uids");
+			remove_me("uids");
 		});
 
 </script>
@@ -672,19 +672,19 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								</div>
 							</div>
 							<div class="card-footer">
-								<div id="serials_fields">
-									<?php while(!empty($Game->serials) && !empty($serial = array_shift($Game->serials))) : ?>
+								<div id="uids_fields">
+									<?php while(!empty($Game->uids) && !empty($uid = array_shift($Game->uids))) : ?>
 									<div class="input-group mb-3">
-										<input value="<?= $serial ?>" name="serials[]" type="text" class="form-control" placeholder="Serial(s)"/>
+										<input value="<?= $uid ?>" name="uids[]" type="text" class="form-control" placeholder="UID(s)"/>
 										<div class="input-group-append">
-											<button class="btn btn-danger remove-me-serials" type="button">-</button>
+											<button class="btn btn-danger remove-me-uids" type="button">-</button>
 										</div>
 									</div>
 									<?php endwhile; ?>
 									<div class="input-group mb-3">
-										<input name="serials[]" type="text" class="form-control" placeholder="Serial(s)"/>
+										<input name="uids[]" type="text" class="form-control" placeholder="UID(s)"/>
 										<div class="input-group-append">
-											<button class="btn btn-success add-more-serials" type="button">+</button>
+											<button class="btn btn-success add-more-uids" type="button">+</button>
 										</div>
 									</div>
 								</div>

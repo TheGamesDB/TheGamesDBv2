@@ -56,30 +56,30 @@ require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 try
 {
-	$filters = ['game_title' => true, 'overview' => true, 'platform' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "serials" => true];
+	$filters = ['game_title' => true, 'overview' => true, 'platform' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "uids" => true];
 	$API = TGDB::getInstance();
 	$old_game_data = $API->GetGameByID($_REQUEST['game_id'], 0, 1, $filters)[0];
 
-	if(!empty($_REQUEST['serials']) && !empty($_REQUEST['serials'][0]))
+	if(!empty($_REQUEST['uids']) && !empty($_REQUEST['uids'][0]))
 	{
-		$patterns = $API->GetTitleIDPattern($old_game_data->platform);
+		$patterns = $API->GetUIDPattern($old_game_data->platform);
 		if(empty($patterns))
 		{
-			returnJSONAndDie(-3, "No format found for title id, please contact us on the forum or discord to enable serial addition for this platform.");
+			returnJSONAndDie(-3, "No format found for title id, please contact us on the forum or discord to enable UID addition for this platform.");
 		}
 		else
 		{
-			$_REQUEST["serials"] = array_filter($_REQUEST["serials"]);
-			foreach($_REQUEST["serials"] as $serial)
+			$_REQUEST["uids"] = array_filter($_REQUEST["uids"]);
+			foreach($_REQUEST["uids"] as $uid)
 			{
 				$matches = [];
 				$matched = false;
 				foreach($patterns as $pattern)
 				{
 					$regex_pat = $pattern->regex;
-					if(preg_match_all("/$regex_pat/", $serial, $matches))
+					if(preg_match_all("/$regex_pat/", $uid, $matches))
 					{
-						if(count($matches[0]) == 1 && $matches[0][0] == $serial)
+						if(count($matches[0]) == 1 && $matches[0][0] == $uid)
 						{
 							$matched = true;
 							break;
@@ -88,7 +88,7 @@ try
 				}
 				if(!$matched)
 				{
-					returnJSONAndDie(-2, "The serial format you're using is invalid, please contact us on the forum or discord if you please there is a mistake");
+					returnJSONAndDie(-2, "The UID format you're using is invalid, please contact us on the forum or discord if you please there is a mistake");
 				}
 			}
 		}
@@ -96,7 +96,7 @@ try
 
 	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['genres'], $_REQUEST['rating'],  $_REQUEST['alternate_names'],
-		$_REQUEST['serials']);
+		$_REQUEST['uids']);
 
 	if($res)
 	{
