@@ -297,15 +297,15 @@ $app->group('/Games', function()
 
 		return $response->withJson($JSON_Response);
 	});
-	$this->get('/ByGameSerialID[/{id}]', function($request, $response, $args)
+	$this->get('/ByGameUniqueID[/{uid}]', function($request, $response, $args)
 	{
-		if(isset($args['id']))
+		if(isset($args['uid']))
 		{
-			$serialIDs = $args['id'];
+			$UniqueIDs = $args['uid'];
 		}
-		else if(isset($_REQUEST['id']))
+		else if(isset($_REQUEST['uid']))
 		{
-			$serialIDs = $_REQUEST['id'];
+			$UniqueIDs = $_REQUEST['uid'];
 		}
 		else
 		{
@@ -330,11 +330,11 @@ $app->group('/Games', function()
 			{
 				$PlatformsIDs = $_REQUEST['filter']['platform'];
 			}
-			$list = $API->SearchGamesBySerialIDByPlatformID($serialIDs, $PlatformsIDs, $offset, $limit + 1, $fields);
+			$list = $API->SearchGamesByUniqueIDByPlatformID($UniqueIDs, $PlatformsIDs, $offset, $limit + 1, $fields);
 		}
 		else
 		{
-			$list = $API->SearchGamesBySerialID($serialIDs, $offset, $limit+1, $fields);
+			$list = $API->SearchGamesByUniqueID($UniqueIDs, $offset, $limit+1, $fields);
 		}
 
 		if($has_next_page = count($list) > $limit)

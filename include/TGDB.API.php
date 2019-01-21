@@ -429,12 +429,12 @@ class TGDB
 		}
 	}
 
-	function SearchGamesBySerialID($games_serial_unfiltered, $offset = 0, $limit = 20, $fields = array())
+	function SearchGamesByUniqueID($games_uid_unfiltered, $offset = 0, $limit = 20, $fields = array())
 	{
-		return $this->SearchGamesBySerialIDByPlatformID($games_serial_unfiltered, 0, $offset, $limit, $fields);
+		return $this->SearchGamesByUniqueIDByPlatformID($games_uid_unfiltered, 0, $offset, $limit, $fields);
 	}
 
-	function SearchGamesBySerialIDByPlatformID($games_serial_unfiltered, $PlatformIDs_unfiltered, $offset = 0, $limit = 20, $fields = array())
+	function SearchGamesByUniqueIDByPlatformID($games_uid_unfiltered, $PlatformIDs_unfiltered, $offset = 0, $limit = 20, $fields = array())
 	{
 		$dbh = $this->database->dbh;
 
@@ -455,20 +455,20 @@ class TGDB
 			$PlatformIDs = $PlatformIDs_unfiltered;
 		}
 
-		if(!empty($games_serial_unfiltered))
+		if(!empty($games_uid_unfiltered))
 		{
-			$games_serial_arr = explode(",", $games_serial_unfiltered);
+			$games_uid_arr = explode(",", $games_uid_unfiltered);
 			$valid_chars = "abcdefghijklmnopqrstuvwxyz1234567890-_.";
-			$games_serial_arr_filter = [];
-			foreach($games_serial_arr as $serial)
+			$games_uid_arr_filter = [];
+			foreach($games_uid_arr as $uid)
 			{
 				$i = 0;
-				while($i < strlen($serial))
+				while($i < strlen($uid))
 				{
 					$j = 0;
 					while($j < strlen($valid_chars))
 					{
-						if(strtolower($serial[$i]) == $valid_chars[$j])
+						if(strtolower($uid[$i]) == $valid_chars[$j])
 						{
 							// Valid
 							break;
@@ -482,14 +482,14 @@ class TGDB
 					}
 					++$i;
 				}
-				if($i == strlen($serial))
+				if($i == strlen($uid))
 				{
-					$games_serial_arr_filter[] = $serial;
+					$games_uid_arr_filter[] = $uid;
 				}
 			}
-			if(!empty($games_serial_arr_filter))
+			if(!empty($games_uid_arr_filter))
 			{
-				$games_serials = "\"" . implode("\",\"", $games_serial_arr_filter) . "\"";
+				$games_uids = "\"" . implode("\",\"", $games_uid_arr_filter) . "\"";
 			}
 			else
 			{
@@ -508,7 +508,7 @@ class TGDB
 				}
 			}
 		}
-		$qry .= " FROM games, games_serials where games.id = games_serials.games_id and games_serials.serial in ($games_serials) ";
+		$qry .= " FROM games, games_uids where games.id = games_uids.games_id and games_uids.uid in ($games_uids) ";
 		if(!empty($PlatformIDs))
 		{
 			$qry .= " AND games.platform IN ($PlatformIDs) ";
