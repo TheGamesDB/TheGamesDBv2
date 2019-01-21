@@ -1650,6 +1650,7 @@ class TGDB
 					case 'publishers':
 					case 'alternates':
 					case 'uids':
+					case 'serials':
 					case 'hashes':
 						$edit->value = json_decode($edit->value);
 				}
