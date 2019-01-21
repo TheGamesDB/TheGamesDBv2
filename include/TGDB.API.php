@@ -1694,7 +1694,7 @@ class TGDB
 		}
 	}
 
-	function GetGamesUIDs($games_id, $include_id = true)
+	function GetGamesUIDs($games_id, $include_id = true, $include_type = true)
 	{
 		$dbh = $this->database->dbh;
 		$Games_IDs;
@@ -1720,6 +1720,11 @@ class TGDB
 		if($include_id)
 		{
 			$qry .= ", id, games_id";
+		}
+		if($include_type)
+		{
+			$qry .= ", games_uids_patterns_id";
+
 		}
 		$qry .= " FROM games_uids where games_id IN($Games_IDs);";
 		$sth = $dbh->prepare($qry);
@@ -2138,14 +2143,15 @@ class TGDB
 		return $sth->execute();
 	}
 
-	function UpdateGamesUID($user_id, $games_id, $new_uids)
+	function UpdateGamesUID($user_id, $games_id, $platform, $new_uids)
 	{
 		$dbh = $this->database->dbh;
+		$patterns = $this->GetUIDPattern($platform);
 
 		$is_changed = false;
 		$valid_uid = array();
 
-		$current_uids = $this->GetGamesUIDs($games_id, false);
+		$current_uids = $this->GetGamesUIDs($games_id, false, false);
 		if(!empty($current_uids[$games_id]))
 		{
 			$current_uids = $current_uids[$games_id];
@@ -2161,11 +2167,23 @@ class TGDB
 			{
 				if(!empty($new_uid))
 				{
-					$valid_uid[] = $new_uid;
+					$pattern_id = 0;
+					foreach($patterns as $pattern)
+					{
+						if(preg_match_all("/$pattern->regex_pattern/", $new_hash, $matches))
+						{
+							if(count($matches[0]) == 1 && $matches[0][0] == $new_hash)
+							{
+								$pattern_id = $pattern->id;
+								break;
+							}
+						}
+					}
+					$valid_uid[] = ["uid" => $new_uid, "games_uids_patterns_id" => $pattern_id];
 
 					if(!in_array($new_uid, $current_uids, true))
 					{
-						$res = $this->InsertGamesUID($games_id, $new_uid);
+						$res = $this->InsertGamesUID($games_id, $new_uid, $pattern_id);
 						if(!$dbh->inTransaction() && !$res)
 						{
 							return false;
@@ -2614,7 +2632,7 @@ class TGDB
 		{
 			$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
 
-			$this->UpdateGamesUID($user_id, $game_id, $uids);
+			$this->UpdateGamesUID($user_id, $game_id, $Game->platform, $uids);
 
 			if(!empty($new_genres))
 			{
@@ -2873,7 +2891,7 @@ class TGDB
 
 				if(!empty($uids))
 				{
-					$this->UpdateGamesUID($user_id, $game_id, $uids);
+					$this->UpdateGamesUID($user_id, $game_id, $platform, $uids);
 				}
 
 				$dbh->commit();
