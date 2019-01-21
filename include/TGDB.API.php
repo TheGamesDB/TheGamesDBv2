@@ -2315,26 +2315,26 @@ class TGDB
 		return $temp_array;
 	}
 
-	function UpdateGamesHash($user_id, $games_id, $new_hashs)
+	function UpdateGamesHash($user_id, $games_id, $new_hashes)
 	{
 		$dbh = $this->database->dbh;
 
 		$is_changed = false;
 		$valid_hash = array();
 
-		$current_hashs = $this->GetGamesHashs($games_id, false);
-		if(!empty($current_hashs[$games_id]))
+		$current_hashes = $this->GetGamesHashes($games_id, false);
+		if(!empty($current_hashes[$games_id]))
 		{
-			$current_hashs = $current_hashs[$games_id];
+			$current_hashes = $current_hashes[$games_id];
 		}
-		if(!empty($new_hashs))
+		if(!empty($new_hashes))
 		{
-			foreach($new_hashs as &$new_hash)
+			foreach($new_hashes as &$new_hash)
 			{
 				$new_hash = trim($new_hash);
 			}
 			unset($new_hashl);
-			foreach($new_hashs as $new_hash)
+			foreach($new_hashes as $new_hash)
 			{
 				if(!empty($new_hash))
 				{
@@ -2353,7 +2353,7 @@ class TGDB
 					if(!empty($type))
 					{
 						$valid_hash[] = ["hash" => $new_hash, "type" => $type];
-						if(!in_array($new_hash, $current_hashs, true))
+						if(!in_array($new_hash, $current_hashes, true))
 						{
 							$res = $this->InsertGamesHash($games_id, $new_hash, $type);
 							if(!$dbh->inTransaction() && !$res)
@@ -2367,11 +2367,11 @@ class TGDB
 			}
 		}
 
-		if(!empty($current_hashs))
+		if(!empty($current_hashes))
 		{
-			foreach($current_hashs as $current_hash)
+			foreach($current_hashes as $current_hash)
 			{
-				if(!in_array($current_hash, $new_hashs, true))
+				if(!in_array($current_hash, $new_hashes, true))
 				{
 					$res = $this->DeleteGamesHash($games_id, $current_hash);
 					if(!$dbh->inTransaction() && !$res)
