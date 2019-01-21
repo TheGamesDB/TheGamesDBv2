@@ -93,6 +93,7 @@ if($has_next_page = count($list) > $limit)
 foreach($list as $Game)
 {
 	$IDs[] = $Game->id;
+	$PlatformIDs[] = $Game->platform;
 }
 if(isset($IDs) && !empty($IDs))
 {
@@ -105,6 +106,9 @@ if(isset($IDs) && !empty($IDs))
 		}
 	}
 }
+
+$Platforms = $API->GetPlatforms($PlatformIDs);
+
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browser - Game By $listed_by");
 ?>
@@ -156,6 +160,7 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 							<div class="card-footer bg-secondary" style="text-align:center;">
 								<p><?= $Game->game_title ?></p>
 								<p><?= $Game->release_date ?></p>
+								<p class="text-muted"><?= $Platforms[$Game->platform]->name ?></p>
 							</div>
 						</div>
 					</a>
