@@ -102,6 +102,7 @@ $Header->setTitle("TGDB - Search");
 							<div class="card-footer bg-secondary" style="text-align:center;">
 								<p><?= $Game->game_title ?></p>
 								<p><?= $Game->release_date ?></p>
+								<p class="text-muted"><?= $PlatformList[$Game->platform]->name ?></p>
 							</div>
 						</div>
 					</a>
