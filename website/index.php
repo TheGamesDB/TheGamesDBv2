@@ -3,6 +3,7 @@ require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/include/WebUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
+require_once __DIR__ . "/include/PaginationUtils.class.php";
 
 $API = TGDB::getInstance();
 $soon = $API->GetGamesByDate(date("d/m/Y"), 0, 5, array('AFTER' => true), "release_date", 'ASC');
@@ -16,7 +17,17 @@ foreach($recent as $Game)
 	$IDs[] = $Game->id;
 	$PlatformIDs[] = $Game->platform;
 }
-$lastupdated = $API->GetAllGames(0, 10, array('overview' => true), "id", 'DESC');
+
+$API = TGDB::getInstance();
+$limit = 18;
+$page = 1;
+$offset = ($page - 1) * $limit;
+$lastupdated = $API->GetAllGames($offset, $limit + 1, array('overview' => true), "id", 'DESC');
+if($has_next_page = count($lastupdated) > $limit)
+{
+	unset($lastupdated[$limit]);
+}
+
 foreach($lastupdated as $Game)
 {
 	$IDs[] = $Game->id;
@@ -121,7 +132,7 @@ $Header->appendRawHeader(function() { ?>
 			</div>
 
 		</div>
-
+		<?= (isset($page)) ? PaginationUtils::Create($has_next_page, '/recently_added.php') : "";?>
 	</div>
 
 <?php FOOTER::print(); ?>
