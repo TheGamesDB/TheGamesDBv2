@@ -2981,6 +2981,52 @@ class TGDB
 			return $res;
 		}
 	}
+
+	function GetGameEditContributors($game_id)
+	{
+		$qry = "SELECT UE.id, UE.timestamp, UE.type, UE.value, UE.users_id, BB.username FROM user_edits UE, phpBB.phpbb_users BB WHERE UE.games_id = :games_id and BB.user_id = UE.users_id order by UE.id DESC;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+				$res = $sth->fetchAll(PDO::FETCH_OBJ);
+				return $res;
+		}
+	}
+
+	function GetUserEditsByUserID($user, $offset = 0, $limit = 100)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select * from games where id IN (Select games_id FROM user_edits
+		WHERE users_id = :user_id) LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':user_id', $user, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+				return $sth->fetchAll(PDO::FETCH_OBJ);
+		}
+	}
+
+	function GetLegacyCopy($id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("SELECT GameTitle as game_title, Players as players, ReleaseDate as release_date, Developer as developer, Publisher as publisher, Genre as genre,
+		Overview as overview, Platform as platform, coop, Youtube as youtube, Alternates as alternates, username as lastupdatedby
+		from games_legacy
+		left join users on updatedby = users.id
+		where games_legacy.id = :games_id limit 1");
+		$sth->bindValue(':games_id', $id);
+
+		if($sth->execute())
+		{
+				return $sth->fetch(PDO::FETCH_OBJ);
+		}
+	}
+
 }
 
 ?>
