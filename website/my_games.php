@@ -103,6 +103,7 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 								<div class="card-footer bg-secondary" style="text-align:center;">
 									<p><?= $Game->game_title ?></p>
 									<p><?= $Game->release_date ?></p>
+									<p class="text-muted"><?= $platforms[$Game->platform]->name ?></p>
 								</div>
 							</div>
 						</a>
