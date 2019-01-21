@@ -47,7 +47,7 @@ class TGDB
 
 		if(isset($fields['uids']))
 		{
-			$uids = $this->GetGamesUIDs($GameIDs, false);
+			$uids = $this->GetGamesUIDs($GameIDs, false, true, false);
 		}
 
 		if(isset($fields['hashes']))
@@ -1695,7 +1695,7 @@ class TGDB
 		}
 	}
 
-	function GetGamesUIDs($games_id, $include_id = true, $include_type = true)
+	function GetGamesUIDs($games_id, $include_id = true, $include_type = true, $simple_col = true)
 	{
 		$dbh = $this->database->dbh;
 		$Games_IDs;
@@ -1731,8 +1731,12 @@ class TGDB
 		$sth = $dbh->prepare($qry);
 		if($sth->execute())
 		{
-			return $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_COLUMN);
-			return $res;
+			$flags = PDO::FETCH_OBJ | PDO::FETCH_GROUP;
+			if($simple_col)
+			{
+				$flags |= PDO::FETCH_COLUMN;
+			}
+			return $sth->fetchAll($flags);
 		}
 	}
 
@@ -2126,12 +2130,13 @@ class TGDB
 		return true;
 	}
 
-	function InsertGamesUID($game_id, $uid)
+	function InsertGamesUID($game_id, $uid, $pattern_id)
 	{
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("INSERT IGNORE INTO games_uids (games_id, uid) VALUES (:games_id, :uid);");
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_uids (games_id, uid, games_uids_patterns_id) VALUES (:games_id, :uid, :games_uids_patterns_id);");
 		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
 		$sth->bindValue(':uid', $uid, PDO::PARAM_STR);
+		$sth->bindValue(':games_uids_patterns_id', $pattern_id, PDO::PARAM_STR);
 		return $sth->execute();
 	}
 
@@ -2171,7 +2176,7 @@ class TGDB
 					$pattern_id = 0;
 					foreach($patterns as $pattern)
 					{
-						if(preg_match_all("/$pattern->regex_pattern/", $new_hash, $matches))
+						if(preg_match_all("/$pattern->regex_pattern/", $new_uid, $matches))
 						{
 							if(count($matches[0]) == 1 && $matches[0][0] == $new_hash)
 							{
@@ -2633,7 +2638,7 @@ class TGDB
 		{
 			$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
 
-			$this->UpdateGamesUID($user_id, $game_id, $Game->platform, $uids);
+			$this->UpdateGamesUID($user_id, $game_id, $Game["platform"], $uids);
 
 			if(!empty($new_genres))
 			{
