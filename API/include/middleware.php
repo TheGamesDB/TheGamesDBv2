@@ -23,8 +23,10 @@ class AuthMiddleware
 			{
 				$monthly_allowance = (!empty($User->monthly_allowance)) ? $User->monthly_allowance : 0;
 				$monthly_count = (!empty($User->count)) ? $User->count : 0;
-				if($update_refresh_date = strtotime($User->last_refresh_date) < strtotime('-30 days'))
+				$refresh = strtotime("+30 days", strtotime($User->last_refresh_date)) - time();
+				if($update_refresh_date = $refresh < 0)
 				{
+					$refresh = strtotime("+30 days", 0);
 					$monthly_count = 0;
 				}
 				$remaining_monthly_allowance = $monthly_allowance - $monthly_count;
@@ -37,12 +39,14 @@ class AuthMiddleware
 					$JSON_Response = json_decode($response->getBody(), true);
 					$JSON_Response['remaining_monthly_allowance'] = $remaining_monthly_allowance + (!$use_extra ? -1 : 0);
 					$JSON_Response['extra_allowance'] =  $User->extra_allowance + ($use_extra ? -1 : 0);
+					$JSON_Response['allowance_refresh_timer'] = ($User->is_private_key == 1) ? NULL : $refresh;
 					return $response->withJson($JSON_Response, isset($JSON_Response['code'])  ? $JSON_Response['code'] : 200);
 				}
 				else
 				{
 					$JSON_Response = Utils::getStatus(403);
 					$JSON_Response['remaining_monthly_allowance'] = 0;
+					$JSON_Response['allowance_refresh_timer'] = ($User->is_private_key == 1) ? NULL : $refresh;
 					return $response->withJson($JSON_Response, $JSON_Response['code']);
 				}
 			}
@@ -50,6 +54,7 @@ class AuthMiddleware
 			{
 				$JSON_Response = Utils::getStatus(401);
 				$JSON_Response['remaining_monthly_allowance'] = 0;
+				$JSON_Response['allowance_refresh_timer'] = 0;
 				return $response->withJson($JSON_Response, $JSON_Response['code']);
 			}
 		}
