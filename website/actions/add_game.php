@@ -54,26 +54,26 @@ try
 
 	$API = TGDB::getInstance();
 
-	if(!empty($_REQUEST['serials']) && !empty($_REQUEST['serials'][0]))
+	if(!empty($_REQUEST['uids']) && !empty($_REQUEST['uids'][0]))
 	{
-		$patterns = $API->GetTitleIDPattern($_REQUEST['platform']);
+		$patterns = $API->GetUIDPattern($_REQUEST['platform']);
 		if(empty($patterns))
 		{
-			returnJSONAndDie(-3, "No format found for title id, please contact us on the forum or discord to enable serial addition for this platform.");
+			returnJSONAndDie(-3, "No format found for title id, please contact us on the forum or discord to enable UID addition for this platform.");
 		}
 		else
 		{
-			$_REQUEST["serials"] = array_filter($_REQUEST["serials"]);
-			foreach($_REQUEST["serials"] as $serial)
+			$_REQUEST["uids"] = array_filter($_REQUEST["uids"]);
+			foreach($_REQUEST["uids"] as $uid)
 			{
 				$matches = [];
 				$matched = false;
 				foreach($patterns as $pattern)
 				{
 					$regex_pat = $pattern->regex_pattern;
-					if(preg_match_all("/$regex_pat/", $serial, $matches))
+					if(preg_match_all("/$regex_pat/", $uid, $matches))
 					{
-						if(count($matches[0]) == 1 && $matches[0][0] == $serial)
+						if(count($matches[0]) == 1 && $matches[0][0] == $uid)
 						{
 							$matched = true;
 							break;
@@ -82,7 +82,7 @@ try
 				}
 				if(!$matched)
 				{
-					returnJSONAndDie(-2, "The serial format you're using is invalid, please contact us on the forum or discord if you please there is a mistake");
+					returnJSONAndDie(-2, "The UID format you're using is invalid, please contact us on the forum or discord if you please there is a mistake");
 				}
 			}
 		}
@@ -90,11 +90,11 @@ try
 
 	$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['platform'], $_REQUEST['genres'], $_REQUEST['rating'],
-		$_REQUEST['alternate_names'], $_REQUEST['serials']);
+		$_REQUEST['alternate_names'], $_REQUEST['uids']);
 
 	if($res)
 	{
-		$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "serials" => true];
+		$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "uids" => true];
 		$new_game_data = $API->GetGameByID($res, 0, 1, $filters)[0];
 		DiscordUtils::PostGameUpdate($_user, [], $new_game_data, 0);
 		returnJSONAndDie(1, $res);

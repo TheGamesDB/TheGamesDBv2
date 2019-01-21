@@ -45,9 +45,9 @@ class TGDB
 			$alts = $this->GetGamesAlts($GameIDs, false);
 		}
 
-		if(isset($fields['serials']))
+		if(isset($fields['uids']))
 		{
-			$serials = $this->GetGamesSerials($GameIDs, false);
+			$uids = $this->GetGamesUIDs($GameIDs, false);
 		}
 
 		if(isset($fields['hashes']))
@@ -70,9 +70,9 @@ class TGDB
 			{
 				$game->alternates = !empty($alts[$game->id]) ? $alts[$game->id] : NULL;
 			}
-			if(isset($fields['serials']))
+			if(isset($fields['uids']))
 			{
-				$game->serials = !empty($serials[$game->id]) ? $serials[$game->id] : NULL;
+				$game->uids = !empty($uids[$game->id]) ? $uids[$game->id] : NULL;
 			}
 			if(isset($fields['hashes']))
 			{
@@ -1651,7 +1651,7 @@ class TGDB
 					case 'developers':
 					case 'publishers':
 					case 'alternates':
-					case 'serials':
+					case 'uids':
 					case 'hashes':
 						$edit->value = json_decode($edit->value);
 				}
@@ -1696,7 +1696,7 @@ class TGDB
 		}
 	}
 
-	function GetGamesSerials($games_id, $include_id = true)
+	function GetGamesUIDs($games_id, $include_id = true)
 	{
 		$dbh = $this->database->dbh;
 		$Games_IDs;
@@ -1718,12 +1718,12 @@ class TGDB
 		{
 			return array();
 		}
-		$qry = "SELECT games_id as n, serial";
+		$qry = "SELECT games_id as n, uid";
 		if($include_id)
 		{
 			$qry .= ", id, games_id";
 		}
-		$qry .= " FROM games_serials where games_id IN($Games_IDs);";
+		$qry .= " FROM games_uids where games_id IN($Games_IDs);";
 		$sth = $dbh->prepare($qry);
 		if($sth->execute())
 		{
@@ -1902,11 +1902,11 @@ class TGDB
 
 	/* Everything belowis not planned to be exposed through external API */
 
-	function GetTitleIDPattern($platform_id)
+	function GetUIDPattern($platform_id)
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select * FROM `games_serials_patterns` where platform_id = :platform_id");
+		$sth = $dbh->prepare("Select * FROM `games_uids_patterns` where platform_id = :platform_id");
 		$sth->bindValue(':platform_id', $platform_id);
 
 		if($sth->execute())
@@ -2122,52 +2122,52 @@ class TGDB
 		return true;
 	}
 
-	function InsertGamesSerial($game_id, $serial)
+	function InsertGamesUID($game_id, $uid)
 	{
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("INSERT IGNORE INTO games_serials (games_id, serial) VALUES (:games_id, :serial);");
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_uids (games_id, uid) VALUES (:games_id, :uid);");
 		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
-		$sth->bindValue(':serial', $serial, PDO::PARAM_STR);
+		$sth->bindValue(':uid', $uid, PDO::PARAM_STR);
 		return $sth->execute();
 	}
 
-	function DeleteGamesSerial($game_id, $serial)
+	function DeleteGamesUID($game_id, $uid)
 	{
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("DELETE FROM games_serials  WHERE games_id=:games_id AND serial=:serial");
+		$sth = $dbh->prepare("DELETE FROM games_uids  WHERE games_id=:games_id AND uid=:uid");
 		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
-		$sth->bindValue(':serial', $serial, PDO::PARAM_STR);
+		$sth->bindValue(':uid', $uid, PDO::PARAM_STR);
 		return $sth->execute();
 	}
 
-	function UpdateGamesSerial($user_id, $games_id, $new_serials)
+	function UpdateGamesUID($user_id, $games_id, $new_uids)
 	{
 		$dbh = $this->database->dbh;
 
 		$is_changed = false;
-		$valid_serial = array();
+		$valid_uid = array();
 
-		$current_serials = $this->GetGamesSerials($games_id, false);
-		if(!empty($current_serials[$games_id]))
+		$current_uids = $this->GetGamesUIDs($games_id, false);
+		if(!empty($current_uids[$games_id]))
 		{
-			$current_serials = $current_serials[$games_id];
+			$current_uids = $current_uids[$games_id];
 		}
-		if(!empty($new_serials))
+		if(!empty($new_uids))
 		{
-			foreach($new_serials as &$new_serial)
+			foreach($new_uids as &$new_uid)
 			{
-				$new_serial = trim($new_serial);
+				$new_uid = trim($new_uid);
 			}
-			unset($new_serial);
-			foreach($new_serials as $new_serial)
+			unset($new_uid);
+			foreach($new_uids as $new_uid)
 			{
-				if(!empty($new_serial))
+				if(!empty($new_uid))
 				{
-					$valid_serial[] = $new_serial;
+					$valid_uid[] = $new_uid;
 
-					if(!in_array($new_serial, $current_serials, true))
+					if(!in_array($new_uid, $current_uids, true))
 					{
-						$res = $this->InsertGamesSerial($games_id, $new_serial);
+						$res = $this->InsertGamesUID($games_id, $new_uid);
 						if(!$dbh->inTransaction() && !$res)
 						{
 							return false;
@@ -2178,13 +2178,13 @@ class TGDB
 			}
 		}
 
-		if(!empty($current_serials))
+		if(!empty($current_uids))
 		{
-			foreach($current_serials as $current_serial)
+			foreach($current_uids as $current_uid)
 			{
-				if(!in_array($current_serial, $new_serials, true))
+				if(!in_array($current_uid, $new_uids, true))
 				{
-					$res = $this->DeleteGamesSerial($games_id, $current_serial);
+					$res = $this->DeleteGamesUID($games_id, $current_uid);
 					if(!$dbh->inTransaction() && !$res)
 					{
 						return false;
@@ -2196,8 +2196,8 @@ class TGDB
 
 		if($is_changed)
 		{
-			$valid_serial = array_unique($valid_serial);
-			$this->InsertUserEdits($user_id, $games_id, "serials", json_encode($valid_serial));
+			$valid_uid = array_unique($valid_uid);
+			$this->InsertUserEdits($user_id, $games_id, "uids", json_encode($valid_uid));
 		}
 		return true;
 	}
@@ -2596,7 +2596,7 @@ class TGDB
 		return true;
 	}
 
-	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names, $serials)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names, $uids)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -2616,7 +2616,7 @@ class TGDB
 		{
 			$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
 
-			$this->UpdateGamesSerial($user_id, $game_id, $serials);
+			$this->UpdateGamesUID($user_id, $game_id, $uids);
 
 			if(!empty($new_genres))
 			{
@@ -2763,7 +2763,7 @@ class TGDB
 		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 
-		$sth = $dbh->prepare("DELETE FROM games_serials WHERE games_id=:games_id;");
+		$sth = $dbh->prepare("DELETE FROM games_uids WHERE games_id=:games_id;");
 		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
 		$res = $sth->execute();
 
@@ -2791,7 +2791,7 @@ class TGDB
 		return $dbh->commit();
 	}
 
-	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names, $serials)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names, $uids)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
@@ -2873,9 +2873,9 @@ class TGDB
 					$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
 				}
 
-				if(!empty($serials))
+				if(!empty($uids))
 				{
-					$this->UpdateGamesSerial($user_id, $game_id, $serials);
+					$this->UpdateGamesUID($user_id, $game_id, $uids);
 				}
 
 				$dbh->commit();
