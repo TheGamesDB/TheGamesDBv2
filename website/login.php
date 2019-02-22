@@ -31,7 +31,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 	{
 		if(!empty($_POST['username']) && !empty($_POST['password']))
 		{
-			$res = $_user->Login($_POST['username'], $_POST['password'], isset($_POST['autologin']), isset($_POST['viewonline']));
+			$res = $_user->Login(isset($_POST['autologin']), isset($_POST['viewonline']));
 			if($res['status'] == LOGIN_SUCCESS)
 			{
 				if(!empty($_POST['redirect']) && strpos($_POST['redirect'], "login") === false)
