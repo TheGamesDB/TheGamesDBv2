@@ -36,9 +36,6 @@ fancyboxOpts =
 			'<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg"><path d="m287 456v-299c0-21 6-35 35-35h38v-63c-7-1-29-3-55-3-54 0-91 33-91 94v306m143-254h-205v72h196" /></svg>' +
 			"<span>Facebook</span>" +
 			"</a>" +
-			'<a class="fancybox-share__button btn-googleplus" href="https://plus.google.com/share?url={{url}}" title="Share on Google+" target="_blank">' +
-			'<i class="fab fa-google-plus"></i> Google+' +
-			'</a>' +
 			'<a class="fancybox-share__button btn-stumbleupon" href="http://www.stumbleupon.com/submit?url={{url}}" title="Share on StumbleUpon" target="_blank">' +
 			'<i class="fab fa-stumbleupon"></i> Stumbleupon' +
 			"</a>" +
