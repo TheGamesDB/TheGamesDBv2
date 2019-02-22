@@ -76,7 +76,7 @@ try
 				$matched = false;
 				foreach($patterns as $pattern)
 				{
-					$regex_pat = $pattern->regex;
+					$regex_pat = $pattern->regex_pattern;
 					if(preg_match_all("/$regex_pat/", $uid, $matches))
 					{
 						if(count($matches[0]) == 1 && $matches[0][0] == $uid)
