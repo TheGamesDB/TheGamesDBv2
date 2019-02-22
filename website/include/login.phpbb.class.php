@@ -29,10 +29,13 @@ class phpBBUser
 		return $instance;
 	}
 
-	function Login($user, $pass)
+	function Login($login_autologin, $login_viewonline)
 	{
-		global $config, $phpbb_root_path, $phpEx;
-		$ret = $this->auth->login($user, $pass);
+		global $config, $phpbb_root_path, $phpEx, $request;
+		$login_username = $request->variable('username', '', true, \phpbb\request\request_interface::POST);
+		$login_password = $request->untrimmed_variable('password', '', true, \phpbb\request\request_interface::POST);
+
+		$ret = $this->auth->login($login_username, $login_password);
 		if($ret['status'] ==  LOGIN_ERROR_ATTEMPTS)
 		{
 			$ret['error_msg_str'] = "You exceeded the maximum allowed number of login attempts. In addition to your username and password you now also have to solve the CAPTCHA," .
@@ -49,6 +52,10 @@ class phpBBUser
 				'<a href="' . phpbb_get_board_contact_link($config, $phpbb_root_path, $phpEx) . '">',
 				'</a>'
 			);
+		}
+		elseif($ret['status'] == LOGIN_SUCCESS)
+		{
+			$this->user->session_create($ret['user_row']['user_id'], false, $login_autologin, $login_viewonline);
 		}
 		return $ret;
 	}
