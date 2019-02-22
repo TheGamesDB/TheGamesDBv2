@@ -28,21 +28,6 @@
 	background: #30477a;
 	color: #fff
 }
-.btn-googleplus
-{
-	background: #e93f2e;
-	border-radius: 0;
-	color: #fff
-}
-.btn-googleplus:link, .btn-googleplus:visited
-{
-	color: #fff
-}
-.btn-googleplus:active, .btn-googleplus:hover
-{
-	background: #ba3225;
-	color: #fff
-}
 .btn-stumbleupon
 {
 	background: #f74425;

@@ -185,7 +185,6 @@ class FOOTER
 						<div class="social-networks">
 							<a href="https://twitter.com/thegamesdb" class="twitter"><i class="fab fa-twitter"></i></a>
 							<a href="https://www.facebook.com/thegamesdb/" class="facebook"><i class="fab fa-facebook"></i></a>
-							<a href="https://plus.google.com/116977810662942577082" class="google"><i class="fab fa-google-plus"></i></a>
 						</div>
 						<a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin" role="button" class="btn btn-info">Contact us</a>
 					</div>
