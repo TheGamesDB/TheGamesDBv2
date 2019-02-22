@@ -441,10 +441,10 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 							<p><button id="reportbtn" class="btn btn-primary btn-block">Report Duplicate</button></p>
 							<!--<p><a href="https://forums.thegamesdb.net/memberlist.php?mode=contactadmin&subject=<?= urlencode("[REPORT][GAME:$Game->id][$Game->game_title]") ?>" class="btn btn-primary btn-block">Report</a></p>-->
 							<p><a href="/edit_game.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">Edit</a></p>
-							</div>
 							<?php if($_user->isLoggedIn() && $_user->hasPermission('m_delete_games')) : ?>
 							<p><a href="/contr.php?id=<?= $Game->id ?>" class="btn btn-primary btn-block">View Edits</a></p>
 							<?php endif; ?>
+							</div>
 						</div>
 					</div>
 				</div>
