@@ -186,55 +186,7 @@ class TGDB
 
 	function SearchGamesByName($searchTerm, $offset = 0, $limit = 20, $fields = array())
 	{
-		$dbh = $this->database->dbh;
-
-		$qry = "Select id, game_title, release_date, platform ";
-
-		if(!empty($fields))
-		{
-			foreach($fields as $key => $enabled)
-			{
-				if($enabled && $this->is_valid_games_col($key))
-				{
-					$qry .= ", $key ";
-				}
-			}
-		}
-
-		$qry .= " FROM games WHERE game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4)
-		GROUP BY id ORDER BY CASE
-		WHEN game_title like :name5 THEN 3
-		WHEN game_title like :name6 THEN 0
-		WHEN game_title like :name7 THEN 1
-		WHEN game_title like :name8 THEN 2
-		ELSE 4
-		END, game_title LIMIT :limit OFFSET :offset";
-
-		$sth = $dbh->prepare($qry);
-
-		$sth->bindValue(':name', "%$searchTerm%");
-		$sth->bindValue(':name2', $searchTerm);
-		$sth->bindValue(':name3', "$searchTerm%");
-		$sth->bindValue(':name4', "% %$searchTerm% %");
-
-		$sth->bindValue(':name5', "%$searchTerm");
-		$sth->bindValue(':name6', $searchTerm);
-		$sth->bindValue(':name7', "$searchTerm%");
-		$sth->bindValue(':name8', "% %$searchTerm% %");
-
-
-		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
-		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
-
-		if($sth->execute())
-		{
-			$res = $sth->fetchAll(PDO::FETCH_OBJ);
-			if(!empty($res))
-			{
-				$this->PopulateOtherData($res, $fields);
-			}
-			return $res;
-		}
+		return $this->SearchGamesByNameByPlatformID($searchTerm, '', $offset, $limit, $fields);
 	}
 
 	function SearchGamesByExactName($searchTerm, $offset = 0, $limit = 20, $fields = array())
@@ -278,19 +230,6 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, game_title, release_date, platform ";
-
-		if(!empty($fields))
-		{
-			foreach($fields as $key => $enabled)
-			{
-				if($enabled && $this->is_valid_games_col($key))
-				{
-					$qry .= ", $key ";
-				}
-			}
-		}
-
 		$PlatformIDs = array();
 		if(is_array($IDs))
 		{
@@ -307,21 +246,45 @@ class TGDB
 			$PlatformIDs = $IDs;
 		}
 
-		$qry .= " FROM games WHERE ";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
 
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", games.$key ";
+				}
+			}
+		}
+		$qry .= " FROM games,
+		(
+			SELECT games_names_merged.id, @rank := @rank + 1 AS rank FROM
+			(
+				(
+					SELECT games_id as id, name as game_title, SOUNDEX from games_alts
+					WHERE name LIKE :name OR name=:name2 OR SOUNDEX LIKE soundex(:name3) OR SOUNDEX LIKE soundex(:name4)
+				)
+				UNION
+				(
+					SELECT id, game_title, SOUNDEX from games
+					WHERE game_title LIKE :name_2 OR game_title=:name_2_2 OR SOUNDEX LIKE soundex(:name_2_3) OR SOUNDEX LIKE soundex(:name_2_4)
+				)
+			) games_names_merged, (SELECT @rank := 0) t1
+			ORDER BY CASE
+			WHEN game_title like :name_3_2 THEN 0
+			WHEN game_title like :name_3_3 THEN 1
+			WHEN game_title like :name_3_4 THEN 2
+			WHEN game_title like :name_3 THEN 3
+			ELSE 4
+			END, game_title
+		) games_ordered where games.id = games_ordered.id ";
 		if(!empty($PlatformIDs))
 		{
-			$qry .= " platform IN ($PlatformIDs) AND ";
+			$qry .= " AND games.platform IN ($PlatformIDs) ";
 		}
-
-		$qry .= " (game_title LIKE :name OR game_title=:name2 OR soundex(game_title) LIKE soundex(:name3) OR soundex(game_title) LIKE soundex(:name4))
-		GROUP BY id ORDER BY CASE
-		WHEN game_title like :name5 THEN 3
-		WHEN game_title like :name6 THEN 0
-		WHEN game_title like :name7 THEN 1
-		WHEN game_title like :name8 THEN 2
-		ELSE 4
-		END, game_title LIMIT :limit OFFSET :offset";
+		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
 
 		$sth = $dbh->prepare($qry);
 
@@ -330,11 +293,15 @@ class TGDB
 		$sth->bindValue(':name3', "$searchTerm%");
 		$sth->bindValue(':name4', "% %$searchTerm% %");
 
-		$sth->bindValue(':name5', "%$searchTerm");
-		$sth->bindValue(':name6', $searchTerm);
-		$sth->bindValue(':name7', "$searchTerm%");
-		$sth->bindValue(':name8', "% %$searchTerm% %");
+		$sth->bindValue(':name_2', "%$searchTerm%");
+		$sth->bindValue(':name_2_2', $searchTerm);
+		$sth->bindValue(':name_2_3', "$searchTerm%");
+		$sth->bindValue(':name_2_4', "% %$searchTerm% %");
 
+		$sth->bindValue(':name_3', "%$searchTerm");
+		$sth->bindValue(':name_3_2', $searchTerm);
+		$sth->bindValue(':name_3_3', "$searchTerm%");
+		$sth->bindValue(':name_3_4', "% %$searchTerm% %");
 
 		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
 		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -1356,9 +1323,14 @@ class TGDB
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 			foreach($res as $edit)
 			{
-				if($edit->type == 'genres' || $edit->type == 'developers' || $edit->type == 'publishers')
+				//Note, these listing return a json array of data, thus must be decoded to any array to be encoded correctly later
+				switch($edit->type)
 				{
-					$edit->value = json_decode($edit->value);
+					case 'genres':
+					case 'developers':
+					case 'publishers':
+					case 'alternates':
+						$edit->value = json_decode($edit->value);
 				}
 			}
 			return $res;
@@ -1696,6 +1668,90 @@ class TGDB
 		return $sth->execute();
 	}
 
+	function InsertGamesAltName($game_id, $alt_name)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT IGNORE INTO games_alts (games_id, name, SOUNDEX) VALUES (:games_id, :alt_name, soundex(:alt_name2));");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':alt_name', $alt_name, PDO::PARAM_STR);
+		$sth->bindValue(':alt_name2', $alt_name, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function DeleteGamesAltName($game_id, $alt_name)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("DELETE FROM games_alts  WHERE games_id=:games_id AND name=:alt_name");
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+		$sth->bindValue(':alt_name', $alt_name, PDO::PARAM_STR);
+		return $sth->execute();
+	}
+
+	function UpdateGamesAltName($user_id, $games_id, $new_alt_names)
+	{
+		$dbh = $this->database->dbh;
+
+		$is_changed = false;
+		$valid_alt_name = array();
+
+		$current_alt_names = $this->GetGamesAlts($games_id, false);
+		if(!empty($current_alt_names[$games_id]))
+		{
+			$current_alt_names = $current_alt_names[$games_id];
+		}
+		if(!empty($new_alt_names))
+		{
+			foreach($new_alt_names as &$new_alt_name)
+			{
+				$new_alt_name = trim($new_alt_name);
+			}
+			unset($new_alt_name);
+			foreach($new_alt_names as $new_alt_name)
+			{
+				if(!empty($new_alt_name))
+				{
+					$valid_alt_name[] = $new_alt_name;
+
+					if(!in_array($new_alt_name, $current_alt_names, true))
+					{
+						$res = $this->InsertGamesAltName($games_id, $new_alt_name);
+						if(!$dbh->inTransaction() && !$res)
+						{
+							return false;
+						}
+						$is_changed = true;
+					}
+				}
+			}
+		}
+
+		if(!empty($current_alt_names))
+		{
+			foreach($current_alt_names as $current_alt_name)
+			{
+				if(!in_array($current_alt_name, $new_alt_names, true))
+				{
+					$res = $this->DeleteGamesAltName($games_id, $current_alt_name);
+					if(!$dbh->inTransaction() && !$res)
+					{
+						return false;
+					}
+					$is_changed = true;
+				}
+			}
+		}
+
+		if($is_changed)
+		{
+			$valid_alt_name = array_unique($valid_alt_name);
+			if(!empty($valid_alt_name))
+			{
+				$this->InsertUserEdits($user_id, $games_id, "alternates", json_encode($valid_alt_name));
+			}
+		}
+		return true;
+	}
+
 	function InsertGamesGenre($game_id, $genres_id)
 	{
 		$dbh = $this->database->dbh;
@@ -1718,6 +1774,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 		$is_changed = false;
+		$valid_ids = array();
 
 		$list = $this->GetGenres();
 
@@ -1764,8 +1821,7 @@ class TGDB
 			$valid_ids = array_unique($valid_ids);
 			if(!empty($valid_ids))
 			{
-				$genres_str = implode(",", $valid_ids);
-				$this->InsertUserEdits($user_id, $games_id, "genres", "[$genres_str]");
+				$this->InsertUserEdits($user_id, $games_id, "genres", json_encode($valid_ids, JSON_NUMERIC_CHECK));
 			}
 		}
 		return true;
@@ -1794,6 +1850,8 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$is_changed = false;
+		$valid_ids = array();
+
 		$list = $this->GetDevsListByIDs($new_ids);
 		$current_ids = $this->GetGamesDevs($games_id);
 		if(!empty($current_ids[$games_id]))
@@ -1837,8 +1895,7 @@ class TGDB
 			$valid_ids = array_unique($valid_ids);
 			if(!empty($valid_ids))
 			{
-				$ids_str = implode(",", $valid_ids);
-				$this->InsertUserEdits($user_id, $games_id, "developers", "[$ids_str]");
+				$this->InsertUserEdits($user_id, $games_id, "developers", json_encode($valid_ids, JSON_NUMERIC_CHECK));
 			}
 		}
 		return true;
@@ -1867,6 +1924,8 @@ class TGDB
 		$dbh = $this->database->dbh;
 
 		$is_changed = false;
+		$valid_ids = array();
+
 		$list = $this->GetPubsListByIDs($new_ids);
 		$current_ids = $this->GetGamesPubs($games_id);
 		if(!empty($current_ids[$games_id]))
@@ -1910,14 +1969,13 @@ class TGDB
 			$valid_ids = array_unique($valid_ids);
 			if(!empty($valid_ids))
 			{
-				$ids_str = implode(",", $valid_ids);
-				$this->InsertUserEdits($user_id, $games_id, "publishers", "[$ids_str]");
+				$this->InsertUserEdits($user_id, $games_id, "publishers", json_encode($valid_ids, JSON_NUMERIC_CHECK));
 			}
 		}
 		return true;
 	}
 
-	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -1935,6 +1993,8 @@ class TGDB
 		}
 
 		{
+			$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
+
 			if(!empty($new_genres))
 			{
 				$this->UpdateGamesGenre($user_id, $game_id, $new_genres);
@@ -2095,7 +2155,7 @@ class TGDB
 		return $dbh->commit();
 	}
 
-	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
@@ -2163,6 +2223,11 @@ class TGDB
 				if(!empty($new_publishers))
 				{
 					$this->UpdateGamesPub($user_id, $game_id, $new_publishers);
+				}
+
+				if(!empty($alternate_names))
+				{
+					$this->UpdateGamesAltName($user_id, $game_id, $alternate_names);
 				}
 
 				$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'platform', 'rating'];

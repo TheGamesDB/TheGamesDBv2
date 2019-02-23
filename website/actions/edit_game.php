@@ -56,12 +56,12 @@ require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 try
 {
-	$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true];
+	$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true];
 	$API = TGDB::getInstance();
 	$old_game_data = $API->GetGameByID($_REQUEST['game_id'], 0, 1, $filters)[0];
 
 	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
-		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['genres'], $_REQUEST['rating']);
+		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['genres'], $_REQUEST['rating'],  $_REQUEST['alternate_names']);
 
 	if($res)
 	{

@@ -488,6 +488,46 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 			});
 		});
 	</script>
+	<script type="text/template" id="template-alt-field">
+		<div class="input-group mb-3">
+			<input name="alternate_names[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
+			<div class="input-group-append">
+				<button class="btn btn-success add-more" type="button">+</button>
+			</div>
+		</div>
+	</script>
+	<script>
+		$(document).ready(function()
+		{
+
+			function remove_me()
+			{
+				$('.remove-me').click(function(e)
+				{
+					e.preventDefault();
+					$(this).parent().parent().remove();
+				});
+			}
+			function add_more()
+			{
+				$(".add-more").click(function(e){
+					e.preventDefault();
+					$("#alt_fields").append($.trim($('#template-alt-field').clone().html()));
+
+					$(this).removeClass("btn-success add-more").addClass("btn-danger remove-me");
+					$(this).text("-");
+
+					$(".add-more, .remove-me").unbind("click");
+
+					add_more();
+					remove_me();
+				});
+			}
+			add_more();
+			remove_me();
+		});
+
+</script>
 <?php });?>
 <?= $Header->print(); ?>
 
@@ -558,6 +598,22 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 						<div class="card border-primary">
 							<div class="card-header">
 								<h1><input style="width:100%" name="game_title" value="<?= $Game->game_title?>"/></h1>
+								<div id="alt_fields">
+									<?php while(!empty($Game->alternates) && !empty($alt_name = array_shift($Game->alternates))) : ?>
+									<div class="input-group mb-3">
+										<input value="<?= $alt_name ?>" name="alternate_names[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
+										<div class="input-group-append">
+											<button class="btn btn-danger remove-me" type="button">-</button>
+										</div>
+									</div>
+									<?php endwhile; ?>
+									<div class="input-group mb-3">
+										<input name="alternate_names[]" type="text" class="form-control" placeholder="Alt Name(s)"/>
+										<div class="input-group-append">
+											<button class="btn btn-success add-more" type="button">+</button>
+										</div>
+									</div>
+								</div>
 							</div>
 							<div class="card-body">
 								<p>
