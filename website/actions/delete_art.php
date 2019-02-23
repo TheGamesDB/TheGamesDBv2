@@ -32,6 +32,7 @@ if(
 
 require_once __DIR__ . "/../../include/TGDB.API.php";
 require_once __DIR__ . "/../include/WebUtils.class.php";
+require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 try
 {
@@ -58,6 +59,7 @@ try
 				$res = $API->DeleteGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['image_id'], $cover->type);
 				if($res)
 				{
+					DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], '', $_REQUEST['type'], $_REQUEST['sub_type'], 2);
 					returnJSONAndDie(1, "success!!");
 				}
 			}

@@ -27,12 +27,15 @@ if(!isset($_REQUEST['game_id']) || !is_numeric($_REQUEST['game_id']))
 }
 
 require_once __DIR__ . "/../../include/TGDB.API.php";
+require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 try
 {
 
 	$API = TGDB::getInstance();
-	if(empty($API->GetGameByID($_REQUEST['game_id'], 0, 1)))
+	$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true];
+	$games = $API->GetGameByID($_REQUEST['game_id'], 0, 1, $filters);
+	if(empty($games))
 	{
 		returnJSONAndDie(0, "No game in record to delete.");
 	}
@@ -56,7 +59,7 @@ try
 	}
 
 	$res = $API->DeleteGame($_user->GetUserID(), $_REQUEST['game_id']);
-
+	DiscordUtils::PostGameUpdate($_user, [], $games[0], 2);
 	returnJSONAndDie(1, "success!!");
 	
 

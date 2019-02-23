@@ -4,6 +4,7 @@ require_once __DIR__ . "/../include/UploadHandler.fineupload.class.php";
 require_once __DIR__ . "/../include/ErrorPage.class.php";
 require_once __DIR__ . "/../include/login.phpbb.class.php";
 require_once __DIR__ . "/../include/WebUtils.class.php";
+require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 function save_image($original_image, $dest_image, $type)
 {
@@ -207,24 +208,33 @@ if (get_request_method() == "POST")
 						}
 						if($_REQUEST['subtype'] == $cover->side)
 						{
-							$res = $API->DeleteAndInsertGameImages($_user->GetUserID(), $cover->id, $_REQUEST['game_id'], $_REQUEST['type'],
-								$_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name, $_REQUEST['subtype']);
+							$image_path = $_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name;
+							$res = $API->DeleteAndInsertGameImages($_user->GetUserID(), $cover->id, $_REQUEST['game_id'], $_REQUEST['type'], $image_path, $_REQUEST['subtype']);
+							DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], CommonUtils::getImagesBaseURL()['thumb'] . $image_path, $_REQUEST['type'], $_REQUEST['subtype'], 1);
 								echo json_encode($result); return;
 						}
 					}
 				}
-				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'],
-					$_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name, $_REQUEST['subtype']);
+				$image_path = $_REQUEST['type'] . "/" . $_REQUEST['subtype'] . "/" . $image_name;
+				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'], $image_path, $_REQUEST['subtype']);
 			}
 			else
 			{
-				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'],
-					$_REQUEST['type'] . "/" . $image_name);
+				$image_path = $_REQUEST['type'] . "/" . $image_name;
+				$res = $API->InsertGameImages($_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['type'], $image_path);
 			}
 			
 			if(!isset($res) || !$res)
 			{
 				returnJSONAndDie("Failed to update database.");
+			}
+			else if(!empty($image_path))
+			{
+				$sub_type = "";
+				if(!empty($_REQUEST['subtype']))
+					$sub_type = $_REQUEST['subtype'];
+				DiscordUtils::PostImageUpdate($_user, $_REQUEST['game_id'], CommonUtils::getImagesBaseURL()['thumb'] . $image_path, $_REQUEST['type'], $sub_type, 0);
+
 			}
 		}
 		else
