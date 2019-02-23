@@ -39,6 +39,7 @@ class HEADER
 <head>
 	<title><?= $this->_title ?></title>
 	<meta charset="utf-8">
+	<link rel="icon" href="/favicon.ico" type="image/png">
 	<!-- allow site to adapt to mobile
 		 TODO: add check for mobile desktop toggle -->
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
