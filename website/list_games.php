@@ -34,6 +34,13 @@ if(isset($_REQUEST['dev_id']) && is_numeric($_REQUEST['dev_id']))
 	{
 		$DevInfo = $DevInfo[$_REQUEST['dev_id']];
 	}
+	else
+	{
+		$errorPage = new ErrorPage();
+		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
+		$errorPage->print_die();
+	}
 }
 else if(isset($_REQUEST['pub_id']) && is_numeric($_REQUEST['pub_id']))
 {
@@ -43,6 +50,13 @@ else if(isset($_REQUEST['pub_id']) && is_numeric($_REQUEST['pub_id']))
 	if(!empty($DevInfo))
 	{
 		$DevInfo = $DevInfo[$_REQUEST['pub_id']];
+	}
+	else
+	{
+		$errorPage = new ErrorPage();
+		$errorPage->SetHeader(ErrorPage::$HEADER_OOPS_ERROR);
+		$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
+		$errorPage->print_die();
 	}
 }
 else if(isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id']))
@@ -102,7 +116,9 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 			<div class="col-12 col-md-10">
 				<div class="card">
 					<div class="card-header">
-						<legend><img src="<?= CommonUtils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
+						<fieldset>
+							<legend><img src="<?= CommonUtils::$BOXART_BASE_URL ?>/consoles/png48/<?= $Platform->icon ?>"> <?= $Platform->name ?></legend>
+						</fieldset>
 					</div>
 					<div class="card-body">
 						<p>Developer: <?= $Platform->developer ?></p>
@@ -116,7 +132,9 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 			<div class="col-12 col-md-10">
 				<div class="card">
 					<div class="card-header">
-						<legend><?= $DevInfo->name ?></legend>
+						<fieldset>
+							<legend><?= $DevInfo->name ?></legend>
+						</fieldset>
 					</div>
 					<div class="card-body">
 						<?= $listed_by ?>s overview have not been added yet.
