@@ -11,7 +11,7 @@ $PubsList = $API->GetPubsList();
 $alpha_list = array();
 foreach($PubsList as $pub)
 {
-	$alpha_list[strtoupper($pub->name[0])][] = $pub;
+	$alpha_list[mb_strtoupper(mb_substr($pub->name, 0, 1))][] = $pub;
 }
 
 
@@ -73,12 +73,14 @@ $Header->appendRawHeader(function()
 					<?php endforeach; ?>
 					</div>
 					<div class="card-body">
-						<legend>Pubs</legend>
+						<fieldset>
+							<legend>Pubs</legend>
+						</fieldset>
 						<?php foreach($alpha_list as $key => $val_publist) : ?>
 						<h2 id="<?= $key ?>"><?= $key ?></h2><hr/>
 						<div class="grid-container grid-col-config" style=" text-align: center">
 							<?php foreach($val_publist as $pub) :?>
-							<a class="btn btn-link grid-item" href="./listgames.php?pub_id=<?= $pub->id ?>">
+							<a class="btn btn-link grid-item" href="./list_games.php?pub_id=<?= $pub->id ?>">
 							<p><?= $pub->name ?></p>
 							</a>
 							<?php endforeach; ?>

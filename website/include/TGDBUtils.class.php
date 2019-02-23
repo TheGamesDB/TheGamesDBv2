@@ -36,11 +36,11 @@ class TGDBUtils
 		{
 			if(isset($game->game_title))
 			{
-				return "https://via.placeholder.com/200x200?text=$game->game_title";
+				return "https://via.placeholder.com/200x200?text=" . urlencode($game->game_title);
 			}
 			elseif(isset($game->name))
 			{
-				return "https://via.placeholder.com/200x200?text=$game->name";
+				return "https://via.placeholder.com/200x200?text=" . urlencode($game->name);
 			}
 			return "https://via.placeholder.com/200x200";
 		}
@@ -75,7 +75,7 @@ class TGDBUtils
 
 	public static function GetPlaceholderImage($Name, $size)
 	{
-		return "https://via.placeholder.com/200x200?text=$Name";
+		return "https://via.placeholder.com/200x200?text=" . urlencode($Name);
 	}
 }
 

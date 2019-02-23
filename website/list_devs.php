@@ -11,7 +11,7 @@ $DevsList = $API->GetDevsList();
 $alpha_list = array();
 foreach($DevsList as $Dev)
 {
-	$alpha_list[strtoupper($Dev->name[0])][] = $Dev;
+	$alpha_list[mb_strtoupper(mb_substr($Dev->name, 0, 1))][] = $Dev;
 }
 
 
@@ -73,12 +73,14 @@ $Header->appendRawHeader(function()
 					<?php endforeach; ?>
 					</div>
 					<div class="card-body">
-						<legend>Devs</legend>
+						<fieldset>
+							<legend>Devs</legend>
+						</fieldset>
 						<?php foreach($alpha_list as $key => $val_Devlist) : ?>
 						<h2 id="<?= $key ?>"><?= $key ?></h2><hr/>
 						<div class="grid-container grid-col-config" style=" text-align: center">
 							<?php foreach($val_Devlist as $Dev) :?>
-							<a class="btn btn-link grid-item" href="./listgames.php?dev_id=<?= $Dev->id ?>">
+							<a class="btn btn-link grid-item" href="./list_games.php?dev_id=<?= $Dev->id ?>">
 							<p><?= $Dev->name ?></p>
 							</a>
 							<?php endforeach; ?>

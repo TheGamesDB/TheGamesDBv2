@@ -609,12 +609,28 @@ class TGDB
 		}
 	}
 
-	function GetMissingGames($field, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	function GetMissingGames($field, $platform_ids = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
 		if(!$this->is_valid_games_col($field))
 		{
 			return array();
 		}
+
+		if(is_array($platform_ids))
+		{
+			if(!empty($platform_ids))
+			{
+				foreach($platform_ids as $platform_id)
+					if(is_numeric($platform_id))
+						$valid_platform_ids_arr[] = $platform_id;
+			}
+			$valid_platform_ids = implode(",", $valid_platform_ids_arr);
+		}
+		else if(is_numeric($platform_ids) && $platform_ids != 0)
+		{
+			$valid_platform_ids = $platform_ids;
+		}
+
 		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
@@ -631,7 +647,11 @@ class TGDB
 		$qry .= " FROM games ";
 
 
-		$qry .= "WHERE $field = '' OR $field IS NULL ";
+		$qry .= "WHERE ($field = '' OR $field IS NULL) ";
+		if(isset($valid_platform_ids))
+		{
+			$qry .= "AND (platform IN ($valid_platform_ids)) ";
+		}
 		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
 		{
 			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
@@ -674,8 +694,23 @@ class TGDB
 		}
 	}
 
-	function GetMissingGamesImages($type, $sub_type = '', $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
+	function GetMissingGamesImages($type, $sub_type = '', $platform_ids = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
+
+		if(is_array($platform_ids))
+		{
+			if(!empty($platform_ids))
+			{
+				foreach($platform_ids as $platform_id)
+					if(is_numeric($platform_id))
+						$valid_platform_ids_arr[] = $platform_id;
+			}
+			$valid_platform_ids = implode(",", $valid_platform_ids_arr);
+		}
+		else if(is_numeric($platform_ids))
+		{
+			$valid_platform_ids = $platform_ids;
+		}
 		$qry = "Select id, game_title, release_date, platform ";
 
 		if(!empty($fields))
@@ -696,7 +731,11 @@ class TGDB
 		{
 			$side = 'AND side=:side';
 		}
-		$qry .= "WHERE id NOT IN (select games_id from banners where type=:type $side) ";
+		$qry .= "WHERE (id NOT IN (select games_id from banners where type=:type $side)) ";
+		if($platform_id > 0)
+		{
+			$qry .= "AND (platform IN ($valid_platform_ids)) ";
+		}
 		if(!empty($OrderBy) && $this->is_valid_games_col($OrderBy))
 		{
 			if($ASCDESC != 'ASC' && $ASCDESC != 'DESC')
@@ -824,6 +863,48 @@ class TGDB
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
+	function GetGameBoxartTypes()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare('SELECT DISTINCT type, side FROM `banners`;');
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function GetLatestGameBoxartStats($limit = 20)
+	{
+		$type_list = $this->GetGameBoxartTypes();
+
+		$queries = array();
+		foreach($type_list as $type)
+		{
+			$qry = "(Select games_id as game_id, type, side, filename, resolution FROM banners WHERE type = '$type->type'";
+
+			if(!empty($type->side) && ($type->side == 'front' || $type->side == 'back'))
+			{
+				$qry .= " AND side = '$type->side' ";
+			}
+			$qry .= " ORDER BY id DESC LIMIT $limit)";
+			$queries[] = $qry;
+		}
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare(implode(" Union ", $queries));
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
 			return $res;
 		}
 	}
@@ -1462,14 +1543,15 @@ class TGDB
 
 	/* Everything belowis not planned to be exposed through external API */
 
-	function InsertUserGameBookmark($users_id, $games_id, $is_booked)
+	function InsertUserGameBookmark($users_id, $Game, $is_booked)
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, is_booked)
-		VALUES (:users_id, :games_id, :is_booked)
+		$sth = $dbh->prepare("INSERT INTO `user_games` (users_id, games_id, platforms_id, is_booked)
+		VALUES (:users_id, :games_id, :platforms_id, :is_booked)
 		ON DUPLICATE KEY UPDATE is_booked = :is_booked2");
-		$sth->bindValue(':games_id', $games_id);
+		$sth->bindValue(':games_id', $Game->id);
+		$sth->bindValue(':platforms_id', $Game->platform);
 		$sth->bindValue(':users_id', $users_id);
 		$sth->bindValue(':is_booked', $is_booked);
 		$sth->bindValue(':is_booked2', $is_booked);
@@ -1477,16 +1559,66 @@ class TGDB
 		return ($sth->execute());
 	}
 
-	function GetUserBookmarkedGames($users_id)
+	function GetUserBookmarkedGamesGroupByPlatform($users_id)
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
 		$sth->bindValue(':users_id', $users_id);
 
 		if($sth->execute())
 		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
+	function GetUserBookmarkedGamesByPlatformID($users_id, $platform_id, $offset = 0, $limit = 18)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G
+		where UG.users_id=:users_id AND UG.is_booked=1 AND G.platform = :platform_id AND G.id = UG.games_id ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
+		
+		$sth->bindValue(':users_id', $users_id);
+		$sth->bindValue(':platform_id', $platform_id);
+
+		$sth->bindValue(':offset', $offset);
+		$sth->bindValue(':limit', $limit);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP);
+			return $res;
+		}
+	}
+
+	function GetUserBookmarkedGames($users_id, $offset = 0, $limit = 18)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id  ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
+		$sth->bindValue(':users_id', $users_id);
+
+		$sth->bindValue(':offset', $offset);
+		$sth->bindValue(':limit', $limit);
+
+		if($sth->execute())
+		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+	}
+
+	function GetUserBookmarkedGamesPlatforms($users_id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select DISTINCT platforms_id FROM `user_games` WHERE users_id=:users_id AND is_booked=1");
+		$sth->bindValue(':users_id', $users_id);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_COLUMN);
 			return $res;
 		}
 	}

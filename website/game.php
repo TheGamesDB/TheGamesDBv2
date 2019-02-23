@@ -84,13 +84,13 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
 
-	<script type="text/javascript" defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
-	<script type="text/javascript" defer src="/js/fontawesome.5.0.10.js" crossorigin="anonymous"></script>
+	<script defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
+	<script defer src="/js/fontawesome.5.0.10.js" crossorigin="anonymous"></script>
 
-	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
-	<script type="text/javascript" src="/js/fancybox.config.js"></script>
+	<script src="/js/jquery.fancybox.3.3.5.js"></script>
+	<script src="/js/fancybox.config.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		$(document).ready(function()
 		{
 			fancyboxOpts.share.descr = function(instance, item)
@@ -171,7 +171,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 			});
 		});
 	</script>
-	<style type="text/css">
+	<style>
 		.cover
 		{
 			width: 100%;
@@ -218,9 +218,9 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 			<div class="col">
 				<div id="cover" class="view-width fanart-banner">
 				<?php if(!empty($cover = $fanarts) || !empty($cover = $screenshots)): ?>
-					<img class="cover cover-offset" src="<?= $cover[0]->medium ?>"/>
+					<img alt="cover" class="cover cover-offset" src="<?= $cover[0]->medium ?>"/>
 				<?php else: ?>
-					<img class="cover" src="<?= CommonUtils::$BOXART_BASE_URL ?>/placeholder_game_banner.png"/>
+					<img alt="cover" class="cover" src="<?= CommonUtils::$BOXART_BASE_URL ?>/placeholder_game_banner.png"/>
 				<?php endif; ?>
 				</div>
 			</div>
@@ -234,7 +234,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 						<div class="card border-primary">
 							<?php if(!empty($box_cover->front)) : ?>
 							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Front Cover" href="<?= $box_cover->front->original ?>">
-								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
+								<img alt="front cover" class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php if(!empty($box_cover->back)): ?>
 							<a class="fancybox-thumb" style="display:none;" data-fancybox="cover" data-caption="Back Cover"
@@ -244,10 +244,10 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								
 							<?php elseif(!empty($box_cover->back)): ?>
 							<a class="fancybox-thumb" data-fancybox="cover" data-caption="Back Cover" href="<?= $box_cover->front->original ?>">
-								<img class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
+								<img alt="back cover" class="card-img-top" src="<?= $box_cover->front->thumbnail ?>"/>
 							</a>
 							<?php else: ?>
-							<img class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
+							<img alt="cover placeholder" class="card-img-top" src="<?= TGDBUtils::GetPlaceholderImage($Game->game_title, 'boxart'); ?>"/>
 							<?php endif; ?>
 							<div class="card-body">
 							<?php if(isset($Game->is_booked) && $Game->is_booked == 1) : ?>
@@ -261,11 +261,11 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
 								<?php endif; if (!empty($Game->developers) && !empty($DevsList)) : ?>
 								<p>Developer(s): <?php $last_key = end(array_keys($DevsList)); foreach($DevsList as $key => $Dev) : ?>
-								<a href="listgames.php?dev_id=<?= $Dev->id ?>"><?= $Dev->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<a href="list_games.php?dev_id=<?= $Dev->id ?>"><?= $Dev->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
 								<?php endforeach; ?></p>
 								<?php endif;  if (!empty($Game->publishers) && !empty($PubsList)) : ?>
 								<p>Publishers(s): <?php $last_key = end(array_keys($PubsList)); foreach($PubsList as $key => $pub) : ?>
-								<a href="listgames.php?pub_id=<?= $pub->id ?>"><?= $pub->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
+								<a href="list_games.php?pub_id=<?= $pub->id ?>"><?= $pub->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
 								<?php endforeach; ?></p>
 								<?php endif; if (!empty($Game->release_date)) : ?>
 								<p>ReleaseDate: <?= $Game->release_date ;?></p>
@@ -319,23 +319,23 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 							<div class="card-footer" style="text-align: center;">
 								<p>Share Via</p>
 								<!-- Twitter -->
-								<div data="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->game_title' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
+								<div data-url="https://twitter.com/intent/tweet?text=<?= urlencode("Checkout '$Game->game_title' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" class="btn btn-twitter">
 									<i class="fab fa-twitter"></i>
 								</div>
 								<!-- Facebook -->
-								<div data="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Facebook" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" class="btn btn-facebook">
+								<div data-url="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Facebook" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" class="btn btn-facebook">
 									<i class="fab fa-facebook"></i>
 								</div>
 								<!-- Google+ -->
-								<div data="https://plus.google.com/share?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Google+" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" target="_blank" class="btn btn-googleplus">
+								<div data-url="https://plus.google.com/share?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on Google+" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" class="btn btn-googleplus">
 									<i class="fab fa-google-plus"></i>
 								</div>
 								<!-- StumbleUpon -->
-								<div data="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-stumbleupon">
+								<div data-url="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" data-placement="top" class="btn btn-stumbleupon">
 									<i class="fab fa-stumbleupon"></i>
 								</div>
 								<!-- Pinterest -->
-								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->game_title' on " . CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
+								<div data-url="https://www.pinterest.com/pin/create/button/?description=<?= urlencode("Checkout '$Game->game_title' on " . CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "game.php?id=$Game->id");?>&media=<?= !empty($box_cover->front) ? urlencode($box_cover->front->thumbnail) : "" ?>" title="Share on Pinterest" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" data-placement="top" class="btn btn-pinterest">
 									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
@@ -355,8 +355,8 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 									<?php if(!empty($cover = array_shift($fanarts))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="fanarts" data-caption="Fanart" href="<?= $cover->original ?>">
-											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>" alt=""/>
-											<img src="/images/ribbonFanarts.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+											<img alt="fanart(s)" class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>" alt=""/>
+											<img alt="fanart ribbon" src="/images/ribbonFanarts.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($fanarts)) : ?>
 											<a class="fancybox-thumb" style="display:none" data-fancybox="fanarts" data-caption="Fanart"
@@ -367,8 +367,8 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 									<?php if(!empty($cover = array_shift($screenshots))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="screenshots" data-caption="Screenshot" href="<?= $cover->original ?>">
-											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>"/>
-											<img src="/images/ribbonScreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+											<img alt="screenshot(s)" class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>"/>
+											<img alt="screenshot ribbon" src="/images/ribbonScreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($screenshots)) : ?>
 											<a class="fancybox-thumb" style="display:none" data-fancybox="screenshots" data-caption="Screenshot"
@@ -380,8 +380,8 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 									<?php if(!empty($cover = array_shift($banners))) : ?>
 									<div class="col-8" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="banners" data-caption="Banner" href="<?= $cover->original ?>">
-											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
-											<img src="/images/ribbonBanners.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+											<img alt="banner(s)" class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
+											<img alt="banner ribbon" src="/images/ribbonBanners.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($banners)) : ?>
 											<a class="fancybox-thumb" style="display:none" data-fancybox="banners" data-caption="Banner"
@@ -395,8 +395,8 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
 									<div class="col-5" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="clearlogos" data-caption="Clearlogo" href="<?= $cover->original ?>">
-											<img style ="background-color: black;"class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
-											<img src="/images/ribbonClearlogos.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+											<img alt="clearlogo(s)" style ="background-color: black;"class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
+											<img alt="clearlogo ribbon" src="/images/ribbonClearlogos.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($clearlogos)) : ?>
 											<a class="fancybox-thumb" style="display:none" data-fancybox="clearlogos" data-caption="Clearlogo"
