@@ -103,14 +103,16 @@ $Header->appendRawHeader(function() { global $Game; ?>
 		<div class="row justify-content-center">
 			<div class="card">
 				<div class="card-header">
-					<legend>Login</legend>
+					<fieldset>
+						<legend>Login</legend>
+					</fieldset>
 				</div>
 				<div class="card-body">
 					<form id="login_form" class="form-horizontal" method="post">
 					<div class="form-group">
 							<div class="input-group mb-3">
 								<div class="input-group-prepend">
-								<span class="input-group-text"><i class="fas fa-users" aria-hidiven="true"> Username </i></span>
+								<span class="input-group-text"><i class="fas fa-users" aria-hidden="true"> Username </i></span>
 								</div>
 								<input class="form-control" name="username" id="username" placeholder="Enter your Username" type="text">
 							</div>
@@ -119,7 +121,7 @@ $Header->appendRawHeader(function() { global $Game; ?>
 						<div class="form-group">
 							<div class="input-group mb-3">
 								<div class="input-group-prepend">
-								<span class="input-group-text"><i class="fas fa-lock" aria-hidiven="true"> Password </i></span>
+								<span class="input-group-text"><i class="fas fa-lock" aria-hidden="true"> Password </i></span>
 								</div>
 								<input class="form-control" name="password" id="password" placeholder="Enter your Password" type="password">
 							</div>

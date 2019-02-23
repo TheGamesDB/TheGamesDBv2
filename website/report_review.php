@@ -29,7 +29,9 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 $BASE_URL = CommonUtils::getImagesBaseURL();
 
 $API = TGDB::getInstance();
-$reports = $API->GetGamesReports(0);
+$offset = 0;
+$limit = 100;
+$reports = $API->GetGamesReports(0, $offset, $limit);
 foreach($reports as $Game)
 {
 	$IDs[] = $Game->games_id;
@@ -41,11 +43,11 @@ foreach($reports as $Game)
 }
 if(isset($additional_games_id))
 {
-	$additional_games = $API->GetGameByID($additional_games_id);
+	$additional_games = $API->GetGameByID($additional_games_id, $offset, $limit);
 }
 if(isset($IDs))
 {
-	$games = $API->GetGameByID($IDs);
+	$games = $API->GetGameByID($IDs, $offset, $limit);
 }
 
 foreach($additional_games as $Game)
@@ -53,7 +55,7 @@ foreach($additional_games as $Game)
 	$IDs[] = $Game->id;
 	$PlatformIDs[] = $Game->platform;
 }
-$Platforms = $API->GetPlatforms($PlatformIDs);
+$Platforms = $API->GetPlatforms($PlatformIDs, $offset, $limit);
 $covers = $API->GetGameBoxartByID($IDs, 0, 9999);
 foreach($reports as $Game)
 {
@@ -100,12 +102,12 @@ function PrintDuplicateView(&$report)
 				<div class="row" style="padding-bottom:10px;align-items: center;">
 					<div class="col-3">
 						<a href="/game.php?id=<?= $report->games_id ?>">
-							<img class="cover-overlay"src="<?= TGDBUtils::GetCover($report, 'boxart', 'front', true, true, 'thumb') ?>">
+							<img alt="<?= $report->game_title ?>" class="cover-overlay"src="<?= TGDBUtils::GetCover($report, 'boxart', 'front', true, true, 'thumb') ?>">
 						</a>
 					</div>
 					<div class="col-6">
 						<div>
-							<a style="font-weight: bold;" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $game->user_id ?>"><?= $report->username ?></a> reports the following game
+							<a style="font-weight: bold;" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $report->user_id ?>"><?= $report->username ?></a> reports the following game
 							<br/>
 							<a style="font-weight: bold;" href="/game.php?id=<?= $report->games_id ?>"><?= $report->game_title . "(games_id: $report->games_id)" ?></a>
 							<br/>as a duplicate of<br/>
@@ -128,7 +130,7 @@ function PrintDuplicateView(&$report)
 					</div>
 					<div class="col-3">
 						<a href="/game.php?id=<?= $report->metadata_0 ?>">
-							<img class="cover-overlay"src="<?= TGDBUtils::GetCover($ref_additional_games[$report->metadata_0], 'boxart', 'front', true, true, 'thumb') ?>">
+							<img alt="<?= $ref_additional_games[$report->metadata_0]->game_title ?>" class="cover-overlay"src="<?= TGDBUtils::GetCover($ref_additional_games[$report->metadata_0], 'boxart', 'front', true, true, 'thumb') ?>">
 						</a>
 					</div>
 				</div>
@@ -253,7 +255,7 @@ $Header->appendRawHeader(function() { ?>
 		<div class="row justify-content-center">
 
 			<div class="col-12 col-lg-8 order-2 order-lg-1 text-center">
-				<h2>Reports</h2><hr/>
+				<h2>Reports(<?= count($reports) ?>)</h2><hr/>
 			</div>
 			<?php foreach($reports as $game) 
 			{

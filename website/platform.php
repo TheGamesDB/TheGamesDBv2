@@ -27,8 +27,8 @@ else
 	$errorPage->SetMSG(ErrorPage::$MSG_INVALID_PARAM_ERROR);
 	$errorPage->print_die();
 }
-$covers = $API->GetGameBoxartByID($_REQUEST['id'], 0, 1, 'platform-boxart');
-$fanart = $API->GetGameBoxartByID($_REQUEST['id'], 0, 1, 'platform-fanart');
+$covers = $API->GetPlatformBoxartByID($_REQUEST['id'], 0, 1, 'boxart');
+$fanart = $API->GetPlatformBoxartByID($_REQUEST['id'], 0, 1, 'fanart');
 if(isset($covers) && !empty($covers))
 {
 	$Platform->boxart[] = $covers[$_REQUEST['id']][0];
@@ -63,7 +63,7 @@ $Header->appendRawHeader(function()
 
 	<meta property="og:title" content="<?= $Platform->name; ?>" />
 	<meta property="og:type" content="article" />
-	<meta property="og:image" content="<?= TGDBUtils::GetCover($Platform, 'platform-boxart', '', false,  true, 'thumb') ?>" />
+	<meta property="og:image" content="<?= TGDBUtils::GetCover($Platform, 'boxart', '', false,  true, 'thumb') ?>" />
 	<meta property="og:description" content="<?= htmlspecialchars($Platform->overview); ?>" />
 
 	<link href="/css/social-btn.css" rel="stylesheet">
@@ -71,10 +71,10 @@ $Header->appendRawHeader(function()
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
 	<link href="/css/jquery.fancybox.min.3.3.5.css" rel="stylesheet">
 
-	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
-	<script type="text/javascript" src="/js/fancybox.config.js"></script>
+	<script src="/js/jquery.fancybox.3.3.5.js"></script>
+	<script src="/js/fancybox.config.js"></script>
 
-	<script type="text/javascript">
+	<script>
 		$(document).ready(function()
 		{
 			fancyboxOpts.share.descr = function(instance, item)
@@ -93,7 +93,7 @@ $Header->appendRawHeader(function()
 		<div class="row" style="padding-bottom:10px;">
 			<div class="col">
 				<div id="cover" class="view-width" style="max-width: 100%; height: 300px; overflow: hidden; text-align: center;padding: 0px;;">
-					<img alt='CoverIMG' class="cover" style=" margin-top: -170px;" src="<?= TGDBUtils::GetCover($Platform, 'platform-fanart', '', false,  false, 'medium') ?>" />
+					<img alt='CoverIMG' class="cover" style=" margin-top: -170px;" src="<?= TGDBUtils::GetCover($Platform, 'fanart', '', false,  false, 'medium') ?>" />
 				</div>
 			</div>
 		</div>
@@ -105,7 +105,7 @@ $Header->appendRawHeader(function()
 				<div class="row">
 					<div class="col">
 						<div class="card border-primary">
-							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'platform-boxart', '', false,  true, 'thumb') ?>" />
+							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'boxart', '', false,  true, 'thumb') ?>" />
 							<div class="card-body">
 							<button onclick="alert('Not Implemented Yet!')" type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							</div>
@@ -115,7 +115,7 @@ $Header->appendRawHeader(function()
 			</div>
 
 			<div class="col-xs-12 col-sm-8 col-md-8">
-				<div class="row" style="text-align: center; padding-bottom:10px" ;>
+				<div class="row" style="text-align: center; padding-bottom:10px">
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
@@ -150,20 +150,20 @@ $Header->appendRawHeader(function()
 							<div class="card-footer" style="text-align: center;">
 								<!-- chaning div to a, and data to href causes these to disappear on OSX, perhaps due to add blocker -->
 								<p>Share Via</p>
-								<div data="https://twitter.com/intent/tweet?text=<?= urlencode(" Checkout '$Platform->name' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id");?>" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" target="_blank" class="btn btn-twitter">
+								<div data-url="https://twitter.com/intent/tweet?text=<?= urlencode(" Checkout '$Platform->name' on ")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id");?>" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" title="Share on Twitter" class="btn btn-twitter">
 									<i class="fab fa-twitter"></i>
 								</div>
-								<div data="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Facebook" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" class="btn btn-facebook">
+								<div data-url="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Facebook" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" class="btn btn-facebook">
 									<i class="fab fa-facebook"></i>
 								</div>
-								<div data="https://plus.google.com/share?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Google+" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" target="_blank" class="btn btn-googleplus">
+								<div data-url="https://plus.google.com/share?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Google+" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=600');return false;" class="btn btn-googleplus">
 									<i class="fab fa-google-plus"></i>
 								</div>
-								<div data="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-stumbleupon">
+								<div data-url="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" data-placement="top" class="btn btn-stumbleupon">
 									<i class="fab fa-stumbleupon"></i>
 								</div>
-								<div data="https://www.pinterest.com/pin/create/button/?description=<?= urlencode(" Checkout '$Platform->name' on " . CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id"); ?>&media=
-									<?= urlencode(TGDBUtils::GetCover($Platform, 'platform-boxart', '', false, true, 'thumb')) ?>" title="Share on Pinterest" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-pinterest">
+								<div data-url="https://www.pinterest.com/pin/create/button/?description=<?= urlencode(" Checkout '$Platform->name' on " . CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id"); ?>&media=
+									<?= urlencode(TGDBUtils::GetCover($Platform, 'boxart', '', false, true, 'thumb')) ?>" title="Share on Pinterest" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" data-placement="top" class="btn btn-pinterest">
 									<i class="fab fa-pinterest"></i>
 								</div>
 							</div>
@@ -171,7 +171,7 @@ $Header->appendRawHeader(function()
 					</div>
 				</div>
 				<?php if(!empty($recent)) : ?>
-				<div class="row" style="text-align: center; padding-bottom:10px" ;>
+				<div class="row" style="text-align: center; padding-bottom:10px">
 					<div class="col">
 						<div class="card border-primary">
 							<h3 class="card-header">
@@ -184,7 +184,7 @@ $Header->appendRawHeader(function()
 										<div style="padding-bottom:12px; height: 100%">
 											<a href="./game.php?id=<?= $Game->id ?>">
 												<div class="card border-primary" style="height: 100%">
-													<img class="card-img-top" alt="PosterIMG" src="<?= TGDBUtils::GetCover($Game, 'boxart', 'front', true, true, 'thumb') ?>">
+													<img class="card-img-top" alt="<?= $Game->game_title ?>" src="<?= TGDBUtils::GetCover($Game, 'boxart', 'front', true, true, 'thumb') ?>">
 													<div class="card-body card-noboday" style="text-align:center;">
 													</div>
 													<div class="card-footer bg-secondary" style="text-align:center;">
@@ -197,7 +197,7 @@ $Header->appendRawHeader(function()
 									</div>
 									<?php endforeach; ?>
 									<div class="col-md-12">
-										<a href="/listgames.php?platform_id=<?= $Platform->id ?>" class="btn btn-info" role="button" style="width:100%;">See More</a>
+										<a href="/list_games.php?platform_id=<?= $Platform->id ?>" class="btn btn-info" role="button" style="width:100%;">See More</a>
 									</div>
 								</div>
 							</div>
