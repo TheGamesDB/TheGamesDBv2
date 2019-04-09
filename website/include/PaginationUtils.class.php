@@ -12,7 +12,7 @@ class PaginationUtils
 		return 1;
 	}
 
-	public static function Create($has_next_page)
+	public static function Create($has_next_page, $custom_url = '')
 	{
 		$page = PaginationUtils::getPage();
 		{
@@ -26,10 +26,10 @@ class PaginationUtils
 			<nav aria-label="Page navigation example">
 				<ul class="pagination justify-content-center">
 					<li class="page-item <?= $page <= 1 ? "disabled" : ""?>">
-						<a class="page-link" href="<?= $page > 1 ? $previous_args : "#"?>" tabindex="-1">&lt;&lt; Previous</a>
+					<a class="page-link" href="<?= $page > 1 ? $custom_url . $previous_args : "#"?>" tabindex="-1">&lt;&lt; Previous</a>
 					</li>
 					<li class="page-item <?= !$has_next_page ? "disabled" : ""?>">
-						<a class="page-link" href="<?= $has_next_page > 0 ? $next_args : "#"?>">Next &gt;&gt;</a>
+						<a class="page-link" href="<?= $has_next_page > 0 ? $custom_url . $next_args : "#"?>">Next &gt;&gt;</a>
 					</li>
 				</ul>
 			</nav>
