@@ -94,9 +94,14 @@ try
 		}
 	}
 
+	if(!$_user->hasPermission('m_delete_games'))
+	{
+			$_REQUEST['platform'] = $old_game_data->platform;
+	}
+
 	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['genres'], $_REQUEST['rating'],  $_REQUEST['alternate_names'],
-		$_REQUEST['uids']);
+		$_REQUEST['uids'], $_REQUEST['platform']);
 
 	if($res)
 	{

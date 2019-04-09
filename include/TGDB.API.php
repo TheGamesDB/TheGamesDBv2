@@ -2620,7 +2620,7 @@ class TGDB
 		return true;
 	}
 
-	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names, $uids)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names, $uids, $platform)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -2688,7 +2688,7 @@ class TGDB
 			$dbh->beginTransaction();
 
 			$sth = $dbh->prepare("UPDATE games SET game_title=:game_title, overview=:overview, release_date=:release_date, players=:players,
-			coop=:coop, youtube=:YouTube, rating=:rating WHERE id=:game_id");
+			coop=:coop, youtube=:YouTube, rating=:rating, platform=:platform WHERE id=:game_id");
 			$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
 			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
 			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
@@ -2697,6 +2697,7 @@ class TGDB
 			$sth->bindValue(':YouTube', htmlspecialchars($youtube), PDO::PARAM_STR);
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
 			$sth->bindValue(':rating', $rating, PDO::PARAM_STR);
+			$sth->bindValue(':platform', $platform, PDO::PARAM_INT);
 
 			$sth->execute();
 			{
