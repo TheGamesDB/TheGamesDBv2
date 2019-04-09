@@ -41,6 +41,7 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 	$GenreList = $API->GetGenres();
 	$ESRBRating = $API->GetESRBRating();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
+	$PlatformList = $API->GetPlatformsList();
 
 	if(empty($list))
 	{
@@ -58,10 +59,10 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 			$Game->boxart = $covers[$_REQUEST['id']];
 		}
 	}
-	$Platform = $API->GetPlatforms($Game->platform, array("icon" => true, "overview" => true, "developer" => true));
-	if(isset($Platform[$Game->platform]))
+	$Current_Platform = $API->GetPlatforms($Game->platform, array("icon" => true, "overview" => true, "developer" => true));
+	if(isset($Current_Platform[$Game->platform]))
 	{
-		$Platform = $Platform[$Game->platform];
+		$Current_Platform = $Current_Platform[$Game->platform];
 	}
 }
 
@@ -586,7 +587,16 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 							<?php endif; ?>
 							</a>
 							<div class="card-body">
-								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
+								<?php if($_user->hasPermission('m_delete_games')): ?>
+								<p>Platform: <select name="platform" style="width:100%">
+												<?php foreach($PlatformList as $Platform) : ?>
+												<option value="<?= $Platform->id ?>" <?= ($Current_Platform->id == $Platform->id) ? "selected" : "" ?>><?= $Platform->name ?></option>
+												<?php endforeach; ?>
+										</select>
+								</p>
+								<?php else: ?>
+								<p>Platform: <a href="/platform.php?id=<?= $Current_Platform->id?>"><?= $Current_Platform->name; ?></a></p>
+								<?php endif; ?>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="<?= $Game->release_date ;?>"></p>
 								<p>Players:
 									<select name="players">
