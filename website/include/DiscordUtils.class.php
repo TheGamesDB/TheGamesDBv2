@@ -92,6 +92,16 @@ class DiscordUtils
 
 				if(!empty($val) && (empty($old_game_data) || empty($old_game_data->$key) || $val != $old_game_data->$key))
 				{
+					if($key == "uids")
+					{
+							$uids = [];
+							foreach($val as $item)
+							{
+									$uids[] = $item->uid;
+							}
+							$val = $uids;
+					}
+
 					if(is_array($val))
 						$val = implode(",", $val);
 					$data = ["name" => $key, "value" => $val];
