@@ -156,7 +156,7 @@ $Header->appendRawHeader(function()
 								<div data-url="https://www.facebook.com/sharer/sharer.php?u=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on Facebook" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" class="btn btn-facebook">
 									<i class="fab fa-facebook"></i>
 								</div>
-								<div data="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open(this.attributes['data'].value, '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" target="_blank" data-placement="top" class="btn btn-stumbleupon">
+								<div data-url="http://www.stumbleupon.com/submit?url=<?= urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id");?>" title="Share on StumbleUpon" onclick="javascript:window.open($(this).data('url'), '', 'menubar=no,toolbar=no,resizable=yes,scrollbars=yes,height=400,width=700');return false;" data-placement="top" class="btn btn-stumbleupon">
 									<i class="fab fa-stumbleupon"></i>
 								</div>
 								<div data-url="https://www.pinterest.com/pin/create/button/?description=<?= urlencode(" Checkout '$Platform->name' on " . CommonUtils::$WEBSITE_BASE_URL ."platform.php?id=$Platform->id")."&amp;url=".urlencode(CommonUtils::$WEBSITE_BASE_URL . "platform.php?id=$Platform->id"); ?>&media=
