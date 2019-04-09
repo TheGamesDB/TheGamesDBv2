@@ -14,12 +14,12 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/login.phpbb.class.php";
 
 $_user = phpBBuser::getInstance();
+$API = TGDB::getInstance();
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
 		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "uids" => true);
-	$API = TGDB::getInstance();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	if(empty($list))
 	{
