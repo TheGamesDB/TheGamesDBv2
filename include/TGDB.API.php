@@ -1472,10 +1472,15 @@ class TGDB
 		}
 	}
 
-	function GetPubsList()
+	function GetPubsList($limit = -1)
 	{
+		$qry = "SELECT id as n, id, name FROM pubs_list order by name";
+		if($limit > 0)
+		{
+			$qry .= " LIMIT $limit;"
+		}
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("SELECT id as n, id, name FROM pubs_list order by name");
+		$sth = $dbh->prepare($qry);
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
@@ -1483,10 +1488,15 @@ class TGDB
 		}
 	}
 
-	function GetDevsList()
+	function GetDevsList($limit = -1)
 	{
+		$qry = "SELECT id as n, id, name FROM devs_list order by name";
+		if($limit > 0)
+		{
+			$qry .= " LIMIT $limit;"
+		}
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("SELECT id as n, id, name FROM devs_list order by name");
+		$sth = $dbh->prepare($qry);
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
