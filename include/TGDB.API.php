@@ -1477,7 +1477,7 @@ class TGDB
 		$qry = "SELECT id as n, id, name FROM pubs_list order by name";
 		if($limit > 0)
 		{
-			$qry .= " LIMIT $limit;"
+			$qry .= " LIMIT $limit;";
 		}
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
@@ -1493,7 +1493,7 @@ class TGDB
 		$qry = "SELECT id as n, id, name FROM devs_list order by name";
 		if($limit > 0)
 		{
-			$qry .= " LIMIT $limit;"
+			$qry .= " LIMIT $limit;";
 		}
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
