@@ -663,9 +663,14 @@ $app->group('/v1', function()
 	{
 		$this->get('', function($request, $response, $args)
 		{
+			$limit = -1;
+			if(!empty($_REQUEST['limit']) && is_numeric($_REQUEST['limit']) && $_REQUEST['limit'] > 0)
+			{
+				$limit = $_REQUEST['limit'];
+			}
 			$this->logger->info("TGDB '/Developers' route");
 			$API = TGDB::getInstance();
-			$list = $API->GetDevsList();
+			$list = $API->GetDevsList($limit);
 
 			CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 			$JSON_Response = Utils::getStatus(200);
@@ -678,9 +683,14 @@ $app->group('/v1', function()
 	{
 		$this->get('', function($request, $response, $args)
 		{
+			$limit = -1;
+			if(!empty($_REQUEST['limit']) && is_numeric($_REQUEST['limit']) && $_REQUEST['limit'] > 0)
+			{
+				$limit = $_REQUEST['limit'];
+			}
 			$this->logger->info("TGDB '/Publishers' route");
 			$API = TGDB::getInstance();
-			$list = $API->GetPubsList();
+			$list = $API->GetPubsList($limit);
 
 			CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
 			$JSON_Response = Utils::getStatus(200);
