@@ -409,7 +409,7 @@ $app->group('/v1', function()
 					$PlatformsIDs = $_REQUEST['filter']['platform'];
 				}
 			}
-			if(isset($_REQUEST['filter']['type']) && (!is_array($_REQUEST['filter']['type']))
+			if(isset($_REQUEST['filter']['type']) && (!is_array($_REQUEST['filter']['type'])))
 			{
 				$filter_type = $_REQUEST['filter']['type'];
 			}
