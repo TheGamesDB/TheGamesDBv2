@@ -3000,7 +3000,7 @@ class TGDB
 
 	function GetGameEditContributors($game_id)
 	{
-		$qry = "SELECT UE.id, UE.timestamp, UE.type, UE.value, UE.users_id, BB.username FROM user_edits UE, phpBB.phpbb_users BB WHERE UE.games_id = :games_id and BB.user_id = UE.users_id order by UE.id DESC;";
+		$qry = "SELECT UE.id, UE.timestamp, UE.type, UE.value, UE.users_id, BB.username FROM user_edits UE, phpbb_0.phpbb_users BB WHERE UE.games_id = :games_id and BB.user_id = UE.users_id order by UE.id DESC;";
 
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare($qry);
