@@ -598,12 +598,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<p>Platform: <a href="/platform.php?id=<?= $Current_Platform->id?>"><?= $Current_Platform->name; ?></a></p>
 								<?php endif; ?>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="<?= $Game->release_date ;?>"></p>
-								<p>Players:
-									<select name="players">
-									<?php for($x = 0; $x < 17; ++$x) : ?>
-										<option value="<?= $x ?>" <?= ($Game->players == $x) ? "selected" : "" ?>><?= $x ?></option>
-									<?php endfor; ?>
-									</select>
+								<input type="number" name="players"  value="<?= $Game->players; ?>" min="1" max="100">
 								</p>
 								<p>Co-op:
 									<select name="coop">
