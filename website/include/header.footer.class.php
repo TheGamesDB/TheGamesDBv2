@@ -169,6 +169,14 @@ class FOOTER
 							<li><a href="/list_pubs.php">Publishers</a></li>
 						</ul>
 					</div>
+					<div class="col-sm-3">
+						<h5>Developers</h5>
+						<ul>
+							<li><a href="https://api.thegamesdb.net/">API Documentation</a></li>
+							<li><a href="https://forums.thegamesdb.net/viewforum.php?f=10">API Access Request</a></li>
+							<li><a href="https://github.com/TheGamesDB/TheGamesDBv2">Github Repo</a></li>
+						</ul>
+					</div>
 					<?php if(false) : ?>
 					<div class="col-sm-2">
 						<h5>About us</h5>
