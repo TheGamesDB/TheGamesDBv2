@@ -17,8 +17,15 @@ $API = TGDB::getInstance();
 $page = PaginationUtils::getPage();
 $limit = 18;
 $offset = ($page - 1) * $limit;
-$list = $API->GetUserEditsByUserID($_REQUEST['id'], $offset, 10000);
+$list = $API->GetUserEditsByUserID($_REQUEST['id'], $offset, $limit + 1);
+$count = $API->GetUserEditsCountByUserID($_REQUEST['id']);
 
+$displayMin = ($page - 1) * $limit;
+$displayMax = $page * $limit;
+if($displayMax > $count)
+{
+	$displayMax = $count;
+}
 if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);
@@ -107,7 +114,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 
 		<div class="row">
 			<?php if(isset($list) && !empty($list)): ?>
-			<div class="col-12"><h2><?php echo count($list) ?></h2></div>
+			<div class="col-12"><h2><?= $displayMin ?> - <?= $displayMax ?> / <?= $count ?></h2></div>
 			<?php foreach($list as $Game) : ?>
 				<div class="col-6 col-md-2">
 					<div style="padding-bottom:12px; height: 100%">
@@ -134,7 +141,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 				</div>
 			<?php endif; ?>
 		</div>
-
+		<?= (isset($page)) ? PaginationUtils::Create($has_next_page) : "";?>
 	</div>
 
 

@@ -3026,6 +3026,28 @@ class TGDB
 		}
 	}
 
+	function GetUserEditsCountByUserID($user)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select count(DISTINCT games_id) FROM user_edits
+		WHERE users_id = :user_id and games_id in (SELECT id from games)");
+		$sth->bindValue(':user_id', $user, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			return $sth->fetch(PDO::FETCH_COLUMN);
+		}
+	}
+
+	function GetLastUserEditID()
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("Select id FROM user_edits order by id DESC limit 1");
+		if($sth->execute())
+		{
+			return $sth->fetch(PDO::FETCH_COLUMN);
+		}
+	}
+
 	function GetLegacyCopy($id)
 	{
 		$dbh = $this->database->dbh;
