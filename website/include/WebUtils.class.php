@@ -21,6 +21,30 @@ class WebUtils
 		return $text;
 	}
 
+	static function purgeCDNCacheFile($filenames)
+	{
+		require_once __DIR__ . '/../../vendor/autoload.php';
+		require_once __DIR__ . '/../../include/config.class.php';
+		try
+		{
+			$key = new \Cloudflare\API\Auth\APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
+			$adapter = new Cloudflare\API\Adapter\Guzzle($key);
+
+			$zones = new \Cloudflare\API\Endpoints\Zones($adapter);
+
+			foreach($filenames as $filename)
+			{
+				$files[] = "https://cdn.thegamesdb.net/$filename";
+			}
+			return $zones->cachePurge(Config::$_CF_ZONE_ID, $files);
+		}
+		catch (Exception $e)
+		{
+			error_log($err);
+		}
+		return false;
+	}
+
 	static function purgeCDNCache($img_name)
 	{
 		require_once __DIR__ . '/../../vendor/autoload.php';
