@@ -598,7 +598,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<p>Platform: <a href="/platform.php?id=<?= $Current_Platform->id?>"><?= $Current_Platform->name; ?></a></p>
 								<?php endif; ?>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="<?= $Game->release_date ;?>"></p>
-								<input type="number" name="players"  value="<?= $Game->players; ?>" min="1" max="100">
+								<p>Players:<br/> <input type="number" name="players"  value="<?= $Game->players; ?>" min="1" max="100"></p>
 								</p>
 								<p>Co-op:
 									<select name="coop">

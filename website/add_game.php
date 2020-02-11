@@ -303,13 +303,7 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 									</select>
 								</p>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="1970-01-01"></p>
-								<p>Players:
-									<select name="players">
-									<?php for($x = 0; $x < 17; ++$x) : ?>
-										<option value="<?= $x ?>" <?= (1 == $x) ? "selected" : "" ?>><?= $x ?></option>
-									<?php endfor; ?>
-									</select>
-								</p>
+								<p>Players:<br/> <input type="number" name="players" min="1" max="100"></p>
 								<p>Co-op:
 									<select name="coop">
 										<option value="Yes">Yes</option>
