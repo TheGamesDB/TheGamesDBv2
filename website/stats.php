@@ -3,8 +3,15 @@
 require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
+require_once __DIR__ . "/include/login.phpbb.class.php";
 
 $API = TGDB::getInstance();
+
+$_user = phpBBuser::getInstance();
+if($_user->isLoggedIn() && $_user->hasPermission('m_delete_games') && isset($_REQUEST['update']))
+{
+	$API->UpdateStats();
+}
 $Stats = $API->GetGamesStats();
 
 $limit = 75;
