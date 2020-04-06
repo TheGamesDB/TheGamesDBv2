@@ -30,7 +30,7 @@ $devs_list = $API->GetDevsList();
 $pubs_list = $API->GetPubsList();
 
 $Header = new HEADER();
-$Header->setTitle("TGDB - Merge");
+$Header->setTitle("TGDB - Add Dev/Pub");
 $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 
 	<link href="/css/select-pure.css" rel="stylesheet">
