@@ -1472,6 +1472,19 @@ class TGDB
 		}
 	}
 
+	function InsertPub($name)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT INTO pubs_list(name) VALUES(:name);");
+		$sth->bindValue(':name', $name);
+
+		if($sth->execute())
+		{
+			return $dbh->lastInsertId();
+		}
+		return false;
+	}
+
 	function GetPubsList($limit = -1)
 	{
 		$qry = "SELECT id as n, id, name FROM pubs_list order by name";
@@ -1486,6 +1499,19 @@ class TGDB
 			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP| PDO::FETCH_UNIQUE);
 			return $res;
 		}
+	}
+
+	function InsertDev($name)
+	{
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("INSERT INTO devs_list(name) VALUES(:name);");
+		$sth->bindValue(':name', $name);
+
+		if($sth->execute())
+		{
+			return $dbh->lastInsertId();
+		}
+		return false;
 	}
 
 	function GetDevsList($limit = -1)

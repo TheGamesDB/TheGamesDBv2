@@ -125,6 +125,7 @@ class HEADER
 						<a class="dropdown-item" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $_user->GetUserID() ?>">Forum Profile</a>
 						<div class="dropdown-divider"></div>
 						<?php if($_user->hasPermission('m_delete_games')) : ?>
+						<a class="dropdown-item" href="/add_dev_pub.php">Add Devs/Pubs</a>
 						<a class="dropdown-item" href="/merge_dev_pub.php">Merge Devs/Pubs</a>
 						<a class="dropdown-item" href="/report_review.php">Duplicates Reports</a>
 						<div class="dropdown-divider"></div>
