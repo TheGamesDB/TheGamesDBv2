@@ -224,7 +224,7 @@ paths:
         type: string
       - in: query
         name: filter[type]
-        description: "(Optional) - valid `,` delimited options: `fanart`, `banner`, `boxart`, `screenshot`, `clearlogo`"
+        description: "(Optional) - valid `,` delimited options: `fanart`, `banner`, `boxart`, `screenshot`, `clearlogo`, `titlescreen`"
         required: false
         type: string
       - in: query

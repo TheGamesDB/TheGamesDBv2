@@ -1115,6 +1115,7 @@ class TGDB
 			case 'banner':
 			case 'boxart':
 			case 'screenshot':
+			case 'titlescreen':
 			case 'icon':
 			case 'clearlogo':
 				if(!$is_filter)

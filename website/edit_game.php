@@ -76,7 +76,8 @@ $fanarts = TGDBUtils::GetAllCovers($Game, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($Game, 'screenshot', '');
 $banners = TGDBUtils::GetAllCovers($Game, 'banner', '');
 $clearlogos = TGDBUtils::GetAllCovers($Game, 'clearlogo', '');
-$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) &&  empty($clearlogos);
+$titlescreens = TGDBUtils::GetAllCovers($Game, 'titlescreen', '');
+$is_graphics_empty = empty($fanarts) && empty($screenshots) && empty($banners) &&  empty($clearlogos) && empty($titlescreens);
 
 $box_cover = new \stdClass();
 $box_cover->front = TGDBUtils::GetAllCovers($Game, 'boxart', 'front');
@@ -719,6 +720,20 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
+
+									<?php if(!empty($cover = array_shift($titlescreens))) : ?>
+									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
+										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="titlescreens" data-caption="Title Screens" href="<?= $cover->original ?>">
+											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>"/>
+											<img src="/images/ribbonScreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+										</a>
+										<?php while($cover = array_shift($titlescreens)) : ?>
+											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="screenshots" data-caption="Title Screen"
+												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+										<?php endwhile; ?>
+									</div>
+									<?php endif; ?>
+
 									<?php if(!empty($cover = array_shift($screenshots))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" data-fancybox="screenshots" data-caption="Screenshot" href="<?= $cover->original ?>">
@@ -792,6 +807,8 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload Banners</button>
 														<button type="button" data-upload-type="clearlogo" data-upload-subtype="" data-toggle="modal"
 															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload ClearLogo</button>
+														<button type="button" data-upload-type="titlescreen" data-upload-subtype="" data-toggle="modal"
+															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload Title Screens</button>
 													</div>
 													<div class="modal fade" id="UploadModal2" tabindex="-1" role="dialog" aria-labelledby="UploadModal2Label"
 														aria-hidden="true">
