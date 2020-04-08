@@ -94,14 +94,14 @@ $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 				}
 				$("#dev_form").submit(function(e)
 				{
-					var input = getRequest(e, "dev_id");
+					var input = getRequest(e.target, "dev_id");
 					$.ajax(input);
 
 					e.preventDefault();
 				});
 				$("#pub_form").submit(function(e)
 				{
-					var input = getRequest(e, "pub_id");
+					var input = getRequest(e.target, "pub_id");
 					$.ajax(input);
 
 					e.preventDefault();
@@ -116,7 +116,7 @@ $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 			<div class="col-6">
 				<h2>Developer</h2>
 				<div class="card-footer">
-					<input name="name" type="text" clss="w-100" />
+					<input name="name" type="text" class="w-100" />
 					<input name="tbl"  value="dev" type="hidden" />
 				</div>
 				<p><button type="submit" class="btn btn-primary btn-block">Add</button></p>
@@ -127,7 +127,7 @@ $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 				<h2>Publisher</h2>
 
 				<div class="card-footer">
-					<input name="name" type="text" clss="w-100" />
+					<input name="name" type="text" class="w-100" />
 					<input name="tbl"  value="pub" type="hidden" />
 				</div>
 				<p><button type="submit" class="btn btn-primary btn-block">Add</button></p>
