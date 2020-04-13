@@ -374,7 +374,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px; overflow:hidden;">
 										<a class="fancybox-thumb" data-fancybox="titlescreens" data-caption="Title Screen" href="<?= $cover->original ?>">
 											<img alt="titlescreen(s)" class="rounded img-thumbnail img-fluid" src="<?= $cover->cropped_center_thumb ?>"/>
-											<img alt="titlescreen ribbon" src="/images/ribbonScreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
+											<img alt="titlescreen ribbon" src="/images/ribbonTitlescreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($titlescreens)) : ?>
 											<a class="fancybox-thumb" style="display:none" data-fancybox="titlescreens" data-caption="Title Screen"
