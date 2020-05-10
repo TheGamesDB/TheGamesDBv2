@@ -787,7 +787,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 														<button type="button" data-upload-type="fanart" data-upload-subtype="" data-toggle="modal"
 															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload Fanart</button>
 														<button type="button" data-upload-type="screenshot" data-upload-subtype="" data-toggle="modal"
-															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload Sceenshot</button>
+															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload Screenshot</button>
 														<button type="button" data-upload-type="banner" data-upload-subtype="" data-toggle="modal"
 															  data-backdrop="static" data-keyboard="false" data-target="#UploadModal2" class="btn btn-primary margin5px col-4">Upload Banners</button>
 														<button type="button" data-upload-type="clearlogo" data-upload-subtype="" data-toggle="modal"
