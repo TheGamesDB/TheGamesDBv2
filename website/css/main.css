@@ -9,6 +9,11 @@
 	width: 100%;
 }
 
+.game-overview
+{
+	white-space: pre-wrap;
+}
+
 .cover-text-col-3
 {
 	left: 15px !important;

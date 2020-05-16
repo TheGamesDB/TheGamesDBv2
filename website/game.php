@@ -307,7 +307,7 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<?php if(!empty($Game->alternates)) : ?><h6 class="text-muted">Also know as: <?= implode(" | ", $Game->alternates) ?></h6><?php endif; ?>
 							</div>
 							<div class="card-body">
-								<p><?= !empty($Game->overview) ? $Game->overview : "No overview is currently available for this title, please feel free to add one.";?></p>
+								<p class="game-overview"><?= !empty($Game->overview) ? $Game->overview : "No overview is currently available for this title, please feel free to add one.";?></p>
 								<?php if (!empty($Game->youtube)) : ?>
 								<p>Trailer: <a data-fancybox data-caption="Trailer" href="https://youtube.com/watch?v=<?= $Game->youtube?>">YouTube</a></p>
 								<?php endif; if (!empty($Game->rating)) : ?>
