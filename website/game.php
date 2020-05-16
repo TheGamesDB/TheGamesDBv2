@@ -312,9 +312,16 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 								<p>Trailer: <a data-fancybox data-caption="Trailer" href="https://youtube.com/watch?v=<?= $Game->youtube?>">YouTube</a></p>
 								<?php endif; if (!empty($Game->rating)) : ?>
 								<p>ESRB Rating: <?= $Game->rating; ?></p>
-								<?php endif; if (!empty($Game->genres)) : //$gens_id = (json_decode($Game->genres)); ?>
-								<p>Genre(s): <?php foreach($Game->genres as $gen_id) { echo $GenresList[$gen_id]->name . " | "; } ?></p>
-								<?php endif;if (!empty($Game->uids)) : ?>
+								<?php endif; if (!empty($Game->genres)) : ?>
+								<?php
+								$genres = [];
+								foreach($Game->genres as $gen_id)
+									{
+										$genres[] = $GenresList[$gen_id]->name;
+									}
+								?>
+								<p>Genre(s): <?= implode(" | ", $genres) ?></p>
+								<?php endif; if (!empty($Game->uids)) : ?>
 								<?php
 								$uids = [];
 									foreach($Game->uids as $item)
