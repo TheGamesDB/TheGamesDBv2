@@ -141,12 +141,6 @@ class HEADER
 			</ul>
 		</div>
 	</nav>
-	<div class="container">
-		<div class="alert alert-success">
-			  <h2 class="alert-heading">IMPORTANT NOTICE!</h2>
-			<a href="https://forums.thegamesdb.net/viewtopic.php?f=5&t=1652"><h3>Please Click Here To Read Latest Annoucement</h3></a>
-		</div>
-	</div>
 	<?php }// endfunction print()
 }
 ?>
