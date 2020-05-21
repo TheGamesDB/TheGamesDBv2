@@ -24,6 +24,7 @@ $fanarts = TGDBUtils::GetAllCovers($PsudoGame, 'fanart', '');
 $screenshots = TGDBUtils::GetAllCovers($PsudoGame, 'screenshot', '');
 $banners = TGDBUtils::GetAllCovers($PsudoGame, 'banner', '');
 $clearlogos = TGDBUtils::GetAllCovers($PsudoGame, 'clearlogo', '');
+$titlescreen = TGDBUtils::GetAllCovers($PsudoGame, 'titlescreen', '');
 $fboxart = TGDBUtils::GetAllCovers($PsudoGame, 'boxart', 'front');
 $bboxart = TGDBUtils::GetAllCovers($PsudoGame, 'boxart', 'back');
 
@@ -176,6 +177,15 @@ $Header->appendRawHeader(function() { global $PsudoGame; ?>
 											<?php endwhile; ?>
 									</div>
 									<?php endif; ?>
+									<?php if(!empty($cover = array_shift($titlescreen))) : ?>
+									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
+										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="titlescreen" data-caption="Title Screen - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Title Screen
+										</a>
+										<?php while($cover = array_shift($titlescreen)) : ?>
+											<a class="fancybox-thumb" style="display:none" data-fancybox="titlescreen" data-caption="Title Screen - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
+											<?php endwhile; ?>
+									</div>
+									<?php endif; ?>
 									<?php if(!empty($cover = array_shift($screenshots))) : ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
 										<a class="btn btn-block btn-info btn-wrap-text fancybox-thumb" data-fancybox="screenshots" data-caption="Screenshot - <a href='/game.php?id=<?= $cover->game_id ?>' target='_black'><?= $Games[$cover->game_id]->game_title ?></a>" href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>" alt=""> Latest Screenshots
@@ -235,6 +245,11 @@ $Header->appendRawHeader(function() { global $PsudoGame; ?>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
 										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=fanart'>
 											Missing Fanarts
+										</a>
+									</div>
+									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
+										<a class="btn btn-block btn-danger btn-wrap-text" href='/missing.php?type=titlescreen'>
+											Missing Title Screen
 										</a>
 									</div>
 									<div class="col-12 col-sm-6" style="margin-bottom:10px;">
