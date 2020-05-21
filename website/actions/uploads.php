@@ -129,9 +129,9 @@ if (get_request_method() == "POST")
 
 	$API = TGDB::getInstance();
 	$covers = $API->GetGameBoxartByID($_REQUEST['game_id'], 0, 30, $_REQUEST['type']);
-	if(!empty($covers) && ($covers = $covers[$_REQUEST['game_id']]) && count($covers) > 5)
+	if(!empty($covers) && ($covers = $covers[$_REQUEST['game_id']]) && count($covers) > 10)
 	{
-		returnJSONAndDie("Max (5) allowed uploaded images has been reached.");
+		returnJSONAndDie("Max (10) allowed uploaded images has been reached.");
 	}
 
 	if($_REQUEST['type'] == 'clearlogo')
@@ -149,7 +149,7 @@ if (get_request_method() == "POST")
 	}
 	if(!isset($image_name))
 	{
-		for($i = 1; $i < 6; ++$i)
+		for($i = 1; $i <= 10; ++$i)
 		{
 			$tmp_name = $_REQUEST['game_id'] . "-$i.$type";
 			if(!file_exists($path . "/" . $tmp_name))

@@ -428,7 +428,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				},
 				validation:
 				{
-					itemLimit: 5,
+					itemLimit: 10,
 					acceptFiles: 'image/*',
 					allowedExtensions: ['jpe', 'jpg', 'jpeg', 'gif', 'png', 'bmp']
 				},
