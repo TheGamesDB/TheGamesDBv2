@@ -52,16 +52,18 @@ if(isset($IDs) && !empty($IDs))
 		}
 	}
 }
+
+$platforms = [];
 if(isset($Platform_IDs) && !empty($Platform_IDs))
 {
 	$platforms = $API->GetPlatforms(array_unique($Platform_IDs), ['name']);
-}
-$icons = $API->GetPlatformBoxartByID($Platform_IDs, 0, 99999, ['icon']);
-foreach($platforms as &$platform)
-{
-	if(isset($icons[$platform->id]))
+	$icons = $API->GetPlatformBoxartByID($Platform_IDs, 0, 99999, ['icon']);
+	foreach($platforms as &$platform)
 	{
-		$platform->boxart = &$icons[$platform->id];
+		if(isset($icons[$platform->id]))
+		{
+			$platform->boxart = &$icons[$platform->id];
+		}
 	}
 }
 unset($platform);
