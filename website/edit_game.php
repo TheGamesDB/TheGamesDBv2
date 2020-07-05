@@ -728,7 +728,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 											<img src="/images/ribbonTitlescreens.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
 										<?php while($cover = array_shift($titlescreens)) : ?>
-											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="screenshots" data-caption="Title Screen"
+											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="titlescreens" data-caption="Title Screen"
 												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 										<?php endwhile; ?>
 									</div>
