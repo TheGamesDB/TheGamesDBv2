@@ -70,7 +70,7 @@ $Header->appendRawHeader(function() { ?>
 					<?php foreach($recent as $game) : ?>
 					<div class="col-6 col-md-2">
 						<a href="/game.php?id=<?= $game->id ?>" style="padding-bottom: 10px;">
-							<img alt="<?= $game->gamr_title?>" class="cover-overlay" src="<?= TGDBUtils::GetCover($game, 'boxart', 'front', true,  true, 'cropped_center_thumb_square') ?>">
+							<img alt="<?= $game->game_title?>" class="cover-overlay" src="<?= TGDBUtils::GetCover($game, 'boxart', 'front', true,  true, 'cropped_center_thumb_square') ?>">
 							<div class="cover-text-col-3 cover-text cover-text-bottom cover-text-hover"><?= $game->game_title ?></div>
 						</a>
 					</div>
@@ -90,7 +90,7 @@ $Header->appendRawHeader(function() { ?>
 				<div class="row" style="padding-bottom:10px">
 					<div class="col-3">
 						<a href="/game.php?id=<?= $game->id ?>">
-							<img alt="<?= $game->gamr_title?>" class="cover-overlay" src="<?= TGDBUtils::GetCover($game, 'boxart', 'front', true, true, 'thumb') ?>">
+							<img alt="<?= $game->game_title?>" class="cover-overlay" src="<?= TGDBUtils::GetCover($game, 'boxart', 'front', true, true, 'thumb') ?>">
 						</a>
 					</div>
 					<div class="col-9">

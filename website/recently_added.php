@@ -53,7 +53,7 @@ $Header->appendRawHeader(function() { ?>
 				<div class="row" style="padding-bottom:10px">
 					<div class="col-3">
 						<a href="/game.php?id=<?= $game->id ?>">
-							<img alt="<?= $game->gamr_title?>" class="cover-overlay" src="<?= TGDBUtils::GetCover($game, 'boxart', 'front', true, true, 'thumb') ?>">
+							<img alt="<?= $game->game_title?>" class="cover-overlay" src="<?= TGDBUtils::GetCover($game, 'boxart', 'front', true, true, 'thumb') ?>">
 						</a>
 					</div>
 					<div class="col-9">
