@@ -7,7 +7,7 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 	$errorPage->SetMSG(ErrorPage::$MSG_MISSING_PARAM_ERROR);
 	$errorPage->print_die();
 }
-require_once __DIR__ . "/include/login.phpbb.class.php";
+require_once __DIR__ . "/include/login.common.class.php";
 $_user = phpBBUser::getInstance();
 if(!$_user->isLoggedIn())
 {

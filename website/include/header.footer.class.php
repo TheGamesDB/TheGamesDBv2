@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . "/../../include/CommonUtils.class.php";
 session_start();
-require_once __DIR__ . "/login.phpbb.class.php";
+require_once __DIR__ . "/login.common.class.php";
 $_user = phpBBUser::getInstance();
 FOOTER::$_time_start = microtime(true);
 

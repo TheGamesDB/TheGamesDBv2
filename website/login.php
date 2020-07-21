@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/include/login.phpbb.class.php";
+require_once __DIR__ . "/include/login.common.class.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $error_msgs = array();

@@ -13,7 +13,7 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 require_once __DIR__ . "/include/ErrorPage.class.php";
 
 
-require_once __DIR__ . "/include/login.phpbb.class.php";
+require_once __DIR__ . "/include/login.common.class.php";
 $_user = phpBBUser::getInstance();
 if(!$_user->isLoggedIn())
 {

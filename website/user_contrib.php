@@ -10,7 +10,7 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/include/login.phpbb.class.php";
+require_once __DIR__ . "/include/login.common.class.php";
 require_once __DIR__ . "/include/PaginationUtils.class.php";
 
 $API = TGDB::getInstance();

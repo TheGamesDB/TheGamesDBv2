@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . "/../website/include/login.phpbb.class.php";
+require_once __DIR__ . "/../website/include/login.common.class.php";
 
 $key = "NA";
 $_user = phpBBUser::getInstance();

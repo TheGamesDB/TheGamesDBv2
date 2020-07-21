@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/../include/ErrorPage.class.php";
-require_once __DIR__ . "/../include/login.phpbb.class.php";
+require_once __DIR__ . "/../include/login.common.class.php";
 
 function returnJSONAndDie($code, $msg, $id = 0)
 {

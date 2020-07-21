@@ -2,7 +2,7 @@
 require_once __DIR__ . "/../../include/TGDB.API.php";
 require_once __DIR__ . "/../include/UploadHandler.fineupload.class.php";
 require_once __DIR__ . "/../include/ErrorPage.class.php";
-require_once __DIR__ . "/../include/login.phpbb.class.php";
+require_once __DIR__ . "/../include/login.common.class.php";
 require_once __DIR__ . "/../include/WebUtils.class.php";
 require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
