@@ -95,7 +95,7 @@ $Fields = ['game_id', 'type', 'subtype'];
 $uploader = new UploadHandler();
 
 $uploader->allowedExtensions = array('jpe', 'jpg', 'jpeg', 'gif', 'png', 'bmp');
-$uploader->sizeLimit = 5 * 1024 *1024;
+$uploader->sizeLimit = WebUtils::$_image_upload_size_limit;
 
 $uploader->inputName = "qqfile";
 
@@ -130,9 +130,9 @@ if (get_request_method() == "POST")
 
 	$API = TGDB::getInstance();
 	$covers = $API->GetGameBoxartByID($_REQUEST['game_id'], 0, 30, $_REQUEST['type']);
-	if(!empty($covers) && ($covers = $covers[$_REQUEST['game_id']]) && count($covers) > 10)
+	if(!empty($covers) && ($covers = $covers[$_REQUEST['game_id']]) && count($covers) > WebUtils::$_image_upload_count_limit)
 	{
-		returnJSONAndDie("Max (10) allowed uploaded images has been reached.");
+		returnJSONAndDie("Max " . WebUtils::$_image_upload_count_limit . ") allowed uploaded images has been reached.");
 	}
 
 	if($_REQUEST['type'] == 'clearlogo')
@@ -150,7 +150,7 @@ if (get_request_method() == "POST")
 	}
 	if(!isset($image_name))
 	{
-		for($i = 1; $i <= 10; ++$i)
+		for($i = 1; $i <= WebUtils::$_image_upload_count_limit; ++$i)
 		{
 			$tmp_name = $_REQUEST['game_id'] . "-$i.$type";
 			if(!file_exists($path . "/" . $tmp_name))

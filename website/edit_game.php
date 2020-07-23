@@ -31,6 +31,7 @@ require_once __DIR__ . "/include/header.footer.class.php";
 require_once __DIR__ . "/include/TGDBUtils.class.php";
 require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
+require_once __DIR__ . "/include/WebUtils.class.php";
 
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
@@ -429,7 +430,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 				},
 				validation:
 				{
-					itemLimit: 10,
+					itemLimit: <?= WebUtils::$_image_upload_count_limit; ?>,
 					acceptFiles: 'image/*',
 					allowedExtensions: ['jpe', 'jpg', 'jpeg', 'gif', 'png', 'bmp']
 				},
