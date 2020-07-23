@@ -3,8 +3,8 @@
 class WebUtils
 {
 
-	public static $_image_upload_count_limit = 10;
-	public static $_image_upload_size_limit = 5 * 1024 *1024;
+	public static $_image_upload_count_limit = 20;
+	public static $_image_upload_size_limit = 18 * 1024 *1024;
 
 	static function truncate($text, $maxlen, $add_leading_trail = false)
 	{
