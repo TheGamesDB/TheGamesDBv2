@@ -127,8 +127,10 @@ class HEADER
 						<?php if($_user->hasPermission('m_delete_games')) : ?>
 						<a class="dropdown-item" href="/add_dev_pub.php">Add Devs/Pubs</a>
 						<a class="dropdown-item" href="/merge_dev_pub.php">Merge Devs/Pubs</a>
-						<a class="dropdown-item" href="/report_review.php">Duplicates Reports</a>
 						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="/add_platform.php">Add Platform</a>
+						<div class="dropdown-divider"></div>
+						<a class="dropdown-item" href="/report_review.php">Duplicates Reports</a>
 						<?php endif; ?>
 						<a class="dropdown-item" href="<?= append_sid("/login.php", 'logout', false, $_user->GetUserSessionID()); ?>">Logout</a>
 					</div>
