@@ -99,6 +99,23 @@ class phpBBUser
 		return $this->user->session_id;
 	}
 
+	function GetNotificationCount()
+	{
+			global $phpbb_container;
+			$phpbb_notifications = $phpbb_container->get('notification_manager');
+
+			$notifications = $phpbb_notifications->load_notifications('notification.method.board', array(
+			'all_unread'	=> true,
+			'limit'			=> 5,
+			));
+			return ($notifications !== false) ? $notifications['unread_count'] : 0;
+	}
+	
+	function GetPMCount()
+	{
+			return $this->user->data['user_unread_privmsg'];
+	}
+
 	function hasPermission($perm)
 	{
 		// we're using permission to post in general forum as a permission to edit covers/platform information

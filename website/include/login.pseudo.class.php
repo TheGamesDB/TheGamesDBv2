@@ -63,6 +63,16 @@ class phpBBUser
         // we're using permission to post in general forum as a permission to edit covers/platform information
         return true;
     }
+
+    function GetNotificationCount()
+    {
+        return 0;
+    }
+    
+    function GetPMCount()
+    {
+        return 0;
+    }
 }
 
 function append_sid($a, $b, $c, $d)

@@ -116,13 +116,15 @@ class HEADER
 				<div class="nav-item mr-0 dropdown">
 					<button class="btn btn-link dropdown-toggle font-weight-bold" style="color:white;" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 						<img width="25px" src="<?= $_user->GetAvatar() ?>" style="border-radius: 50%;">
-						<?= $_user->GetUsername() ?>
+						<?= $_user->GetUsername() ?> <span class="nav-link badge badge-pill badge-<?= ($_user->GetNotificationCount() + $_user->GetPMCount()) == 0 ? 'dark' : 'danger' ?>"> <?= $_user->GetNotificationCount() + $_user->GetPMCount(); ?> </span>
 						<span class="glyphicon glyphicon-star" aria-hidden="true"></span>
 						<span class="caret"></span>
 					</button>
 					<div class="dropdown-menu " aria-labelledby="dropdownMenuButton">
 						<a class="dropdown-item" href="/my_games.php">My Games</a>
 						<a class="dropdown-item" href="https://forums.thegamesdb.net/memberlist.php?mode=viewprofile&u=<?= $_user->GetUserID() ?>">Forum Profile</a>
+						<a class="dropdown-item" href="https://forums.thegamesdb.net/ucp.php?i=ucp_notifications">Notifications <span class="nav-link badge badge-pill badge-<?= $_user->GetNotificationCount() == 0 ? 'dark' : 'danger' ?>"> <?= $_user->GetNotificationCount(); ?> </span></a>
+						<a class="dropdown-item" href="https://forums.thegamesdb.net/ucp.php?i=pm&folder=inbox">Private Msg <span class="nav-link badge badge-pill badge-<?= $_user->GetPMCount() == 0 ? 'dark' : 'danger' ?>"> <?= $_user->GetPMCount(); ?> </span></a>
 						<div class="dropdown-divider"></div>
 						<?php if($_user->hasPermission('m_delete_games')) : ?>
 						<a class="dropdown-item" href="/add_dev_pub.php">Add Devs/Pubs</a>
