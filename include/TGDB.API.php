@@ -3106,6 +3106,17 @@ class TGDB
 		return $sth->execute();
 	}
 
+	function deletePlatformImage($platforms_id, $type)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("DELETE FROM platforms_images WHERE platforms_id=:platforms_id , type=:type;");
+		$sth->bindValue(':platforms_id', $platforms_id, PDO::PARAM_INT);
+		$sth->bindValue(':type', $type, PDO::PARAM_STR);
+
+		return $sth->execute();
+	}
+
 	function InsertPlatform($name, $developer, $manufacturer, $media, $cpu, $memory, $graphics, $sound, $maxcontrollers, $display, $overview, $youtube)
 	{
 		$alias = str_replace(" ", "-", strtolower($name));
@@ -3139,6 +3150,38 @@ class TGDB
 			return $dbh->lastInsertId();
 		}
 		return -1;
+	}
+
+	function updatePlatform($id, $name, $developer, $manufacturer, $media, $cpu, $memory, $graphics, $sound, $maxcontrollers, $display, $overview, $youtube)
+	{
+		$alias = str_replace(" ", "-", strtolower($name));
+		$alias = str_replace(".", "-", $alias);
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare("UPDATE platforms SET name=:name, alias=:alias, developer=:developer, manufacturer=:manufacturer, media=:media, cpu=:cpu, memory=:memory, graphics=:graphics, sound=:sound, maxcontrollers=:maxcontrollers, display=:display, overview=:overview, youtube=:youtube
+		where id=:id;");
+
+		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+		$sth->bindValue(':name', $name, PDO::PARAM_STR);
+		$sth->bindValue(':alias', $alias, PDO::PARAM_STR);
+		// unused
+		// $sth->bindValue(':icon', $icon, PDO::PARAM_STR);
+		// $sth->bindValue(':console', $console, PDO::PARAM_STR);
+		// $sth->bindValue(':controller', $controller, PDO::PARAM_STR);
+		$sth->bindValue(':developer', $developer, PDO::PARAM_STR);
+		$sth->bindValue(':manufacturer', $manufacturer, PDO::PARAM_STR);
+		$sth->bindValue(':media', $media, PDO::PARAM_STR);
+		$sth->bindValue(':cpu', $cpu, PDO::PARAM_STR);
+		$sth->bindValue(':memory', $memory, PDO::PARAM_STR);
+		$sth->bindValue(':graphics', $graphics, PDO::PARAM_STR);
+		$sth->bindValue(':sound', $sound, PDO::PARAM_STR);
+		$sth->bindValue(':maxcontrollers', $maxcontrollers, PDO::PARAM_INT);
+		$sth->bindValue(':display', $display, PDO::PARAM_STR);
+		$sth->bindValue(':overview', $overview, PDO::PARAM_STR);
+		$sth->bindValue(':youtube', $youtube, PDO::PARAM_STR);
+
+
+		return $sth->execute();
 	}
 
 }

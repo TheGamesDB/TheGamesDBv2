@@ -142,6 +142,8 @@ $Header->appendRawHeader(function()
 								<p>Sound: <?= $Platform->sound ;?></p>
 								<?php endif; if(!empty($Platform->display)) : ?>
 								<p>Display: <?= $Platform->display ;?></p>
+								<?php endif; if(!empty($Platform->maxcontrollers)) : ?>
+								<p>Max Controllers: <?= $Platform->maxcontrollers ;?></p>
 								<?php endif; if(!empty($Platform->youtube)) : ?>
 								<p><a data-fancybox data-caption="Trailer" href="http://youtube.com/watch?v=<?= $Platform->youtube;?>">Watch Trailer</a>
 								</p>
