@@ -14,6 +14,8 @@ require_once __DIR__ . "/../include/TGDB.API.php";
 require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
+$_user = phpBBuser::getInstance();
+
 $fields = array("id" => true, "name" => true, "alias" => true, "icon" => true, "console" => true, "controller" => true, "developer" => true, "manufacturer" => true, "media" => true, "cpu" => true, "memory" => true, "graphics" => true, "sound" => true, "maxcontrollers" => true, "display" => true, "overview" => true, "youtube" => true);
 $Platform = $API->GetPlatforms($_REQUEST['id'], $fields);
 if(isset($Platform[$_REQUEST['id']]))
@@ -205,6 +207,23 @@ $Header->appendRawHeader(function()
 				</div>
 				<?php endif; ?>
 			</div>
+
+			<?php if($_user->isLoggedIn() && $_user->hasPermission('m_delete_games')) : ?>
+			<div class="col-12 col-md-3 col-lg-2" style="padding-bottom:10px; text-align: center;">
+				<div class="row">
+					<div class="col">
+						<div class="card border-primary">
+							<div class="card-header">
+								<legend>Control Panel</legend>
+							</div>
+							<div class="card-body">
+							<p><a href="/edit_platform.php?id=<?= $Platform->id ?>" class="btn btn-primary btn-block">Edit</a></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<?php endif; ?>
 
 		</div>
 
