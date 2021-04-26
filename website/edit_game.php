@@ -113,7 +113,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 
 	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
 	<script type="text/javascript" src="/js/fancybox.config.js"></script>
-	<script type="text/javascript" src="https://unpkg.com/select-pure@latest/dist/bundle.min.js"></script>
+	<script type="text/javascript" src="https://unpkg.com/select-pure@0.6.2/dist/bundle.min.js"></script>
 
 	<script type="text/javascript">
 		function isJSON(json)
