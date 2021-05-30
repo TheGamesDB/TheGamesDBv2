@@ -1465,7 +1465,7 @@ class TGDB
 	function GetGenres()
 	{
 		$dbh = $this->database->dbh;
-		$sth = $dbh->prepare("SELECT id as n, id, genre as name FROM genres");
+		$sth = $dbh->prepare("SELECT id as n, id, genre as name FROM genres order by name");
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
