@@ -3110,7 +3110,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("DELETE FROM platforms_images WHERE platforms_id=:platforms_id , type=:type;");
+		$sth = $dbh->prepare("DELETE FROM platforms_images WHERE platforms_id=:platforms_id and type=:type;");
 		$sth->bindValue(':platforms_id', $platforms_id, PDO::PARAM_INT);
 		$sth->bindValue(':type', $type, PDO::PARAM_STR);
 
