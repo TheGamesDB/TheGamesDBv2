@@ -43,6 +43,8 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 	$ESRBRating = $API->GetESRBRating();
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	$PlatformList = $API->GetPlatformsList();
+	$RegionList = $API->GetRegionsList();
+	$CountryList = $API->GetCountriesList();
 
 	if(empty($list))
 	{
@@ -599,6 +601,20 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<?php else: ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Current_Platform->id?>"><?= $Current_Platform->name; ?></a></p>
 								<?php endif; ?>
+								<p>Region*: <select name="region_id" style="width:100%">
+										<option value="" selected disabled hidden>Select Region</option>
+										<?php foreach($RegionList as $region) : ?>
+										<option value="<?= $region->id ?>"><?= $region->name ?></option>
+										<?php endforeach; ?>
+									</select>
+								</p>
+								<p>Country: <select name="country_id" style="width:100%">
+										<option value="" selected disabled hidden>Select Country</option>
+										<?php foreach($CountryList as $country) : ?>
+										<option value="<?= $country->id ?>"><?= $country->name ?></option>
+										<?php endforeach; ?>
+									</select>
+								</p>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="<?= $Game->release_date ;?>"></p>
 								<p>Players:<br/> <input type="number" name="players"  value="<?= $Game->players; ?>" min="1" max="100"></p>
 								</p>

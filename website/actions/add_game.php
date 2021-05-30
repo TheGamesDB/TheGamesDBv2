@@ -22,14 +22,15 @@ else
 }
 
 
-$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developers', 'publishers', 'platform', 'youtube', 'genres', 'rating'];
+$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developers', 'publishers', 'platform', 'youtube', 'genres', 'rating', 'region_id', 'country_id'];
+$OptionalFields = ['youtube', 'overview', 'country_id'];
 foreach($GameArrayFields as $field)
 {
 	if(!isset($_REQUEST[$field]))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
 	}
-	else if(empty($_REQUEST[$field]) && ($field != 'youtube' && $field != 'overview'))
+	else if(empty($_REQUEST[$field]) && !in_array($field, $OptionalFields))
 	{
 		returnJSONAndDie(-1, "field is empty: ($field).");
 	}

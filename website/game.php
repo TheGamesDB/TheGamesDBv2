@@ -19,7 +19,8 @@ $API = TGDB::getInstance();
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "uids" => true);
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "uids" => true,
+		"region_id" => true, "country_id" => true);
 	$list = $API->GetGameByID($_REQUEST['id'], 0, 1, $options);
 	if(empty($list))
 	{
@@ -45,6 +46,14 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 	if(isset($Platform[$Game->platform]))
 	{
 		$Platform = $Platform[$Game->platform];
+	}
+	if($Game->region_id > 0)
+	{
+		$region = $API->GetGameRegion($Game->region_id);
+	}
+	if($Game->country_id > 0)
+	{
+		$country = $API->GetGameCountry($Game->country_id);
 	}
 }
 
@@ -260,7 +269,12 @@ $Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
 							<div class="card-body">
 								<?php if (!empty($Platform)) : ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Platform->id?>"><?= $Platform->name; ?></a></p>
-								<?php endif; if (!empty($Game->developers) && !empty($DevsList)) : ?>
+								<?php endif; ?>
+								<p>Region: <?= isset($region) ? $region->name : "Region Not Set" ?></p>
+								<?php if(isset($country)) : ?>
+								<p>Country: <?= $country->name; ?></a></p>
+								<?php endif; ?>
+								<?php if (!empty($Game->developers) && !empty($DevsList)) : ?>
 								<p>Developer(s): <?php $last_key = end(array_keys($DevsList)); foreach($DevsList as $key => $Dev) : ?>
 								<a href="list_games.php?dev_id=<?= $Dev->id ?>"><?= $Dev->name ?></a><?= ($key != $last_key) ? " | " : "" ?>
 								<?php endforeach; ?></p>

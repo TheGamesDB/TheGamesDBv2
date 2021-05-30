@@ -21,7 +21,8 @@ else
 	}
 }
 
-$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developers', 'publishers', 'youtube', 'genres', 'rating'];
+$GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop', 'developers', 'publishers', 'youtube', 'genres', 'rating', 'region_id', 'country_id'];
+$OptionalFields = ['youtube', 'overview', 'country_id'];
 if(!isset($_REQUEST['game_id']) || !is_numeric($_REQUEST['game_id']))
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR);
@@ -34,7 +35,7 @@ else
 		{
 			returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
 		}
-		else if(empty($_REQUEST[$field]) && ($field != 'youtube' && $field != 'overview'))
+		else if(empty($_REQUEST[$field]) && !in_array($field, $OptionalFields))
 		{
 			returnJSONAndDie(-1, "field is empty: ($field).");
 		}
@@ -56,7 +57,7 @@ require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 try
 {
-	$filters = ['game_title' => true, 'overview' => true, 'platform' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "uids" => true];
+	$filters = ['game_title' => true, 'overview' => true, 'platform' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "uids" => true, "region_id" => true, 'country_id' => true];
 	$API = TGDB::getInstance();
 	$old_game_data = $API->GetGameByID($_REQUEST['game_id'], 0, 1, $filters)[0];
 

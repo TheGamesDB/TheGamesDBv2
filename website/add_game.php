@@ -28,6 +28,8 @@ require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList();
+$RegionList = $API->GetRegionsList();
+$CountryList = $API->GetCountriesList();
 $GenreList = $API->GetGenres();
 $ESRBRating = $API->GetESRBRating();
 $devs_list = $API->GetDevsList();
@@ -299,6 +301,20 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 										<option value="" selected disabled hidden>Select Platform</option>
 										<?php foreach($PlatformList as $Platform) : ?>
 										<option value="<?= $Platform->id ?>"><?= $Platform->name ?></option>
+										<?php endforeach; ?>
+									</select>
+								</p>
+								<p>Region*: <select name="region_id" style="width:100%">
+										<option value="" selected disabled hidden>Select Region</option>
+										<?php foreach($RegionList as $region) : ?>
+										<option value="<?= $region->id ?>"><?= $region->name ?></option>
+										<?php endforeach; ?>
+									</select>
+								</p>
+								<p>Country: <select name="country_id" style="width:100%">
+										<option value="" selected disabled hidden>Select Country</option>
+										<?php foreach($CountryList as $country) : ?>
+										<option value="<?= $country->id ?>"><?= $country->name ?></option>
 										<?php endforeach; ?>
 									</select>
 								</p>

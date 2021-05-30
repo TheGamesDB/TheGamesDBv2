@@ -3184,6 +3184,60 @@ class TGDB
 		return $sth->execute();
 	}
 
+	function GetRegionsList()
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select id as n, id, name FROM regions;");
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetGameRegion($id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select id, name FROM regions where id=:id;");
+		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetch(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetCountriesList()
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select id as n, id, name FROM countries order by name;");
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
+	function GetGameCountry($id)
+	{
+		$dbh = $this->database->dbh;
+
+		$sth = $dbh->prepare("Select id, name FROM countries where id=:id;");
+		$sth->bindValue(':id', $id, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetch(PDO::FETCH_OBJ | PDO::FETCH_GROUP | PDO::FETCH_UNIQUE);
+			return $res;
+		}
+	}
+
 }
 
 ?>
