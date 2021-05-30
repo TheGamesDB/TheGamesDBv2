@@ -89,8 +89,8 @@ try
 			'icon' => ["path" => "/consoles/png48/", "type" => "png", "width" => 48, "height" => 48],
 			'boxart'=> ["path" => "/platform/boxart/", "type" => "jpg", "width" => 0, "height" => 0]
 		];
-		$tmp_path = __DIR__ . "/../../cdn/images/tmp/original/console/";
-		$org_path = __DIR__ . "/../../cdn/images/original/console/";
+		$tmp_path = __DIR__ . "/../../cdn/images/tmp/original";
+		$org_path = __DIR__ . "/../../cdn/images/original";
 		foreach(['icon', 'boxart'] as $type)
 		{
 			if(!file_exists($tmp_path . $PATHS[$type]['path']))
