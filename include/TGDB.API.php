@@ -83,7 +83,7 @@ class TGDB
 
 	function GetGameListByPlatform($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -169,7 +169,7 @@ class TGDB
 			return array();
 		}
 
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -212,7 +212,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -271,7 +271,7 @@ class TGDB
 			}
 		}
 
-		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform, games.region_id, games.country_id ";
 
 		if(!empty($fields))
 		{
@@ -371,7 +371,7 @@ class TGDB
 			}
 		}
 
-		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform, games.region_id, games.country_id ";
 
 		if(!empty($fields))
 		{
@@ -461,7 +461,7 @@ class TGDB
 			$PlatformIDs = $IDs;
 		}
 
-		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform, games.region_id, games.country_id ";
 
 		if(!empty($fields))
 		{
@@ -559,7 +559,7 @@ class TGDB
 			$PlatformIDs = $IDs;
 		}
 
-		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform, games.region_id, games.country_id ";
 
 		if(!empty($fields))
 		{
@@ -693,7 +693,7 @@ class TGDB
 				return array();
 			}
 		}
-		$qry = "Select games.id, games.game_title, games.release_date, games.platform";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform, games.region_id, games.country_id ";
 
 		if(!empty($fields))
 		{
@@ -790,7 +790,7 @@ class TGDB
 				return array();
 			}
 		}
-		$qry = "Select games.id, games.game_title, games.release_date, games.platform";
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform, games.region_id, games.country_id ";
 
 		if(!empty($fields))
 		{
@@ -840,7 +840,7 @@ class TGDB
 
 	function GetGamesByDateByPlatform($IDs, $date, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id";
 
 		if(!empty($fields))
 		{
@@ -913,7 +913,7 @@ class TGDB
 
 	function GetAllGames($offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -958,7 +958,7 @@ class TGDB
 
 	function GetGamesByLatestUpdatedDate($minutes, $offset = 0, $limit = 20, $fields = array())
 	{
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -995,7 +995,7 @@ class TGDB
 
 	function GetGamesByDevID($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -1061,7 +1061,7 @@ class TGDB
 
 	function GetGamesByPubID($IDs = 0, $offset = 0, $limit = 20, $fields = array(), $OrderBy = '', $ASCDESC = 'ASC')
 	{
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -1147,7 +1147,7 @@ class TGDB
 			$valid_platform_ids = $platform_ids;
 		}
 
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -1227,7 +1227,7 @@ class TGDB
 		{
 			$valid_platform_ids = $platform_ids;
 		}
-		$qry = "Select id, game_title, release_date, platform ";
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
 
 		if(!empty($fields))
 		{
@@ -2178,7 +2178,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform, G.region_id, G.country_id FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id ORDER BY UG.added DESC");
 		$sth->bindValue(':users_id', $users_id);
 
 		if($sth->execute())
@@ -2192,7 +2192,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G
+		$sth = $dbh->prepare("Select G.platform, G.id, G.game_title, G.release_date, G.platform, G.region_id, G.country_id FROM `user_games` UG, `games` G
 		where UG.users_id=:users_id AND UG.is_booked=1 AND G.platform = :platform_id AND G.id = UG.games_id ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
 		
 		$sth->bindValue(':users_id', $users_id);
@@ -2212,7 +2212,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
-		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date, G.platform FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id  ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
+		$sth = $dbh->prepare("Select G.id, G.game_title, G.release_date, G.platform, G.region_id, G.country_id FROM `user_games` UG, `games` G where UG.users_id=:users_id AND UG.is_booked=1 AND G.id = UG.games_id  ORDER BY UG.added DESC LIMIT :limit OFFSET :offset");
 		$sth->bindValue(':users_id', $users_id);
 
 		$sth->bindValue(':offset', $offset);
