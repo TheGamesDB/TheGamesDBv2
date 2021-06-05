@@ -245,6 +245,201 @@ class TGDB
 		}
 	}
 
+	function SearchGamesByNameFilter($game_title, $filters, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		if(!empty($filters))
+		{
+			$filters = array_filter($filters, function($key) {
+				return in_array($key, ['platform', 'region_id', 'country_id']);
+			}, ARRAY_FILTER_USE_KEY);
+
+			foreach($filters as $key => $filter)
+			{
+				if(is_array($filter))
+				{
+					$tmp = array();
+					if(!empty($filter))
+					{
+						foreach($filter as $key => $val)
+							if(is_numeric($val))
+								$tmp[] = $val;
+					}
+					$filters[$key] = implode(",", $tmp);
+				}
+			}
+		}
+
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", games.$key ";
+				}
+			}
+		}
+		$qry .= " FROM games,
+		(
+			SELECT games_names_merged.id, @rank := @rank + 1 AS rank FROM
+			(
+				(
+					SELECT games_id as id, name as game_title, SOUNDEX from games_alts
+					WHERE name LIKE :name OR name=:name2 OR SOUNDEX LIKE soundex(:name3) OR SOUNDEX LIKE soundex(:name4)
+				)
+				UNION
+				(
+					SELECT id, game_title, SOUNDEX from games
+					WHERE game_title LIKE :name_2 OR game_title=:name_2_2 OR SOUNDEX LIKE soundex(:name_2_3) OR SOUNDEX LIKE soundex(:name_2_4)
+				)
+			) games_names_merged, (SELECT @rank := 0) t1
+			ORDER BY CASE
+			WHEN game_title like :name_3_2 THEN 0
+			WHEN game_title like :name_3_3 THEN 1
+			WHEN game_title like :name_3_4 THEN 2
+			WHEN game_title like :name_3 THEN 3
+			ELSE 4
+			END, game_title
+		) games_ordered where games.id = games_ordered.id ";
+
+		foreach($filters as $key => $filter)
+		{
+			$qry .= " AND games.$key IN ($filter) ";
+		}
+
+		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$searchTerm = htmlspecialchars($game_title);
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+
+		$sth->bindValue(':name_2', "%$searchTerm%");
+		$sth->bindValue(':name_2_2', $searchTerm);
+		$sth->bindValue(':name_2_3', "$searchTerm%");
+		$sth->bindValue(':name_2_4', "% %$searchTerm% %");
+
+		$sth->bindValue(':name_3', "%$searchTerm");
+		$sth->bindValue(':name_3_2', $searchTerm);
+		$sth->bindValue(':name_3_3', "$searchTerm%");
+		$sth->bindValue(':name_3_4', "% %$searchTerm% %");
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
+	function SearchGamesByNameFilter_Natural($game_title, $filters, $offset = 0, $limit = 20, $fields = array())
+	{
+		$dbh = $this->database->dbh;
+
+		if(!empty($filters))
+		{
+			$filters = array_filter($filters, function($key) {
+				return in_array($key, ['platform', 'region_id', 'country_id']);
+			}, ARRAY_FILTER_USE_KEY);
+
+			foreach($filters as $key => $filter)
+			{
+				if(is_array($filter))
+				{
+					$tmp = array();
+					if(!empty($filter))
+					{
+						foreach($filter as $key => $val)
+							if(is_numeric($val))
+								$tmp[] = $val;
+					}
+					$filters[$key] = implode(",", $tmp);
+				}
+			}
+		}
+
+		$qry = "Select games.id, games.game_title, games.release_date, games.platform ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", games.$key ";
+				}
+			}
+		}
+		$qry .= " FROM games,
+		(
+			SELECT games_names_merged.id, games_names_merged.score, @rank := @rank + 1 AS rank FROM
+			(
+				(
+					SELECT games_id as id, name as game_title, MATCH (name) AGAINST (:name IN NATURAL LANGUAGE MODE) as score from games_alts
+					WHERE  MATCH (name) AGAINST (:name2 IN NATURAL LANGUAGE MODE) > 0
+				)
+				UNION
+				(
+					SELECT id, game_title, MATCH (game_title) AGAINST (:name3 IN NATURAL LANGUAGE MODE) as score from games
+					WHERE MATCH (game_title) AGAINST (:name4 IN NATURAL LANGUAGE MODE) > 0
+				)
+			) games_names_merged, (SELECT @rank := 0) t1
+			ORDER BY CASE
+				WHEN game_title like :name_3 THEN 0
+				WHEN game_title like :name_3_1 THEN 1
+				WHEN game_title like :name_3_2 THEN 2
+				WHEN game_title like :name_3_3 THEN 3
+				ELSE 4
+				END, game_title
+		) games_ordered where games.id = games_ordered.id ";
+
+		foreach($filters as $key => $filter)
+		{
+			$qry .= " AND games.$key IN ($filter) ";
+		}
+
+		$qry .= "GROUP BY games.id ORDER BY MIN(games_ordered.rank) LIMIT :limit OFFSET :offset";
+
+		$sth = $dbh->prepare($qry);
+
+		$searchTerm = htmlspecialchars($game_title);
+		$sth->bindValue(':name', "%$searchTerm%");
+		$sth->bindValue(':name2', $searchTerm);
+		$sth->bindValue(':name3', "$searchTerm%");
+		$sth->bindValue(':name4', "% %$searchTerm% %");
+
+		$sth->bindValue(':name_3', $searchTerm);
+		$sth->bindValue(':name_3_1', "$searchTerm%");
+		$sth->bindValue(':name_3_2', "% %$searchTerm% %");
+		$sth->bindValue(':name_3_3', "%$searchTerm");
+
+		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
+		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			if(!empty($res))
+			{
+				$this->PopulateOtherData($res, $fields);
+			}
+			return $res;
+		}
+	}
+
 	function SearchGamesByNameByPlatformID($game_title, $IDs, $offset = 0, $limit = 20, $fields = array())
 	{
 		$dbh = $this->database->dbh;
@@ -2657,7 +2852,7 @@ class TGDB
 		return true;
 	}
 
-	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names, $uids, $platform)
+	function UpdateGame($user_id, $game_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $new_genres, $ratings, $alternate_names, $uids, $platform, $region_id, $country_id)
 	{
 		$dbh = $this->database->dbh;
 		{
@@ -2725,7 +2920,7 @@ class TGDB
 			$dbh->beginTransaction();
 
 			$sth = $dbh->prepare("UPDATE games SET game_title=:game_title, overview=:overview, release_date=:release_date, players=:players,
-			coop=:coop, youtube=:YouTube, rating=:rating, platform=:platform WHERE id=:game_id");
+			coop=:coop, youtube=:YouTube, rating=:rating, platform=:platform, region_id=:region_id, country_id=:country_id WHERE id=:game_id");
 			$sth->bindValue(':game_id', $game_id, PDO::PARAM_INT);
 			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
 			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
@@ -2735,6 +2930,9 @@ class TGDB
 			$sth->bindValue(':coop', $coop, PDO::PARAM_INT);
 			$sth->bindValue(':rating', $rating, PDO::PARAM_STR);
 			$sth->bindValue(':platform', $platform, PDO::PARAM_INT);
+
+			$sth->bindValue(':region_id', $region_id, PDO::PARAM_INT);
+			$sth->bindValue(':country_id', $country_id, PDO::PARAM_INT);
 
 			$sth->execute();
 			{
@@ -2853,7 +3051,7 @@ class TGDB
 		return $dbh->commit();
 	}
 
-	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names, $uids)
+	function InsertGame($user_id, $game_title, $overview, $youtube, $release_date, $players, $coop, $new_developers, $new_publishers, $platform, $new_genres, $ratings, $alternate_names, $uids, $region_id, $country_id)
 	{
 		$game_id = 0;
 		$dbh = $this->database->dbh;
@@ -2891,8 +3089,8 @@ class TGDB
 					$valid_pubs_id[] = $pubs_list[$pub_id]->name;
 				}
 			}
-			$sth = $dbh->prepare("INSERT INTO games(game_title, overview, release_date, players, coop, youtube, platform, rating)
-			values (:game_title, :overview, :release_date, :players, :coop, :youtube, :platform, :rating)");
+			$sth = $dbh->prepare("INSERT INTO games(game_title, overview, release_date, players, coop, youtube, platform, rating, region_id, country_id)
+			values (:game_title, :overview, :release_date, :players, :coop, :youtube, :platform, :rating, :region_id, :country_id)");
 			$sth->bindValue(':game_title', htmlspecialchars($game_title), PDO::PARAM_STR);
 			$sth->bindValue(':overview', htmlspecialchars($overview), PDO::PARAM_STR);
 			$sth->bindValue(':release_date', $release_date, PDO::PARAM_STR);
@@ -2902,13 +3100,16 @@ class TGDB
 			$sth->bindValue(':platform', $platform, PDO::PARAM_INT);
 			$sth->bindValue(':rating', $rating, PDO::PARAM_STR);
 
+			$sth->bindValue(':region_id', $region_id, PDO::PARAM_INT);
+			$sth->bindValue(':country_id', $country_id, PDO::PARAM_INT);
+
 			if($sth->execute())
 			{
 				$game_id = $dbh->lastInsertId();
 				$dbh->beginTransaction();
 				$this->InsertUserEdits($user_id, $game_id, 'game', '[NEW]');
 
-				$GameArrayFields = ['platform', 'game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'rating'];
+				$GameArrayFields = ['platform', 'game_title', 'overview', 'release_date', 'players', 'coop', 'youtube', 'rating', 'region_id', 'country_id'];
 				foreach($GameArrayFields as $key)
 				{
 					$diff = htmlspecialchars($$key);

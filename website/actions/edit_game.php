@@ -31,7 +31,7 @@ else
 {
 	foreach($GameArrayFields as $field)
 	{
-		if(!isset($_REQUEST[$field]))
+		if(!isset($_REQUEST[$field]) && !in_array($field, $OptionalFields))
 		{
 			returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
 		}
@@ -102,7 +102,8 @@ try
 
 	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['genres'], $_REQUEST['rating'],  $_REQUEST['alternate_names'],
-		$_REQUEST['uids'], $_REQUEST['platform']);
+		$_REQUEST['uids'], $_REQUEST['platform'], $_REQUEST['region_id'], $_REQUEST['country_id']);
+
 
 	if($res)
 	{

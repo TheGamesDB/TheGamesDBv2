@@ -26,7 +26,7 @@ $GameArrayFields = ['game_title', 'overview', 'release_date', 'players', 'coop',
 $OptionalFields = ['youtube', 'overview', 'country_id'];
 foreach($GameArrayFields as $field)
 {
-	if(!isset($_REQUEST[$field]))
+	if(!isset($_REQUEST[$field]) && !in_array($field, $OptionalFields))
 	{
 		returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
 	}
@@ -91,7 +91,7 @@ try
 
 	$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
 		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['platform'], $_REQUEST['genres'], $_REQUEST['rating'],
-		$_REQUEST['alternate_names'], $_REQUEST['uids']);
+		$_REQUEST['alternate_names'], $_REQUEST['uids'], $_REQUEST['region_id'], $_REQUEST['country_id']);
 
 	if($res)
 	{
