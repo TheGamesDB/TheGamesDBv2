@@ -37,7 +37,7 @@ require_once __DIR__ . "/include/WebUtils.class.php";
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
 	$options = array("release_date" => true, "overview" => true, "players" => true, "rating" => true, "ESRB" => true, "boxart" => true, "coop" => true,
-		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "uids" => true);
+		"genres" => true, "publishers" => true, "platform" => true, "youtube" => true, "alternates" => true, "uids" => true, "region_id" => true, "country_id" => true);
 	$API = TGDB::getInstance();
 	$GenreList = $API->GetGenres();
 	$ESRBRating = $API->GetESRBRating();
@@ -602,16 +602,16 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<p>Platform: <a href="/platform.php?id=<?= $Current_Platform->id?>"><?= $Current_Platform->name; ?></a></p>
 								<?php endif; ?>
 								<p>Region*: <select name="region_id" style="width:100%">
-										<option value="" selected disabled hidden>Select Region</option>
+										<option <?= $Game->region_id == 0 ? 'selected' : '' ?> value="" selected disabled hidden>Select Region</option>
 										<?php foreach($RegionList as $region) : ?>
-										<option value="<?= $region->id ?>"><?= $region->name ?></option>
+										<option <?= $Game->region_id == $region->id ? 'selected' : '' ?> value="<?= $region->id ?>"><?= $region->name ?></option>
 										<?php endforeach; ?>
 									</select>
 								</p>
 								<p>Country: <select name="country_id" style="width:100%">
-										<option value="0">No Country</option>
+										<option <?= $Game->country_id == 0 ? 'selected' : '' ?> value="0">No Country</option>
 										<?php foreach($CountryList as $country) : ?>
-										<option value="<?= $country->id ?>"><?= $country->name ?></option>
+										<option <?= $Game->country_id == $country->id ? 'selected' : '' ?> value="<?= $country->id ?>"><?= $country->name ?></option>
 										<?php endforeach; ?>
 									</select>
 								</p>
