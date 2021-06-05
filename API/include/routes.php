@@ -659,6 +659,36 @@ $app->group('/v1', function()
 			return $response->withJson($JSON_Response);
 		});
 	});
+
+	$this->group('/Regions', function()
+	{
+		$this->get('', function($request, $response, $args)
+		{
+			$this->logger->info("TGDB '/Regions' route");
+			$API = TGDB::getInstance();
+			$list = $API->GetRegionsList();
+
+			CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
+			$JSON_Response = Utils::getStatus(200);
+			$JSON_Response['data'] = array("count" => count($list), "regions" => $list);
+			return $response->withJson($JSON_Response);
+		});
+	});
+
+	$this->group('/Countries', function()
+	{
+		$this->get('', function($request, $response, $args)
+		{
+			$this->logger->info("TGDB '/Countries' route");
+			$API = TGDB::getInstance();
+			$list = $API->GetCountriesList();
+
+			CommonUtils::htmlspecialchars_decodeArrayRecursive($list);
+			$JSON_Response = Utils::getStatus(200);
+			$JSON_Response['data'] = array("count" => count($list), "countries" => $list);
+			return $response->withJson($JSON_Response);
+		});
+	});
 })->add(new AuthMiddleware());
 
 $app->get('/v1/API/Limit', function($request, $response, $args)
