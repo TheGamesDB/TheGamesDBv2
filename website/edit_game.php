@@ -609,7 +609,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 									</select>
 								</p>
 								<p>Country: <select name="country_id" style="width:100%">
-										<option value="" selected disabled hidden>Select Country</option>
+										<option value="0">No Country</option>
 										<?php foreach($CountryList as $country) : ?>
 										<option value="<?= $country->id ?>"><?= $country->name ?></option>
 										<?php endforeach; ?>
