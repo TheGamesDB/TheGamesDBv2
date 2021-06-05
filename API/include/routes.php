@@ -39,30 +39,19 @@ $app->group('/v1.1/Games', function()
 		$options = Utils::parseRequestOptions();
 		$fields = Utils::parseRequestedFields();
 		$natural_search = isset($_REQUEST['mode']) && $_REQUEST['mode'] = "natural";
+		$filter_search = isset($_REQUEST['filter']) ? $_REQUEST['filter'] : [];
 
 		$API = TGDB::getInstance();
-		if(isset($_REQUEST['filter']['platform']))
+
+		if($natural_search)
 		{
-			if($natural_search)
-			{
-				$list = $API->SearchGamesByNameFilter_Natural($searchTerm, $_REQUEST['filter'], $offset, $limit + 1, $fields);
-			}
-			else
-			{
-				$list = $API->SearchGamesByNameFilter($searchTerm, $_REQUEST['filter'], $offset, $limit + 1, $fields);
-			}
+			$list = $API->SearchGamesByNameFilter_Natural($searchTerm, $filter_search, $offset, $limit + 1, $fields);
 		}
 		else
 		{
-			if($natural_search)
-			{
-				$list = $API->SearchGamesByNameFilter_Natural($searchTerm, [], $offset, $limit+1, $fields);
-			}
-			else
-			{
-				$list = $API->SearchGamesByNameFilter($searchTerm, [], $offset, $limit+1, $fields);
-			}
+			$list = $API->SearchGamesByNameFilter($searchTerm, $filter_search, $offset, $limit + 1, $fields);
 		}
+
 
 		if($has_next_page = count($list) > $limit)
 			unset($list[$limit]);
@@ -126,29 +115,17 @@ $app->group('/v1', function()
 			$options = Utils::parseRequestOptions();
 			$fields = Utils::parseRequestedFields();
 			$natural_search = isset($_REQUEST['mode']) && $_REQUEST['mode'] = "natural";
+			$filter_search = isset($_REQUEST['filter']) ? $_REQUEST['filter'] : [];
 
 			$API = TGDB::getInstance();
-			if(isset($_REQUEST['filter']))
+
+			if($natural_search)
 			{
-				if($natural_search)
-				{
-					$list = $API->SearchGamesByNameFilter_Natural($searchTerm, $_REQUEST['filter'], $offset, $limit + 1, $fields);
-				}
-				else
-				{
-					$list = $API->SearchGamesByNameFilter($searchTerm, $_REQUEST['filter'], $offset, $limit + 1, $fields);
-				}
+				$list = $API->SearchGamesByNameFilter_Natural($searchTerm, $filter_search, $offset, $limit + 1, $fields);
 			}
 			else
 			{
-				if($natural_search)
-				{
-					$list = $API->SearchGamesByNameFilter_Natural($searchTerm, [], $offset, $limit+1, $fields);
-				}
-				else
-				{
-					$list = $API->SearchGamesByNameFilter($searchTerm, [], $offset, $limit+1, $fields);
-				}
+				$list = $API->SearchGamesByNameFilter($searchTerm, $filter_search, $offset, $limit + 1, $fields);
 			}
 
 			if($has_next_page = count($list) > $limit)
