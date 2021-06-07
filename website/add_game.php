@@ -47,7 +47,7 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 
 	<script type="text/javascript" defer src="/js/brands.5.0.10.js" crossorigin="anonymous"></script>
 	<script type="text/javascript" defer src="/js/fontawesome.5.0.10.js" crossorigin="anonymous"></script>
-	<script type="text/javascript" src="https://unpkg.com/select-pure@0.6.2/dist/bundle.min.js"></script>
+	<script type="text/javascript" src="/js/bundle.min.js"></script>
 
 
 	<script type="text/javascript">
