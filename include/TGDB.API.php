@@ -249,6 +249,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
+		$qry_filters = [];
 		if(!empty($filters))
 		{
 			$filters = array_filter($filters, function($key) {
@@ -266,7 +267,7 @@ class TGDB
 							if(is_numeric($val))
 								$tmp[] = $val;
 					}
-					$filters[$key] = implode(",", $tmp);
+					$qry_filters[$key] = implode(",", $tmp);
 				}
 			}
 		}
@@ -306,7 +307,7 @@ class TGDB
 			END, game_title
 		) games_ordered where games.id = games_ordered.id ";
 
-		foreach($filters as $key => $filter)
+		foreach($qry_filters as $key => $filter)
 		{
 			$qry .= " AND games.$key IN ($filter) ";
 		}
@@ -349,6 +350,7 @@ class TGDB
 	{
 		$dbh = $this->database->dbh;
 
+		$qry_filters = [];
 		if(!empty($filters))
 		{
 			$filters = array_filter($filters, function($key) {
@@ -366,7 +368,7 @@ class TGDB
 							if(is_numeric($val))
 								$tmp[] = $val;
 					}
-					$filters[$key] = implode(",", $tmp);
+					$qry_filters[$key] = implode(",", $tmp);
 				}
 			}
 		}
@@ -406,7 +408,7 @@ class TGDB
 				END, game_title
 		) games_ordered where games.id = games_ordered.id ";
 
-		foreach($filters as $key => $filter)
+		foreach($qry_filters as $key => $filter)
 		{
 			$qry .= " AND games.$key IN ($filter) ";
 		}
