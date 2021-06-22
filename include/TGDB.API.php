@@ -263,11 +263,15 @@ class TGDB
 					$tmp = array();
 					if(!empty($filter))
 					{
-						foreach($filter as $key => $val)
+						foreach($filter as $key1 => $val)
 							if(is_numeric($val))
 								$tmp[] = $val;
 					}
 					$qry_filters[$key] = implode(",", $tmp);
+				}
+				else if(!empty($filter))
+				{
+					$qry_filters[$key] = $filter;
 				}
 			}
 		}
@@ -364,11 +368,15 @@ class TGDB
 					$tmp = array();
 					if(!empty($filter))
 					{
-						foreach($filter as $key => $val)
+						foreach($filter as $key1 => $val)
 							if(is_numeric($val))
 								$tmp[] = $val;
 					}
 					$qry_filters[$key] = implode(",", $tmp);
+				}
+				else if(!empty($filter))
+				{
+					$qry_filters[$key] = $filter;
 				}
 			}
 		}
