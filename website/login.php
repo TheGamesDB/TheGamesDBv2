@@ -57,7 +57,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 			}
 			else
 			{
-				$error_msgs[] = $res['error_msgs_str'];
+				$error_msgs[] = $res['error_msg_str'];
 			}
 		}
 		else
