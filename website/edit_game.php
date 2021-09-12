@@ -782,7 +782,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 											<img class="rounded img-thumbnail img-fluid" src="<?= $cover->thumbnail ?>"/>
 											<img src="/images/ribbonClearlogos.png" style="position: absolute; left: 15px; top: 0; height: 80%; z-index: 10"/>
 										</a>
-										<?php while($cover = array_shift($banners)) : ?>
+										<?php while($cover = array_shift($clearlogos)) : ?>
 											<a class="fancybox-thumb" data-image-id="<?= $cover->id ?>" style="display:none" data-fancybox="clearlogos" data-caption="Clearlogo"
 												href="<?= $cover->original ?>" data-thumb="<?= $cover->thumbnail ?>"></a>
 										<?php endwhile; ?>
