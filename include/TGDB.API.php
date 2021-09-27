@@ -146,6 +146,63 @@ class TGDB
 		}
 	}
 
+	function GetGames($conditions, $fields = [])
+	{
+
+		if(empty($conditions))
+			throw new Exception('conditions can not be empty');
+
+		$qry = "Select id, game_title, release_date, platform, region_id, country_id ";
+
+		if(!empty($fields))
+		{
+			foreach($fields as $key => $enabled)
+			{
+				if($enabled && $this->is_valid_games_col($key))
+				{
+					$qry .= ", $key ";
+				}
+			}
+		}
+
+		$qry .= " FROM games ";
+
+		
+		$prepare_sql_conditions = [];
+		foreach($conditions as $key => $ignored)
+		{
+			if($key && $this->is_valid_games_col($key))
+			{
+				$prepare_sql_conditions[] = "$key=:$key";
+			}
+		}
+		if(empty($prepare_sql_conditions))
+			throw new Exception('No Valid Conditions Provided');
+
+		$condition = implode(" AND ", $prepare_sql_conditions);
+		$qry .= "Where " . $condition . ";";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		foreach($conditions as $key => $data)
+		{
+			if($key && $this->is_valid_games_col($key))
+			{
+				$value = $data[0];
+				$type = $data[1];
+				$sth->bindValue(":$key", $value, $type);
+			}
+		}
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_OBJ);
+			return $res;
+		}
+		return;
+	}
+
 	function GetGameByID($IDs, $offset = 0, $limit = 20, $fields = array())
 	{
 		$GameIDs = array();

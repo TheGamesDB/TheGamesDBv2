@@ -89,9 +89,41 @@ try
 		}
 	}
 
-	$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
-		$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['platform'], $_REQUEST['genres'], $_REQUEST['rating'],
-		$_REQUEST['alternate_names'], $_REQUEST['uids'], $_REQUEST['region_id'], $_REQUEST['country_id']);
+	$rating = "";
+	$ratingsList = $API->GetESRBrating();
+	{
+		if(isset($ratingsList[$_REQUEST['rating']]))
+		{
+			$rating = $ratingsList[$_REQUEST['rating']]->name;
+		}
+	}
+
+	$conditions = [];
+	$conditions['game_title'] = [htmlspecialchars($_REQUEST['game_title']), PDO::PARAM_STR];
+	$conditions['overview'] = [htmlspecialchars($_REQUEST['overview']), PDO::PARAM_STR];
+	$conditions['youtube'] = [htmlspecialchars($_REQUEST['youtube']), PDO::PARAM_STR];
+
+	$conditions['release_date'] = [$_REQUEST['release_date'], PDO::PARAM_STR];
+	$conditions['rating'] = [$rating, PDO::PARAM_STR];
+
+	$conditions['players'] = [$_REQUEST['players'], PDO::PARAM_INT];
+	$conditions['coop'] = [$_REQUEST['coop'], PDO::PARAM_INT];
+	$conditions['platform'] = [$_REQUEST['platform'], PDO::PARAM_INT];
+	$conditions['region_id'] = [$_REQUEST['region_id'], PDO::PARAM_INT];
+	$conditions['country_id'] = [$_REQUEST['country_id'], PDO::PARAM_INT];
+
+	$res = $API->GetGames($conditions);
+	if(!empty($res))
+	{
+		$res = $res[0]->id;
+		returnJSONAndDie(1, $res);
+	}
+	else
+	{
+		$res = $API->InsertGame($_user->GetUserID(), $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
+			$_REQUEST['players'], $_REQUEST['coop'], $_REQUEST['developers'], $_REQUEST['publishers'], $_REQUEST['platform'], $_REQUEST['genres'], $_REQUEST['rating'],
+			$_REQUEST['alternate_names'], $_REQUEST['uids'], $_REQUEST['region_id'], $_REQUEST['country_id']);
+	}
 
 	if($res)
 	{
