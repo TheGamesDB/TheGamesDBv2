@@ -1,4 +1,4 @@
-<?php
+TheGamesDBv2/tools/createimage.php<?php
 
 $_size = array(
 	"small" => 150,
