@@ -9,6 +9,9 @@ class DiscordUtils
 {
 	static private function Send($embeds)
 	{
+		if(!isset(Config::$DiscordWebhook))
+			return;
+
 		if(!isset($embeds))
 			return;
 

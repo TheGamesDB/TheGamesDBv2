@@ -29,6 +29,9 @@ class WebUtils
 	{
 		require_once __DIR__ . '/../../vendor/autoload.php';
 		require_once __DIR__ . '/../../include/config.class.php';
+		if(!isset(Config::$_CF_EMAIL))
+			return false;
+
 		try
 		{
 			$key = new \Cloudflare\API\Auth\APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
@@ -53,6 +56,9 @@ class WebUtils
 	{
 		require_once __DIR__ . '/../../vendor/autoload.php';
 		require_once __DIR__ . '/../../include/config.class.php';
+		if(!isset(Config::$_CF_EMAIL))
+			return false;
+
 		try
 		{
 			$key = new \Cloudflare\API\Auth\APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
@@ -78,6 +84,8 @@ class WebUtils
 	{
 		require_once __DIR__ . '/../../vendor/autoload.php';
 		require_once __DIR__ . '/../../include/config.class.php';
+		if(!isset(Config::$_CF_EMAIL))
+			return;
 
 		$key = new \Cloudflare\API\Auth\APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
 		$adapter = new Cloudflare\API\Adapter\Guzzle($key);
