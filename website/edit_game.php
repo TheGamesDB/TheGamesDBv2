@@ -340,6 +340,76 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 		}
 	</style>
 
+	<style>
+		input.h1
+		{
+			font-size: 2rem;
+			padding: 0.2rem;
+		}
+
+		/* Toggle CSS inspired by https://www.w3schools.com/howto/tryit.asp?filename=tryhow_css_switch */
+		.switch
+		{
+			position: relative;
+			display: inline-block;
+			width: 64px;
+			height: 100%;
+			font-family: "Font Awesome 5 Free";
+			font-weight: 900;
+		}
+
+		.switch input 
+		{
+			opacity: 0;
+			width: 0;
+			height: 0;
+		}
+
+		.slider
+		{
+			position: absolute;
+			cursor: pointer;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-color: var(--success);
+			-webkit-transition: .4s;
+			transition: .4s;
+
+		}
+
+		.slider:before
+		{
+			position: absolute;
+
+			height: 26px;
+			width: 26px;
+			text-align: center;
+			left: calc(50% - 13px);
+			bottom:  calc(50% - 13px);
+			-webkit-transition: .4s;
+			content: "\f09c"
+
+		}
+
+		input:checked + .slider
+		{
+			background-color:  var(--danger);
+		}
+
+		input:focus + .slider
+		{
+			box-shadow: 0 0 1px #2196F3;
+		}
+
+		input:checked + .slider:before
+		{
+			content: "\f023"
+		}
+
+	</style>
+
 	<link href="/css/fine_uploader.5.16.2/fine-uploader-new.css" rel="stylesheet">
 
 	<!-- Fine Uploader jQuery JS file
@@ -601,19 +671,37 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<?php else: ?>
 								<p>Platform: <a href="/platform.php?id=<?= $Current_Platform->id?>"><?= $Current_Platform->name; ?></a></p>
 								<?php endif; ?>
-								<p>Region*: <select name="region_id" style="width:100%">
-										<option <?= $Game->region_id == 0 ? 'selected' : '' ?> value="" selected disabled hidden>Select Region</option>
-										<?php foreach($RegionList as $region) : ?>
-										<option <?= $Game->region_id == $region->id ? 'selected' : '' ?> value="<?= $region->id ?>"><?= $region->name ?></option>
-										<?php endforeach; ?>
-									</select>
+								<p>Region*: 
+									<div class="input-group mb-3">
+										<select name="region_id" class="form-control">
+											<option <?= $Game->region_id == 0 ? 'selected' : '' ?> value="" selected disabled hidden>Select Region</option>
+											<?php foreach($RegionList as $region) : ?>
+											<option <?= $Game->region_id == $region->id ? 'selected' : '' ?> value="<?= $region->id ?>"><?= $region->name ?></option>
+											<?php endforeach; ?>
+										</select>
+										<div class="input-group-append">
+											<label class="switch">
+												<input name="region_id_lock" type="checkbox" checked=""/>
+												<span class="slider"></span>
+											</label>
+										</div>
+									</div>
 								</p>
-								<p>Country: <select name="country_id" style="width:100%">
-										<option <?= $Game->country_id == 0 ? 'selected' : '' ?> value="0">No Country</option>
-										<?php foreach($CountryList as $country) : ?>
-										<option <?= $Game->country_id == $country->id ? 'selected' : '' ?> value="<?= $country->id ?>"><?= $country->name ?></option>
-										<?php endforeach; ?>
-									</select>
+								<p>Country:
+									<div class="input-group mb-3">
+										<select name="country_id" class="form-control">
+											<option <?= $Game->country_id == 0 ? 'selected' : '' ?> value="0">No Country</option>
+											<?php foreach($CountryList as $country) : ?>
+											<option <?= $Game->country_id == $country->id ? 'selected' : '' ?> value="<?= $country->id ?>"><?= $country->name ?></option>
+											<?php endforeach; ?>
+										</select>
+										<div class="input-group-append">
+											<label class="switch">
+												<input name="country_id_lock" type="checkbox" checked=""/>
+												<span class="slider"></span>
+											</label>
+										</div>
+									</div>
 								</p>
 								<p>ReleaseDate*:<br/> <input id="date" name="release_date" type="date" value="<?= $Game->release_date ;?>"></p>
 								<p>Players:<br/> <input type="number" name="players"  value="<?= $Game->players; ?>" min="1" max="100"></p>
@@ -636,7 +724,15 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 					<div class="col">
 						<div class="card border-primary">
 							<div class="card-header">
-								<h1><input style="width:100%" name="game_title" value="<?= $Game->game_title?>"/></h1>
+								<div class="input-group mb-3">
+									<input name="game_title" type="text" class="h1 form-control" value="<?= $Game->game_title?>"/>
+									<div class="input-group-append">
+										<label class="switch">
+											<input name="game_title_lock" type="checkbox" checked=""/>
+											<span class="slider"></span>
+										</label>
+									</div>
+								</div>
 								<div id="alts_fields">
 									<?php while(!empty($Game->alternates) && !empty($alt_name = array_shift($Game->alternates))) : ?>
 									<div class="input-group mb-3">
