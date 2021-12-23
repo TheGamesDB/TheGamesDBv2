@@ -114,7 +114,7 @@ $app->group('/v1', function()
 			$offset = ($page - 1) * $limit;
 			$options = Utils::parseRequestOptions();
 			$fields = Utils::parseRequestedFields();
-			$natural_search = isset($_REQUEST['mode']) && $_REQUEST['mode'] = "natural";
+			$natural_search = isset($_REQUEST['mode']) && $_REQUEST['mode'] == "natural";
 			$filter_search = isset($_REQUEST['filter']) ? $_REQUEST['filter'] : [];
 
 			$API = TGDB::getInstance();
