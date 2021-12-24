@@ -674,7 +674,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								<?php endif; ?>
 								<p>Region*: 
 									<div class="input-group mb-3">
-										<select name="region_id" class="form-control">
+										<select name="region_id" <?= $Lock->region_id && !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> class="form-control">
 											<option <?= $Game->region_id == 0 ? 'selected' : '' ?> value="" selected disabled hidden>Select Region</option>
 											<?php foreach($RegionList as $region) : ?>
 											<option <?= $Game->region_id == $region->id ? 'selected' : '' ?> value="<?= $region->id ?>"><?= $region->name ?></option>
@@ -682,7 +682,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										</select>
 										<div class="input-group-append">
 											<label class="switch">
-												<input name="region_id_lock" type="checkbox" <?= $Lock->region_id ? 'checked' : ''?>/>
+												<input name="region_id_lock" type="checkbox" <?= !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> <?= $Lock->region_id ? 'checked' : ''?>/>
 												<span class="slider"></span>
 											</label>
 										</div>
@@ -690,7 +690,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 								</p>
 								<p>Country:
 									<div class="input-group mb-3">
-										<select name="country_id" class="form-control">
+										<select name="country_id" <?= $Lock->country_id && !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> class="form-control">
 											<option <?= $Game->country_id == 0 ? 'selected' : '' ?> value="0">No Country</option>
 											<?php foreach($CountryList as $country) : ?>
 											<option <?= $Game->country_id == $country->id ? 'selected' : '' ?> value="<?= $country->id ?>"><?= $country->name ?></option>
@@ -698,7 +698,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										</select>
 										<div class="input-group-append">
 											<label class="switch">
-												<input name="country_id_lock" type="checkbox" <?= $Lock->country_id ? 'checked' : '' ?>/>
+												<input name="country_id_lock" type="checkbox" <?= !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> <?= $Lock->country_id ? 'checked' : '' ?>/>
 												<span class="slider"></span>
 											</label>
 										</div>
@@ -726,10 +726,10 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 						<div class="card border-primary">
 							<div class="card-header">
 								<div class="input-group mb-3">
-									<input name="game_title" type="text" class="h1 form-control" value="<?= $Game->game_title?>"/>
+									<input name="game_title" <?= $Lock->game_title && !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> type="text" class="h1 form-control" value="<?= $Game->game_title?>"/>
 									<div class="input-group-append">
 										<label class="switch">
-											<input name="game_title_lock" type="checkbox" <?= $Lock->game_title ? 'checked' : ''?>/>
+											<input name="game_title_lock" type="checkbox" <?= !$_user->hasPermission('m_delete_games') ? 'disabled' : '' ?> <?= $Lock->game_title ? 'checked' : ''?>/>
 											<span class="slider"></span>
 										</label>
 									</div>
