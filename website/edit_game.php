@@ -56,6 +56,7 @@ if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id
 	else
 	{
 		$Game = array_shift($list);
+		$Lock = $API->GetGameLockByID($_REQUEST['id']);
 		$covers = $API->GetGameBoxartByID($_REQUEST['id'], 0, 9999, 'ALL');
 		if(!empty($covers))
 		{
@@ -681,7 +682,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										</select>
 										<div class="input-group-append">
 											<label class="switch">
-												<input name="region_id_lock" type="checkbox" checked=""/>
+												<input name="region_id_lock" type="checkbox" <?= $Lock->region_id ? 'checked' : ''?>/>
 												<span class="slider"></span>
 											</label>
 										</div>
@@ -697,7 +698,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 										</select>
 										<div class="input-group-append">
 											<label class="switch">
-												<input name="country_id_lock" type="checkbox" checked=""/>
+												<input name="country_id_lock" type="checkbox" <?= $Lock->country_id ? 'checked' : '' ?>/>
 												<span class="slider"></span>
 											</label>
 										</div>
@@ -728,7 +729,7 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 									<input name="game_title" type="text" class="h1 form-control" value="<?= $Game->game_title?>"/>
 									<div class="input-group-append">
 										<label class="switch">
-											<input name="game_title_lock" type="checkbox" checked=""/>
+											<input name="game_title_lock" type="checkbox" <?= $Lock->game_title ? 'checked' : ''?>/>
 											<span class="slider"></span>
 										</label>
 									</div>

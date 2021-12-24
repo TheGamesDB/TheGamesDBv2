@@ -3506,6 +3506,40 @@ class TGDB
 		}
 	}
 
+	function GetGameLockByID($game_id)
+	{
+		$getter = new class
+		{
+			private $_data = array();
+			public function updateData($data)
+			{
+				$this->_data = $data;
+			}
+
+			public function __get($name)
+			{
+				if (array_key_exists($name, $this->_data))
+					return $this->_data[$name];
+
+				// by default the item is not locked, if we dont have a db entry for it
+				return false;
+			}
+		};
+		$qry = "Select type, is_locked FROM games_lock WHERE games_id = :games_id;";
+
+		$dbh = $this->database->dbh;
+		$sth = $dbh->prepare($qry);
+
+		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
+
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_KEY_PAIR);
+			$getter->updateData($res);
+		}
+
+		return $getter;
+	}
 }
 
 ?>
