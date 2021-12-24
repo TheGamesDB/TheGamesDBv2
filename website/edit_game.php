@@ -180,11 +180,20 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 			{
 
 				var url = "./actions/edit_game.php"; // the script where you handle the form input.
-
+				var getData = function()
+				{
+					// disabled elements are not included in post request
+					// so we'll enable them to get the data and disable it after
+					disabledElm = $('[disabled]');
+					disabledElm.prop('disabled', false);
+					data = $("#game_edit").serialize()
+					disabledElm.prop('disabled', true);
+					return data;
+				}
 				$.ajax({
 					type: "POST",
 					url: url,
-					data: $("#game_edit").serialize() + "&developers%5B%5D=" + multi_devs._config.value.join("&developers%5B%5D=") + "&publishers%5B%5D=" + multi_pubs._config.value.join("&publishers%5B%5D="),
+					data: getData() + "&developers%5B%5D=" + multi_devs._config.value.join("&developers%5B%5D=") + "&publishers%5B%5D=" + multi_pubs._config.value.join("&publishers%5B%5D="),
 					success: function(data)
 					{
 						if(isJSON(data))

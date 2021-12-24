@@ -95,9 +95,26 @@ try
 		}
 	}
 
+	$Lock = $API->GetGameLockByID($_REQUEST['game_id']);
 	if(!$_user->hasPermission('m_delete_games'))
 	{
-			$_REQUEST['platform'] = $old_game_data->platform;
+		$_REQUEST['platform'] = $old_game_data->platform;
+		foreach($Lock->iterator() as $key => $val)
+		{
+			if($val)
+			{
+				$_REQUEST[$key] = $old_game_data->$key;
+			}
+		}
+	}
+	else
+	{
+		foreach($Lock->iterator() as $key => $val)
+		{
+			$locked = isset($_REQUEST[$key . "_lock"]) && $_REQUEST[$key . "_lock"] == "on";
+			$Lock->updateLock($key, $locked);
+		}
+		$Lock->commit($_REQUEST['game_id']);
 	}
 
 	$res = $API->UpdateGame( $_user->GetUserID(), $_REQUEST['game_id'], $_REQUEST['game_title'], $_REQUEST['overview'], $_REQUEST['youtube'], $_REQUEST['release_date'],
