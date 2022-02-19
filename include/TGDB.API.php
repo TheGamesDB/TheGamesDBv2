@@ -2479,7 +2479,7 @@ class TGDB
 					{
 						if(preg_match_all("/$pattern->regex_pattern/", $new_uid, $matches))
 						{
-							if(count($matches[0]) == 1 && $matches[0][0] == $new_hash)
+							if(count($matches[0]) == 1 && $matches[0][0] == $new_uid)
 							{
 								$pattern_id = $pattern->id;
 								break;
