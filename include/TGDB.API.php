@@ -1456,9 +1456,6 @@ class TGDB
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare('SELECT DISTINCT type, side FROM `banners`;');
 
-		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
-		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
-
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
