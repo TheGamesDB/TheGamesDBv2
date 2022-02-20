@@ -45,7 +45,7 @@ $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 
 	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
 	<script type="text/javascript" src="/js/fancybox.config.js"></script>
-	<script type="text/javascript" src="https://unpkg.com/select-pure@latest/dist/bundle.min.js"></script>
+	<script type="text/javascript" src="/js/pure-select.modded.0.6.2.js"></script>
 
 	<script type="text/javascript">
 		function isJSON(json)

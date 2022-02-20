@@ -45,7 +45,6 @@ $Header = new HEADER();
 $Header->setTitle("TGDB - Edit Platforms");
 $Header->appendRawHeader(function() { global $_user; ?>
 
-	<link href="/css/select-pure.css" rel="stylesheet">
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">
 	<link href="/css/fa-brands.5.0.10.css" rel="stylesheet">
@@ -57,7 +56,6 @@ $Header->appendRawHeader(function() { global $_user; ?>
 
 	<script type="text/javascript" src="/js/jquery.fancybox.3.3.5.js"></script>
 	<script type="text/javascript" src="/js/fancybox.config.js"></script>
-	<script type="text/javascript" src="https://unpkg.com/select-pure@latest/dist/bundle.min.js"></script>
 
 	<script type="text/javascript">
 		function isJSON(json)
