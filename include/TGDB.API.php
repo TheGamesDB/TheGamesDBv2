@@ -1457,9 +1457,6 @@ class TGDB
 		$dbh = $this->database->dbh;
 		$sth = $dbh->prepare('SELECT DISTINCT type, side FROM `banners`;');
 
-		$sth->bindValue(':offset', $offset, PDO::PARAM_INT);
-		$sth->bindValue(':limit', $limit, PDO::PARAM_INT);
-
 		if($sth->execute())
 		{
 			$res = $sth->fetchAll(PDO::FETCH_OBJ);
@@ -2480,7 +2477,7 @@ class TGDB
 					{
 						if(preg_match_all("/$pattern->regex_pattern/", $new_uid, $matches))
 						{
-							if(count($matches[0]) == 1 && $matches[0][0] == $new_hash)
+							if(count($matches[0]) == 1 && $matches[0][0] == $new_uid)
 							{
 								$pattern_id = $pattern->id;
 								break;

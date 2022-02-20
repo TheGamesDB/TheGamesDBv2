@@ -10,7 +10,7 @@ class Utils
 		406 => "Invalid request: Invalid or missing paramaters.",
 	);
 
-	function getStatus($code)
+	static function getStatus($code)
 	{
 		if(isset(Utils::$_statusMSG[$code]))
 		{

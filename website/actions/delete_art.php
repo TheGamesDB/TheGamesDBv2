@@ -38,7 +38,7 @@ try
 {
 
 	$API = TGDB::getInstance();
-	$covers = $API->GetGameBoxartByID($_REQUEST['game_id'], 0, 99, $_REQUEST['type']);
+	$covers = $API->GetGameBoxartByID($_REQUEST['game_id'], 0, 99, []);
 
 	if(!empty($covers) && ($covers = $covers[$_REQUEST['game_id']]))
 	{
