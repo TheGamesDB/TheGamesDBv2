@@ -28,7 +28,8 @@ if(isset($_GET['platform_id']) && !empty($_GET['platform_id']) && !in_array(0, $
 $limit = 18;
 $page = PaginationUtils::getPage();
 $offset = ($page - 1) * $limit;
-if(isset($_REQUEST['type']))
+$listed_by = $_REQUEST['type'];
+if(isset($listed_by))
 {
 	if(!isset($_REQUEST['platform_id']) || !is_array($_REQUEST['platform_id']) || in_array(0, $_REQUEST['platform_id']))
 	{
@@ -51,8 +52,6 @@ if(isset($_REQUEST['type']))
 		}
 		$list = $API->GetMissingGamesImages($_REQUEST['type'], $sub_type, $platform_id, $offset, $limit+1, ['platform'], "game_title");
 	}
-	$Platforms = $API->GetPlatforms($PlatformIDs);
-
 }
 else
 {

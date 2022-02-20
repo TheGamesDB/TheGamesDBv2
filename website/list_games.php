@@ -85,7 +85,7 @@ else
 }
 
 
-
+$PlatformIDs = [];
 if($has_next_page = count($list) > $limit)
 {
 	unset($list[$limit]);
@@ -107,7 +107,8 @@ if(isset($IDs) && !empty($IDs))
 	}
 }
 
-$Platforms = $API->GetPlatforms($PlatformIDs);
+if(!empty($PlatformIDs))
+	$Platforms = $API->GetPlatforms($PlatformIDs);
 
 $Header = new HEADER();
 $Header->setTitle("TGDB - Browser - Game By $listed_by");

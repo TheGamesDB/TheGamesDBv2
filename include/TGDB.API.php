@@ -1291,7 +1291,7 @@ class TGDB
 			}
 			$valid_platform_ids = implode(",", $valid_platform_ids_arr);
 		}
-		else if(is_numeric($platform_ids))
+		else if(is_numeric($platform_ids) && $platform_ids > 0)
 		{
 			$valid_platform_ids = $platform_ids;
 		}
@@ -1316,7 +1316,7 @@ class TGDB
 			$side = 'AND side=:side';
 		}
 		$qry .= "WHERE (id NOT IN (select games_id from banners where type=:type $side)) ";
-		if($platform_id > 0)
+		if(!empty($valid_platform_ids))
 		{
 			$qry .= "AND (platform IN ($valid_platform_ids)) ";
 		}
