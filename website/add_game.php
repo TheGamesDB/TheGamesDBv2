@@ -280,7 +280,6 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 <?= $Header->print(); ?>
 
 	<form id="game_add" class="container-fluid">
-		<input name="game_id" type="hidden" value="<?= $Game->id ?>"/>
 		<div class="row" style="padding-bottom: 10px;">
 			<div class="col">
 				<div id="cover" class="view-width fanart-banner">
