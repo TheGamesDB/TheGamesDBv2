@@ -23,13 +23,13 @@ $_user = phpBBuser::getInstance();
 	{
 		$legacy = $API->GetLegacyCopy($_REQUEST['id']);
 	}
-	
+	$Game = array_shift($API->GetGameByID($_REQUEST['id'], 0, 1));
 }
 
 
 $Header = new HEADER();
-$Header->setTitle("TGDB - Browse - Game - $Game->game_title");
-$Header->appendRawHeader(function() { global $Game, $box_cover, $_user; ?>
+$Header->setTitle("TGDB - Browse - GameEdits - $Game->game_title");
+$Header->appendRawHeader(function() { global $Game, $_user; ?>
 
 	<link href="/css/social-btn.css" rel="stylesheet">
 	<link href="/css/fontawesome.5.0.10.css" rel="stylesheet">

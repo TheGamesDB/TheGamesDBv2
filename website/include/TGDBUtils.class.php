@@ -16,7 +16,7 @@ class TGDBUtils
 
 				if($art->type == $type)
 				{
-					if($art->side == $side)
+					if(isset($art->side) && $art->side == $side)
 					{
 						$ret = $art;
 						break;

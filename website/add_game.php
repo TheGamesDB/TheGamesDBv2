@@ -357,10 +357,9 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 							<div class="card-footer">
 								<h4>Genres</h4>
 								<div class="row">
-									<?php foreach($GenreList as $genre) :
-										$checked = strpos($Game->genre, $genre->name) !== false; ?>
+									<?php foreach($GenreList as $genre) : ?>
 									<div class="col-4" style="margin-bottom:10px;">
-										<input name="genres[]" value="<?= $genre->id; ?>" id="genre-<?= $genre->id; ?>" type="checkbox" <?= $checked ? "checked" : "" ?>/>
+										<input name="genres[]" value="<?= $genre->id; ?>" id="genre-<?= $genre->id; ?>" type="checkbox" />
 										<label for="genre-<?= $genre->id; ?>"><span></span><?= $genre->name; ?></label>
 									</div>
 									<?php endforeach; ?>
@@ -377,10 +376,9 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 							<div class="card-footer">
 								<h4>ESRB Rating</h4>
 								<div class="row">
-									<?php foreach($ESRBRating as $rate) :
-										$checked = strpos($Game->rating, $rate->name) !== false; ?>
+									<?php foreach($ESRBRating as $rate) : ?>
 									<div class="col-4" style="margin-bottom:10px;">
-										<input name="rating" value="<?= $rate->id; ?>" id="rating-<?= $rate->id; ?>" type="radio" <?= $checked ? "checked" : "" ?>/>
+										<input name="rating" value="<?= $rate->id; ?>" id="rating-<?= $rate->id; ?>" type="radio" />
 										<label for="rating-<?= $rate->id; ?>"><span></span><?= $rate->name; ?></label>
 									</div>
 									<?php endforeach; ?>
