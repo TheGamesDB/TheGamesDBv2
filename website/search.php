@@ -51,6 +51,7 @@ if(isset($_GET['name']) && !empty($_GET['name']))
 				$Game->boxart = $covers[$Game->id];
 			}
 		}
+		$regionsID = $API->GetRegionsList();
 	}
 }
 
@@ -101,10 +102,8 @@ $Header->setTitle("TGDB - Search");
 							</div>
 							<div class="card-footer bg-secondary" style="text-align:center;">
 								<p><?= $Game->game_title ?></p>
-								<?php if ($Game->region_id > 0):
-									$region = $API->GetGameRegion($Game->region_id); 
-								?>
-								<p><?= $region->name ?></p>
+								<?php if ($Game->region_id > 0): ?>
+								<p><?= $regionsID[$Game->region_id]->name; ?></p>
 								<?php endif; ?>
 								<p><?= $Game->release_date ?></p>
 								<p class="text-muted"><?= $PlatformList[$Game->platform]->name ?></p>
