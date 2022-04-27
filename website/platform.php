@@ -65,7 +65,7 @@ $Header->appendRawHeader(function()
 
 	<meta property="og:title" content="<?= $Platform->name; ?>" />
 	<meta property="og:type" content="article" />
-	<meta property="og:image" content="<?= TGDBUtils::GetCover($Platform, 'boxart', '', false,  true, 'thumb') ?>" />
+	<meta property="og:image" content="<?= TGDBUtils::GetCover($Platform, 'boxart', '', true,  true, 'thumb') ?>" />
 	<meta property="og:description" content="<?= htmlspecialchars($Platform->overview); ?>" />
 
 	<link href="/css/social-btn.css" rel="stylesheet">
@@ -95,7 +95,7 @@ $Header->appendRawHeader(function()
 		<div class="row" style="padding-bottom:10px;">
 			<div class="col">
 				<div id="cover" class="view-width" style="max-width: 100%; height: 300px; overflow: hidden; text-align: center;padding: 0px;;">
-					<img alt='CoverIMG' class="cover" style=" margin-top: -170px;" src="<?= TGDBUtils::GetCover($Platform, 'fanart', '', false,  false, 'medium') ?>" />
+					<img alt='CoverIMG' class="cover" style=" margin-top: -170px;" src="<?= TGDBUtils::GetCover($Platform, 'fanart', '', true,  false, 'medium') ?>" />
 				</div>
 			</div>
 		</div>
@@ -107,7 +107,7 @@ $Header->appendRawHeader(function()
 				<div class="row">
 					<div class="col">
 						<div class="card border-primary">
-							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'boxart', '', false,  true, 'thumb') ?>" />
+							<img class="card-img-top" alt='PosterIMG' src="<?= TGDBUtils::GetCover($Platform, 'boxart', '', true,  true, 'thumb') ?>" />
 							<div class="card-body">
 							<button onclick="alert('Not Implemented Yet!')" type="button" data-toggle="bookmark" class="btn btn-secondary btn-block btn-wrap-text">Add To Collection</button>
 							</div>
