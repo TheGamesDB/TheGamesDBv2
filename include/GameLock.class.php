@@ -7,6 +7,8 @@ class GameLock
 	private $_is_dirty = false;
 	private $_games_id = null;
 
+	private $_lockableTypes = ['game_title', 'region_id' ,'country_id'];
+
 	public function __construct($games_id, $dbh)
 	{
 		$this->_dbh = $dbh;
@@ -59,6 +61,9 @@ class GameLock
 
 		foreach($this->_data as $type => $lock)
 		{
+			if(!in_array($type, $this->_lockableTypes))
+				continue;
+
 			$sth->bindValue(':games_id', $this->_games_id, PDO::PARAM_INT);
 			$sth->bindValue(':type', $type, PDO::PARAM_STR);
 			$sth->bindValue(':type2', $type, PDO::PARAM_STR);
