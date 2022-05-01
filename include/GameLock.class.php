@@ -13,7 +13,10 @@ class GameLock
 	{
 		$this->_dbh = $dbh;
 		$this->_games_id = $games_id;
-
+		foreach($this->_lockableTypes as $type)
+		{
+			$this->_data[$type] = false;
+		}
 	}
 
 	public function updateData($data)
