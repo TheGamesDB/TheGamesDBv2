@@ -21,7 +21,10 @@ class GameLock
 
 	public function updateData($data)
 	{
-		$this->_data = $data;
+		foreach($data as $key => $val)
+		{
+			$this->updateLock($key, $val);
+		}
 	}
 
 	public function __get($name)
