@@ -127,6 +127,8 @@ try
 
 	if($res)
 	{
+		$Lock = $API->GetGameLockByID($res);
+		$Lock->commit();
 		$filters = ['game_title' => true, 'overview' => true, 'youtube' => true, 'release_date' => true, 'players' => true, 'coop' => true, 'developers' => true, 'publishers' => true, 'genres' => true, 'rating' => true, 'alternates' => true, "uids" => true];
 		$new_game_data = $API->GetGameByID($res, 0, 1, $filters)[0];
 		DiscordUtils::PostGameUpdate($_user, [], $new_game_data, 0);
