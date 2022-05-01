@@ -209,7 +209,7 @@ class FOOTER
 				</div>
 
 				<div class="footer-copyright">
-					<p>© 2018 TheGamesDB </p>
+					<p>© <?= date("Y") ?> TheGamesDB </p>
 				</div>
 				<p>execution time: <?= microtime(true) - FOOTER::$_time_start ?></p>
 			</div>
