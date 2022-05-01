@@ -13,9 +13,26 @@ class GameLock
 	{
 		$this->_dbh = $dbh;
 		$this->_games_id = $games_id;
+
+		$qry = "Select type, is_locked FROM games_lock WHERE games_id = :games_id;";
+		
+		$sth = $dbh->prepare($qry);
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		if($sth->execute())
+		{
+			$res = $sth->fetchAll(PDO::FETCH_KEY_PAIR);
+			$this->updateData($res);
+			$this->_is_dirty = false;
+		}
+		// if we need to set any default values,
+		// then entry is dirty and needs updating
 		foreach($this->_lockableTypes as $type)
 		{
-			$this->_data[$type] = false;
+			if(!array_key_exists($type, $this->_data))
+			{
+				$this->_is_dirty |= true;
+				$this->_data[$type] = false;
+			}
 		}
 	}
 

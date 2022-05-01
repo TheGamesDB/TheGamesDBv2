@@ -3510,16 +3510,6 @@ class TGDB
 		
 		$dbh = $this->database->dbh;
 		$Lock = new GameLock($game_id, $dbh);
-		$sth = $dbh->prepare($qry);
-
-		$sth->bindValue(':games_id', $game_id, PDO::PARAM_INT);
-
-		if($sth->execute())
-		{
-			$res = $sth->fetchAll(PDO::FETCH_KEY_PAIR);
-			$Lock->updateData($res);
-		}
-
 		return $Lock;
 	}
 }
