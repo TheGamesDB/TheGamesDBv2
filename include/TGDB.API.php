@@ -3080,6 +3080,10 @@ class TGDB
 
 		$dbh->beginTransaction();
 
+		$sth = $dbh->prepare("DELETE FROM games_lock WHERE games_id=:games_id;");
+		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
+		$res = $sth->execute();
+
 		$sth = $dbh->prepare("DELETE FROM games_hashes WHERE games_id=:games_id;");
 		$sth->bindValue(':games_id', $games_id, PDO::PARAM_INT);
 		$res = $sth->execute();
