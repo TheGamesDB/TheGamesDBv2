@@ -103,6 +103,11 @@ try
 		{
 			if($val)
 			{
+				if(in_array($key, ['game_title', 'overview', 'youtube']))
+				{
+					$_REQUEST[$key] = htmlspecialchars_decode($old_game_data->$key);
+					continue;
+				}
 				$_REQUEST[$key] = $old_game_data->$key;
 			}
 		}
