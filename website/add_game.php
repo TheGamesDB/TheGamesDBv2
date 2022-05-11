@@ -254,7 +254,7 @@ $Header->appendRawHeader(function() { global $devs_list, $pubs_list; ?>
 					}
 					else
 					{
-						input_field.attr('name', "alternate_names");
+						input_field.attr('name', "alternate_names[]");
 						input_field.attr('placeholder', 'Alt Name(s)');
 					}
 
