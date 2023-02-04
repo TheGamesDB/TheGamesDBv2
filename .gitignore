@@ -3,7 +3,6 @@ include/config.class.php
 .DS_Store
 ._.DS_Store
 .DAV
-composer.lock
 website/banners/
 vendor
 cdn
