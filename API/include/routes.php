@@ -12,6 +12,10 @@ $app->get('/', function(Request $request, Response $response, array $args)
 {
 	$this->logger->info("TGDB '/' route");
 
+	if(in_array('localhost:8088', $request->getHeader('Host'))) {
+		return $this->renderer->render($response, 'doc.dev.html', $args);
+	}
+
 	return $this->renderer->render($response, 'doc.html', $args);
 });
 

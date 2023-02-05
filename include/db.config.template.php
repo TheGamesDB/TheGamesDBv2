@@ -2,9 +2,9 @@
 
 class database
 {
-	private $_dsn = 'mysql:host=localhost;dbname=TGDB;charset=utf8';
-	private $_username = "TheGamesDB";
-	private $_password = 'XXXXXXXXXXXXX';
+	private $_dsn = 'mysql:host=mariadb;dbname=TGDB;charset=utf8';
+	private $_username = 'root';
+	private $_password = 'abc123';
 
 	public $dbh;
 
