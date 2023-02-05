@@ -1,5 +1,18 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\WebUtils;
+use TheGamesDB\ErrorPage;
+use TheGamesDB\TGDBUtils;
+use TheGamesDB\CommonUtils;
+use TheGamesDB\PaginationUtils;
+
+global $_user;
+
 if(
 	(!isset($_REQUEST['platform_id']) || !is_numeric($_REQUEST['platform_id']))
 	&&
@@ -13,12 +26,6 @@ if(
 	$errorPage->SetMSG(ErrorPage::$MSG_MISSING_PARAM_ERROR);
 	$errorPage->print_die();
 }
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/PaginationUtils.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/include/WebUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
 
@@ -110,7 +117,7 @@ if(isset($IDs) && !empty($IDs))
 if(!empty($PlatformIDs))
 	$Platforms = $API->GetPlatforms($PlatformIDs);
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Browser - Game By $listed_by");
 ?>
 <?= $Header->print(); ?>
@@ -180,4 +187,4 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 		<?= PaginationUtils::Create($has_next_page); ?>
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

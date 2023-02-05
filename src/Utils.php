@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . '/../../include/CommonUtils.class.php';
+
+namespace TheGamesDB;
 
 class Utils
 {
@@ -101,5 +102,3 @@ class Utils
 		return $IDs;
 	}
 }
-
-?>

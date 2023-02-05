@@ -1,5 +1,5 @@
-include/db.config.php
-include/config.class.php
+src/Database.php
+src/Config.php
 .DS_Store
 ._.DS_Store
 .DAV

@@ -1,6 +1,8 @@
 <?php
 
-class phpBBUser
+namespace TheGamesDB\Login;
+
+class PseudoUser
 {
     private function __construct()
     {
@@ -74,10 +76,3 @@ class phpBBUser
         return 0;
     }
 }
-
-function append_sid($a, $b, $c, $d)
-{
-    return '#';
-}
-
-?>

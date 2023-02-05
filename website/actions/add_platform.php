@@ -1,14 +1,17 @@
 <?php
-require_once __DIR__ . "/../include/ErrorPage.class.php";
-require_once __DIR__ . "/../include/login.common.class.php";
-require_once __DIR__ . "/../include/UploadHandler.fineupload.class.php";
-require_once __DIR__ . "/../include/WebUtils.class.php";
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\WebUtils;
+use TheGamesDB\ErrorPage;
+
+global $_user;
 
 function save_image($original_image, $dest_image, $type, $width = 0, $height = 0)
 {
 	if(file_exists($original_image))
 	{
-		include __DIR__ . "/../../vendor/autoload.php";
 		try
 		{
 			if(!file_exists(dirname($dest_image)))
@@ -54,7 +57,6 @@ function returnJSONAndDie($code, $msg, $id = 0, $name = null)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
 if(!$_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
@@ -72,7 +74,6 @@ if(empty($_REQUEST['name']))
 	returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR);
 }
 
-require_once __DIR__ . "/../../include/TGDB.API.php";
 
 $name = $_REQUEST['name'];
 try

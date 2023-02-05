@@ -1,8 +1,14 @@
 <?php
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/PaginationUtils.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\TGDBUtils;
+use TheGamesDB\PaginationUtils;
+
+global $_user;
 
 $search_term = '';
 $has_next_page = false;
@@ -55,7 +61,7 @@ if(isset($_GET['name']) && !empty($_GET['name']))
 	}
 }
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Search");
 ?>
 <?= $Header->print(); ?>
@@ -118,4 +124,4 @@ $Header->setTitle("TGDB - Search");
 
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

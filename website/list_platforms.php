@@ -1,8 +1,13 @@
 <?php
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\TGDBUtils;
+
+global $_user;
 
 $API = TGDB::getInstance();
 $PlatformList = $API->GetPlatformsList(array("icon" => true));
@@ -20,7 +25,7 @@ foreach($PlatformList as &$platform)
 		$platform->boxart = &$icons[$platform->id];
 	}
 }
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Browse - Platforms");
 $Header->appendRawHeader(function()
 { ?>
@@ -85,4 +90,4 @@ $Header->appendRawHeader(function()
 		</div>
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

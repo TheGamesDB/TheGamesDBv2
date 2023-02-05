@@ -1,6 +1,8 @@
 <?php
 
-// This file should be renamed to config.class.php
+namespace TheGamesDB;
+
+// This file should be renamed to Config.php
 // for testing, keep these uncommented as is
 class Config
 {

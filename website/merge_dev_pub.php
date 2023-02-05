@@ -1,7 +1,14 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
-require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\ErrorPage;
+
+global $_user;
+
 if(!$_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
@@ -20,16 +27,11 @@ else
 	}
 }
 
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
-
 $API = TGDB::getInstance();
 $devs_list = $API->GetDevsList();
 $pubs_list = $API->GetPubsList();
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Merge");
 $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 
@@ -189,5 +191,5 @@ $Header->appendRawHeader(function() { global $_user, $devs_list, $pubs_list; ?>
 		</form>
 	</form>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>
 

@@ -1,12 +1,8 @@
 <?php
 
-define('IN_PHPBB', true);
-$phpbb_root_path = __DIR__ . '/../../../forums.thegamesdb.net/';
-$phpEx = substr(strrchr(__FILE__, '.'), 1);
-require_once $phpbb_root_path . 'common.' . $phpEx;
-$request->enable_super_globals();
+namespace TheGamesDB\Login;
 
-class phpBBUser
+class PhpBBUser
 {
 	private function __construct()
 	{
@@ -122,5 +118,3 @@ class phpBBUser
 		return $this->auth->acl_get($perm) > 0;
 	}
 }
-
-?>

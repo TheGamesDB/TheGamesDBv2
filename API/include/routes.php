@@ -1,11 +1,11 @@
 <?php
-require_once __DIR__ . '/../../include/TGDB.API.php';
-require_once __DIR__ . '/../../include/CommonUtils.class.php';
-require_once __DIR__ . '/Utils.class.php';
-require_once __DIR__ . '/APIAccessDB.class.php';
 
+use TheGamesDB\TGDB;
+use TheGamesDB\Utils;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use TheGamesDB\CommonUtils;
+use TheGamesDB\AuthMiddleware;
 
 // Routes
 $app->get('/', function(Request $request, Response $response, array $args)

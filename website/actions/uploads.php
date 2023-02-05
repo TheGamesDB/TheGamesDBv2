@@ -1,16 +1,20 @@
 <?php
-require_once __DIR__ . "/../../include/TGDB.API.php";
-require_once __DIR__ . "/../include/UploadHandler.fineupload.class.php";
-require_once __DIR__ . "/../include/ErrorPage.class.php";
-require_once __DIR__ . "/../include/login.common.class.php";
-require_once __DIR__ . "/../include/WebUtils.class.php";
-require_once __DIR__ . "/../include/DiscordUtils.class.php";
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\WebUtils;
+use TheGamesDB\ErrorPage;
+use TheGamesDB\CommonUtils;
+use TheGamesDB\DiscordUtils;
+use TheGamesDB\UploadHandler;
+
+global $_user;
 
 function save_image($original_image, $dest_image, $type)
 {
 	if(file_exists($original_image))
 	{
-		include __DIR__ . "/../../vendor/autoload.php";
 		try
 		{
 			if(!file_exists(dirname($dest_image)))
@@ -46,7 +50,6 @@ function returnJSONAndDie($msg)
 	die();
 }
 
-$_user = phpBBUser::getInstance();
 if(!$_user->isLoggedIn())
 {
 	returnJSONAndDie(ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);

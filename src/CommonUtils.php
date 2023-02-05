@@ -1,5 +1,7 @@
 <?php
 
+namespace TheGamesDB;
+
 class CommonUtils
 {
 	static public $WEBSITE_BASE_URL = "https://thegamesdb.net/";
@@ -34,5 +36,3 @@ class CommonUtils
 		}
 	}
 }
-
-?>

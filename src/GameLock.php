@@ -1,5 +1,9 @@
 <?php
 
+namespace TheGamesDB;
+
+use PDO;
+
 class GameLock
 {
 	private $_data = array();

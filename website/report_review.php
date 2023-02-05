@@ -1,7 +1,16 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
-require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\ErrorPage;
+use TheGamesDB\TGDBUtils;
+use TheGamesDB\CommonUtils;
+
+global $_user;
+
 if(!$_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
@@ -19,12 +28,6 @@ else
 		$errorPage->print_die();
 	}
 }
-
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/include/WebUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $BASE_URL = CommonUtils::getImagesBaseURL();
 
@@ -152,7 +155,7 @@ function PrintDuplicateView(&$report)
 	<?php
 }
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Games Reports");
 $Header->appendRawHeader(function() { ?>
 	<script type="text/javascript">
@@ -265,4 +268,4 @@ $Header->appendRawHeader(function() { ?>
 
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

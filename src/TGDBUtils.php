@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . "/../../include/CommonUtils.class.php";
+
+namespace TheGamesDB;
 
 class TGDBUtils
 {
@@ -78,5 +79,3 @@ class TGDBUtils
 		return "https://via.placeholder.com/200x200?text=" . urlencode($Name);
 	}
 }
-
-?>

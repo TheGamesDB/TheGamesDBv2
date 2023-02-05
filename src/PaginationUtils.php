@@ -1,5 +1,7 @@
 <?php
 
+namespace TheGamesDB;
+
 class PaginationUtils
 {
 

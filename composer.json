@@ -6,5 +6,11 @@
         "monolog/monolog": "^1.17",
         "claviska/simpleimage": "^3.6",
         "cloudflare/sdk": "^1.1"
+    },
+    "autoload": {
+        "files": ["include/login.common.class.php"],
+        "psr-4": {
+            "TheGamesDB\\": "src"
+        }
     }
 }

@@ -1,6 +1,10 @@
 <?php
 
-class database
+namespace TheGamesDB;
+
+use PDO;
+
+class Database
 {
 	private $_dsn = 'mysql:host=localhost;dbname=TGDB;charset=utf8';
 	private $_username = "TheGamesDB";
@@ -26,5 +30,3 @@ class database
 		return $instance;
 	}
 }
-
-?>

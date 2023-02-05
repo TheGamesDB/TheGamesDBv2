@@ -1,5 +1,17 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\WebUtils;
+use TheGamesDB\ErrorPage;
+use TheGamesDB\TGDBUtils;
+use TheGamesDB\CommonUtils;
+
+global $_user;
+
 if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 {
 	$errorPage = new ErrorPage();
@@ -7,14 +19,8 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 	$errorPage->SetMSG(ErrorPage::$MSG_MISSING_PARAM_ERROR);
 	$errorPage->print_die();
 }
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/include/WebUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
 
 $API = TGDB::getInstance();
-$_user = phpBBuser::getInstance();
 
 $fields = array("id" => true, "name" => true, "alias" => true, "icon" => true, "console" => true, "controller" => true, "developer" => true, "manufacturer" => true, "media" => true, "cpu" => true, "memory" => true, "graphics" => true, "sound" => true, "maxcontrollers" => true, "display" => true, "overview" => true, "youtube" => true);
 $Platform = $API->GetPlatforms($_REQUEST['id'], $fields);
@@ -57,7 +63,7 @@ if(isset($IDs) && !empty($IDs))
 	}
 }
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Browse - Platforms");
 $Header->appendRawHeader(function()
 {
@@ -229,4 +235,4 @@ $Header->appendRawHeader(function()
 
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

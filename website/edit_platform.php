@@ -1,7 +1,14 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
-require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\ErrorPage;
+
+global $_user;
+
 if(!$_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
@@ -20,11 +27,6 @@ else
 	}
 }
 
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
-
 $API = TGDB::getInstance();
 
 $fields = array("id" => true, "name" => true, "alias" => true, "icon" => true, "console" => true, "controller" => true, "developer" => true, "manufacturer" => true, "media" => true, "cpu" => true, "memory" => true, "graphics" => true, "sound" => true, "maxcontrollers" => true, "display" => true, "overview" => true, "youtube" => true);
@@ -41,7 +43,7 @@ else
 	$errorPage->print_die();
 }
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Edit Platforms");
 $Header->appendRawHeader(function() { global $_user; ?>
 
@@ -195,5 +197,5 @@ $Header->appendRawHeader(function() { global $_user; ?>
 		</form>
 	</form>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>
 

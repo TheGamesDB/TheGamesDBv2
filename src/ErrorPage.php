@@ -1,5 +1,6 @@
 <?php
-require_once __DIR__ . "/header.footer.class.php";
+
+namespace TheGamesDB;
 
 class ErrorPage
 {
@@ -31,7 +32,7 @@ class ErrorPage
 
 	public function print_die()
 	{
-		$Header = new HEADER();
+		$Header = new Header();
 		$Header->setTitle("TGDB - Error");
 		?>
 		<?= $Header->print(); ?>
@@ -54,7 +55,7 @@ class ErrorPage
 			</div>
 
 <?php
-		FOOTER::print();
+		Footer::print();
 		die();
 	}
 }

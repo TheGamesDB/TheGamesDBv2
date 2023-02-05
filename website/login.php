@@ -1,11 +1,16 @@
 <?php
-require_once __DIR__ . "/include/login.common.class.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\CommonUtils;
+
+global $_user;
 
 $error_msgs = array();
 $success_msg = array();
 
-$_user = phpBBUser::getInstance();
 if(isset($_REQUEST['logout']))
 {
 	if($_user->isLoggedIn() && $_user->Logout())
@@ -67,9 +72,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST" && empty($error_msgs) && empty($success_
 	}
 }
 
-require_once __DIR__ . "/include/header.footer.class.php";
-
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Login");
 $Header->appendRawHeader(function() { global $Game; ?>
 
@@ -148,4 +151,4 @@ $Header->appendRawHeader(function() { global $Game; ?>
 		<?php endif; ?>
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

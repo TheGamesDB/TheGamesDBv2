@@ -1,11 +1,14 @@
 <?php
-require_once __DIR__ . "/../website/include/login.common.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\APIAccessDB;
+
+global $_user;
 
 $key = "NA";
-$_user = phpBBUser::getInstance();
 if($_user->isLoggedIn() && $_user->hasPermission('u_api_access'))
 {
-	require_once __DIR__ . "/../API/include/APIAccessDB.class.php";
 	$auth = APIAccessDB::getInstance();
 	$key = $auth->RequestPublicAPIKey($_user->GetUserID());
 	$private_key = $auth->RequestPrivateAPIKey($_user->GetUserID());

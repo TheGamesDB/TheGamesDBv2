@@ -1,11 +1,15 @@
 <pre>
 <?php
 
-require_once __DIR__ . "/../include/db.config.php";
+require __DIR__ . '/../../vendor/autoload.php';
+
+use TheGamesDB\Database;
+
+global $_user;
 
 $qry = "Select id, filename FROM banners WHERE filename LIKE :name ";
 
-$dbh = database::getInstance()->dbh;
+$dbh = Database::getInstance()->dbh;
 $sth = $dbh->prepare($qry);
 
 $sth->bindValue(':name', "%original%", PDO::PARAM_STR);
