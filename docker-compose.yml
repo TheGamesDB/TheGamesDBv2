@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   tgdb_website:
-    image: webdevops/php-apache-dev:7.0
+    image: webdevops/php-apache-dev:8.2
     working_dir: /app
     environment:
       - WEB_DOCUMENT_ROOT=/app/website
@@ -21,7 +21,7 @@ services:
       - ./:/app:rw,cached
 
   tgdb_api:
-    image: webdevops/php-apache-dev:7.0
+    image: webdevops/php-apache-dev:8.2
     working_dir: /app
     environment:
       - WEB_DOCUMENT_ROOT=/app/API
