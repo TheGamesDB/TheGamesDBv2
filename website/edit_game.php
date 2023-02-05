@@ -1,5 +1,17 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\WebUtils;
+use TheGamesDB\ErrorPage;
+use TheGamesDB\TGDBUtils;
+use TheGamesDB\CommonUtils;
+
+global $_user;
+
 if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 {
 	$errorPage = new ErrorPage();
@@ -7,8 +19,7 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 	$errorPage->SetMSG(ErrorPage::$MSG_MISSING_PARAM_ERROR);
 	$errorPage->print_die();
 }
-require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
+
 if(!$_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
@@ -26,13 +37,6 @@ else
 		$errorPage->print_die();
 	}
 }
-
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
-require_once __DIR__ . "/include/WebUtils.class.php";
-
 
 if(isset($_REQUEST['id']) && !empty($_REQUEST['id']) && is_numeric($_REQUEST['id']))
 {
@@ -95,7 +99,7 @@ if(!empty($box_cover->back))
 	$box_cover->back = $box_cover->back[0];
 }
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Browse - Game - $Game->game_title");
 $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_list, $game_pubs, $pubs_list; ?>
 
@@ -985,4 +989,4 @@ $Header->appendRawHeader(function() { global $Game, $_user, $game_devs, $devs_li
 		</div>
 	</form>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

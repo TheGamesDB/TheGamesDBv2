@@ -1,6 +1,9 @@
 <?php
-require_once __DIR__ . "/db.config.php";
-require_once __DIR__ . "/GameLock.class.php";
+
+namespace TheGamesDB;
+
+use PDO;
+use Exception;
 
 class TGDB
 {
@@ -10,7 +13,7 @@ class TGDB
 
 	private function __construct()
 	{
-		$this->database = database::getInstance();
+		$this->database = Database::getInstance();
 	}
 
 	public static function getInstance()
@@ -3517,5 +3520,3 @@ class TGDB
 		return $Lock;
 	}
 }
-
-?>

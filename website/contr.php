@@ -1,5 +1,14 @@
 <?php
-require_once __DIR__ . "/include/ErrorPage.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\ErrorPage;
+
+global $_user;
+
 if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 {
 	$errorPage = new ErrorPage();
@@ -7,13 +16,6 @@ if(!isset($_REQUEST['id']) || !is_numeric($_REQUEST['id']))
 	$errorPage->SetMSG(ErrorPage::$MSG_MISSING_PARAM_ERROR);
 	$errorPage->print_die();
 }
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
-require_once __DIR__ . "/include/login.common.class.php";
-
-$_user = phpBBuser::getInstance();
 
 {
 	$game_id = $_REQUEST['id'];
@@ -27,7 +29,7 @@ $_user = phpBBuser::getInstance();
 }
 
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Browse - GameEdits - $Game->game_title");
 $Header->appendRawHeader(function() { global $Game, $_user; ?>
 
@@ -148,4 +150,4 @@ $Header->appendRawHeader(function() { global $Game, $_user; ?>
 	</div>
 
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

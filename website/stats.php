@@ -1,13 +1,16 @@
 <?php
 
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/include/login.common.class.php";
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\TGDBUtils;
+
+global $_user;
 
 $API = TGDB::getInstance();
 
-$_user = phpBBuser::getInstance();
 if($_user->isLoggedIn() && $_user->hasPermission('m_delete_games') && isset($_REQUEST['update']))
 {
 	$API->UpdateStats();
@@ -42,7 +45,7 @@ $Games = array();
 	$tmp_Games = null;
 }
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Statistics");
 $Header->appendRawHeader(function() { global $PsudoGame; ?>
 	<script type="text/javascript" src="/js/Chart.2.7.2.js"></script>
@@ -277,4 +280,4 @@ $Header->appendRawHeader(function() { global $PsudoGame; ?>
 		</div>
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

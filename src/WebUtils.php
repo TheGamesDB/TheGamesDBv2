@@ -1,5 +1,12 @@
 <?php
 
+namespace TheGamesDB;
+
+use Exception;
+use Cloudflare\API\Auth\APIKey;
+use Cloudflare\API\Adapter\Guzzle;
+use Cloudflare\API\Endpoints\Zones;
+
 class WebUtils
 {
 
@@ -27,17 +34,15 @@ class WebUtils
 
 	static function purgeCDNCacheFile($filenames)
 	{
-		require_once __DIR__ . '/../../vendor/autoload.php';
-		require_once __DIR__ . '/../../include/config.class.php';
 		if(!isset(Config::$_CF_EMAIL))
 			return false;
 
 		try
 		{
-			$key = new \Cloudflare\API\Auth\APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
-			$adapter = new Cloudflare\API\Adapter\Guzzle($key);
+			$key = new APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
+			$adapter = new Guzzle($key);
 
-			$zones = new \Cloudflare\API\Endpoints\Zones($adapter);
+			$zones = new Zones($adapter);
 
 			foreach($filenames as $filename)
 			{
@@ -54,17 +59,15 @@ class WebUtils
 
 	static function purgeCDNCache($img_name)
 	{
-		require_once __DIR__ . '/../../vendor/autoload.php';
-		require_once __DIR__ . '/../../include/config.class.php';
 		if(!isset(Config::$_CF_EMAIL))
 			return false;
 
 		try
 		{
-			$key = new \Cloudflare\API\Auth\APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
-			$adapter = new Cloudflare\API\Adapter\Guzzle($key);
+			$key = new APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
+			$adapter = new Guzzle($key);
 
-			$zones = new \Cloudflare\API\Endpoints\Zones($adapter);
+			$zones = new Zones($adapter);
 			$sizes = array("small", "thumb", "original", "cropped_center_thumb", "cropped_center_thumb_square", "medium", "large");
 
 			foreach($sizes as $size)
@@ -82,15 +85,13 @@ class WebUtils
 
 	static function purgeCDNCacheArray($img_names)
 	{
-		require_once __DIR__ . '/../../vendor/autoload.php';
-		require_once __DIR__ . '/../../include/config.class.php';
 		if(!isset(Config::$_CF_EMAIL))
 			return;
 
-		$key = new \Cloudflare\API\Auth\APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
-		$adapter = new Cloudflare\API\Adapter\Guzzle($key);
+		$key = new APIKey(Config::$_CF_EMAIL, Config::$_CF_KEY);
+		$adapter = new Guzzle($key);
 
-		$zones = new \Cloudflare\API\Endpoints\Zones($adapter);
+		$zones = new Zones($adapter);
 		foreach ($img_names as $value)
 		{
 			$sizes = array("small", "thumb", "original", "cropped_center_thumb", "cropped_center_thumb_square", "medium", "large");
@@ -117,5 +118,3 @@ class WebUtils
 		}
 	}
 }
-
-?>

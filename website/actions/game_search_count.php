@@ -1,6 +1,11 @@
 <?php
-require_once __DIR__ . "/../include/ErrorPage.class.php";
-require_once __DIR__ . "/../include/login.common.class.php";
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\ErrorPage;
+
+global $_user;
 
 function returnJSONAndDie($code, $msg)
 {
@@ -8,7 +13,6 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
 if(!$_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
@@ -30,8 +34,6 @@ foreach($GameArrayFields as $field)
 		returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR . ": ($field).");
 	}
 }
-
-require_once __DIR__ . "/../../include/TGDB.API.php";
 
 try
 {

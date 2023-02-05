@@ -1,20 +1,22 @@
 <?php
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\ErrorPage;
+use TheGamesDB\TGDBUtils;
+use TheGamesDB\PaginationUtils;
+
+global $_user;
+
 if(isset($_REQUEST['platform_id']) && is_numeric($_REQUEST['platform_id']))
 {
 	include "my_games_by_platform.php";
 	die();
 }
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/PaginationUtils.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/include/WebUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
-require_once __DIR__ . "/include/ErrorPage.class.php";
 
-
-require_once __DIR__ . "/include/login.common.class.php";
-$_user = phpBBUser::getInstance();
 if(!$_user->isLoggedIn())
 {
 	$errorPage = new ErrorPage();
@@ -67,7 +69,7 @@ if(isset($Platform_IDs) && !empty($Platform_IDs))
 	}
 }
 unset($platform);
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Browser - Game By $listed_by");
 ?>
 <?= $Header->print(); ?>
@@ -125,4 +127,4 @@ $Header->setTitle("TGDB - Browser - Game By $listed_by");
 		<?= (isset($page)) ? PaginationUtils::Create($has_next_page) : "";?>
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

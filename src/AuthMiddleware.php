@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . '/Utils.class.php';
-require_once __DIR__ . '/APIAccessDB.class.php';
+
+namespace TheGamesDB;
 
 class AuthMiddleware
 {
@@ -60,5 +60,3 @@ class AuthMiddleware
 		}
 	}
 }
-
-?>

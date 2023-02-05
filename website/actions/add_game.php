@@ -1,6 +1,12 @@
 <?php
-require_once __DIR__ . "/../include/ErrorPage.class.php";
-require_once __DIR__ . "/../include/login.common.class.php";
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\ErrorPage;
+use TheGamesDB\DiscordUtils;
+
+global $_user;
 
 function returnJSONAndDie($code, $msg)
 {
@@ -8,7 +14,6 @@ function returnJSONAndDie($code, $msg)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
 if(!$_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
@@ -45,10 +50,6 @@ if(!checkdate($date[1], $date[2], $date[0]))
 {
 	returnJSONAndDie(-1, "Invalid Date Format");
 }
-
-
-require_once __DIR__ . "/../../include/TGDB.API.php";
-require_once __DIR__ . "/../include/DiscordUtils.class.php";
 
 try
 {

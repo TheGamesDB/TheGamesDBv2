@@ -1,5 +1,9 @@
 <?php
-require_once __DIR__ . "/../../include/db.config.php";
+
+namespace TheGamesDB;
+
+use PDO;
+use Exception;
 
 class APIAccessDB
 {
@@ -9,7 +13,7 @@ class APIAccessDB
 
 	private function __construct()
 	{
-		$this->database = database::getInstance();
+		$this->database = Database::getInstance();
 	}
 
 	public static function getInstance()
@@ -160,5 +164,3 @@ class APIAccessDB
 		}
 	}
 }
-
-?>

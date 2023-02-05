@@ -1,9 +1,8 @@
 <?php
 
-require_once __DIR__ . "/../../include/config.class.php";
-require_once __DIR__ . "/../../include/TGDB.API.php";
-require_once __DIR__ . '/../../include/CommonUtils.class.php';
-require_once __DIR__ . '/../../website/include/TGDBUtils.class.php';
+namespace TheGamesDB;
+
+use Exception;
 
 class DiscordUtils
 {
@@ -39,11 +38,11 @@ class DiscordUtils
 		{
 			if(isset($output['message']))
 			{
-				throw new \Exception($output['message']);
+				throw new Exception($output['message']);
 			}
 			else if(isset($output))
 			{
-				throw new \Exception(json_encode($output));
+				throw new Exception(json_encode($output));
 			}
 		}
 
@@ -210,4 +209,3 @@ class DiscordUtils
 
 	}
 }
-?>

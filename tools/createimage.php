@@ -1,5 +1,9 @@
 <?php
 
+include __DIR__ . "/../vendor/autoload.php";
+
+use claviska\SimpleImage;
+
 $_size = array(
 	"small" => 150,
 	"thumb" => 300,
@@ -25,10 +29,9 @@ if(isset($_SERVER['REDIRECT_URL']))
 	$dest_image = __DIR__ . "/images/$size" . implode("/", $PATHs);
 	if(file_exists($original_image) && !file_exists($dest_image))
 	{
-		include __DIR__ . "/../vendor/autoload.php";
 		try
 		{
-			$image = new \claviska\SimpleImage();
+			$image = new SimpleImage();
 		
 			$image = $image->fromFile($original_image);
 			if($size == "cropped_center_thumb")

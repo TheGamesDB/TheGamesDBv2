@@ -1,9 +1,15 @@
 <?php
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/include/TGDBUtils.class.php";
-require_once __DIR__ . "/include/WebUtils.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/include/PaginationUtils.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+use TheGamesDB\WebUtils;
+use TheGamesDB\TGDBUtils;
+use TheGamesDB\PaginationUtils;
+
+global $_user;
 
 $API = TGDB::getInstance();
 $limit = 18;
@@ -32,7 +38,7 @@ foreach($lastupdated as $Game)
 }
 $Game = null;
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Homepage");
 $Header->appendRawHeader(function() { ?>
 	<meta property="og:title" content="TGDB" />
@@ -72,4 +78,4 @@ $Header->appendRawHeader(function() { ?>
 
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>

@@ -1,6 +1,11 @@
 <?php
-require_once __DIR__ . "/../include/ErrorPage.class.php";
-require_once __DIR__ . "/../include/login.common.class.php";
+
+require __DIR__ . '/../../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\ErrorPage;
+
+global $_user;
 
 function returnJSONAndDie($code, $msg, $id = 0)
 {
@@ -17,7 +22,6 @@ function returnJSONAndDie($code, $msg, $id = 0)
 	die();
 }
 
-$_user = phpBBuser::getInstance();
 if(!$_user->isLoggedIn())
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_NOT_LOGGED_IN_EDIT_ERROR);
@@ -34,8 +38,6 @@ if(empty($_REQUEST['name']) || empty($_REQUEST['tbl']))
 {
 	returnJSONAndDie(-1, ErrorPage::$MSG_MISSING_PARAM_ERROR);
 }
-
-require_once __DIR__ . "/../../include/TGDB.API.php";
 
 $tbl_name = $_REQUEST['tbl'];
 $name = $_REQUEST['name'];

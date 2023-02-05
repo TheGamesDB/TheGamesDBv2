@@ -1,4 +1,7 @@
 <?php
+
+namespace TheGamesDB;
+
 /**
  * original can be found at https://github.com/FineUploader/php-traditional-server/blob/master/handler.php
  * and will retain MIT license found at https://github.com/FineUploader/php-traditional-server/blob/master/LICENSE

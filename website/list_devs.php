@@ -1,12 +1,15 @@
 <?php
-require_once __DIR__ . "/include/header.footer.class.php";
-require_once __DIR__ . "/../include/TGDB.API.php";
-require_once __DIR__ . "/../include/CommonUtils.class.php";
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use TheGamesDB\TGDB;
+use TheGamesDB\Header;
+use TheGamesDB\Footer;
+
+global $_user;
 
 $API = TGDB::getInstance();
 $DevsList = $API->GetDevsList();
-
-
 
 $alpha_list = array();
 foreach($DevsList as $Dev)
@@ -15,7 +18,7 @@ foreach($DevsList as $Dev)
 }
 
 
-$Header = new HEADER();
+$Header = new Header();
 $Header->setTitle("TGDB - Browse - Developers");
 $Header->appendRawHeader(function()
 { ?>
@@ -94,4 +97,4 @@ $Header->appendRawHeader(function()
 		</div>
 	</div>
 
-<?php FOOTER::print(); ?>
+<?php Footer::print(); ?>
